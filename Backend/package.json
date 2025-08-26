@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "homepage": "https://github.com/simplysaad/fischerbon#readme",
+  "bugs": {
+    "url": "https://github.com/simplysaad/fischerbon/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simplysaad/fischerbon.git"
+  },
+  "license": "ISC",
+  "author": "saad idris",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node",
+    "dev": "nodemon",
+    "build": "tsc"
+  }
+}
