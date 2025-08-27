@@ -27,16 +27,8 @@ const courseSchema = Schema(
         title: String,
         lessons: [
           {
-            title: String,
-            content: {
-              text: String,
-              videoUrl: String,
-              fileUploads: [String]
-            },
-            quizId: {
-              type: Schema.Types.ObjectId,
-              ref: "quiz"
-            }
+            type: Schema.Types.ObjectId,
+            ref: "lesson"
           }
         ]
       }
