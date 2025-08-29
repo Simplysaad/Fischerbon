@@ -22,15 +22,10 @@ const courseSchema = Schema(
       enum: ["beginner", "intermediate", "advanced"]
     },
     thumbnailUrl: String,
-    modules: [
+    lessons: [
       {
-        title: String,
-        lessons: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: "lesson"
-          }
-        ]
+        type: Schema.Types.ObjectId,
+        ref: "lesson"
       }
     ],
     ratings: [

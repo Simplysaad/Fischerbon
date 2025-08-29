@@ -3,8 +3,8 @@ const router = Router();
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-import User from "../Models/user.model";
-import transporter from "../../Utils/nodemailer.util";
+import User from "../Models/user.model.js";
+import transporter from "../Utils/nodemailer.util.js";
 
 router.post("/register", async (req, res, next) => {
   try {
@@ -37,7 +37,7 @@ router.post("/register", async (req, res, next) => {
 
     const token = jwt.sign({ userId: newUser._id }, process.env.SECRET_KEY);
 
-    req.cookie("token", token, {
+    res.cookie("token", token, {
       maxAge: 360000,
       httpOnly: true
     });
@@ -121,7 +121,7 @@ router.post("/reset-password/:token", async (req, res, next) => {
     const { token } = req.params;
 
     let { emailAddress } = jwt.verify(token, process.env.SECRET_KEY);
-    const hashedPassword = bcrypt.hash(req.body.password, 12);
+    const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
     const updatedUser = await User.findOneAndUpdate(
       { emailAddress },
@@ -155,20 +155,22 @@ router.post("/reset-password", async (req, res, next) => {
 
     const token = jwt.sign({ emailAddress }, process.env.SECRET_KEY);
 
-    const url = `https://fischerbon.onrender.com/reset-password/${token}`;
+    const url = `http://localhost:5000/auth/reset-password/${token}`;
 
-    transporter.sendMail({
-      from: "simplysaad <saadidris23@gmail.com>",
-      to: emailAddress,
-      subject: "Request to Reset Password",
-      html: `<p>
-      This is to inform you that a request was made to reset your password. ignore if this was not you, otherwise click the link below to proceed
-        <a href='${url}' class='background-color=green; display: block; padding: 10px 16px;'> reset password </a>
-      </p>`
-    });
+    console.log(url)
+
+    // transporter.sendMail({
+    //   from: "simplysaad <saadidris23@gmail.com>",
+    //   to: emailAddress,
+    //   subject: "Request to Reset Password",
+    //   html: `<p>
+    //   This is to inform you that a request was made to reset your password. ignore if this was not you, otherwise click the link below to proceed
+    //     <a href='${url}' class='background-color=green; display: block; padding: 10px 16px;'> reset password </a>
+    //   </p>`
+    // });
   } catch (err) {
     next(err);
   }
 });
 
-export default authRoutes = router;
+export default router  

@@ -5,7 +5,7 @@ const lessonSchema = new Schema({
   content: {
     text: String,
     videoUrl: String,
-    fileUploads: [String]
+    files: [String]
   },
   quizId: {
     type: Schema.Types.ObjectId,
