@@ -19,7 +19,8 @@ const courseSchema = Schema(
     tags: [String],
     level: {
       type: String,
-      enum: ["beginner", "intermediate", "advanced"]
+      enum: ["beginner", "intermediate", "advanced"],
+      default: "beginner"
     },
     thumbnailUrl: String,
     lessons: [

@@ -1,5 +1,7 @@
 import "dotenv/config";
 import express from "express";
+import cors from "cors";
+
 import connectDB from "./Config/db.js";
 import authRoutes from "./Routes/auth.route.js";
 import errorMiddleware from "./Middleware/error.middleware.js";
@@ -9,6 +11,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({}));
+app.use(cors({credentials: false, }))
 
 app.use(errorMiddleware);
 app.listen(process.env.PORT, (err) => {
