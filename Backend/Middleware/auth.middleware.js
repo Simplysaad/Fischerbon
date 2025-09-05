@@ -1,8 +1,10 @@
 import jwt from "jsonwebtoken";
 
-export default function (req, res, next) {
+export default function authMiddleware(req, res, next) {
   try {
+   
     const { token } = req.cookies;
+    
     if (!token) {
       // return res.redirect("/auth/login");
       return res.status(401).json({
@@ -18,6 +20,7 @@ export default function (req, res, next) {
       next();
     }
   } catch (err) {
+    console.error(err)
     return res.status(401).json({
       success: false,
       message: "invalid or expired token"

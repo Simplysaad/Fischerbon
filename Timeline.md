@@ -39,19 +39,13 @@ Here's a feasible two-month timeline for building your paid AutoCAD tutorial lea
 - Develop frontend quiz components for students.
 - Add grading and progress updates from quiz results.
 
-### Week 6: PDF-to-Audio Conversion Tool
-- Develop PDF parsing and chapter splitting module.
-- Integrate Text-To-Speech API for chapter-wise audio conversion.
-- Build backend endpoints for uploading PDFs and generating audio.
-- Create UI to select PDFs and listen/download chapter-wise audio.
-
-### Week 7: Frontend UI & UX Enhancements
+### Week 6: Frontend UI & UX Enhancements
 - Design and implement student dashboard, course catalog, lesson views.
 - Add progress visualization and notifications.
 - Implement responsive design for mobile devices.
 - Polish instructor and admin dashboards.
 
-### Week 8: Testing, Deployment & Documentation
+### Week 7: Testing, Deployment & Documentation
 - Write automated tests for backend and frontend.
 - Conduct usability testing and fix bugs.
 - Setup deployment pipeline (Heroku, AWS, or similar).

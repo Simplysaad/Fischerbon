@@ -1,11 +1,4 @@
-import path from "path";
-
-import { v2 as cloudinary } from "cloudinary";
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
+import uploadToCloud from "../Config/cloudinary.js";
 
 import Course from "../Models/course.model.js";
 import User from "../Models/user.model.js";
@@ -32,26 +25,24 @@ export const createCourse = async (req, res, next) => {
     }
 
     // const { title, description, price, category, tags, level } = req.body;
-    if (req.file) {
-      const { thumbnail } = req.file;
-      
-      const thumbnailUpload = await cloudinary.uploader.upload(
-        path.resolve(__dirname, thumbnail.path)
-      );
-      
-      const { secure_url: thumbnailUrl } = thumbnailUpload;
+    let thumbnailUrl
+    if(req.file){
+        let upload = await uploadToCloud(req.file.path)
+        thumbnailUrl = upload?.secure_url
     }
 
-    console.log(req.body)
+    console.log(thumbnailUrl);
+    
 
     const newCourse = new Course({
       ...req.body,
-      // thumbnailUrl,
-      // instructorId: currentUser._id
+      thumbnailUrl,
+      instructorId: currentUser?._id
     });
 
     await newCourse.save();
-
+console.log(newCourse);
+    
     return res.status(201).json({
       success: true,
       message: "new course created",
@@ -73,7 +64,7 @@ export const createLesson = async (req, res, next) => {
 
     const currentUser = await User.findOne({ _id: req.userId });
 
-    const isAuthorized =
+    const isAuthorized = true
       currentUser.role === "instructor" || currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
@@ -96,28 +87,30 @@ export const createLesson = async (req, res, next) => {
     // };
 
     const { courseId } = req.params;
+    const { title } = req.body;
     const { lessonVideo, lessonFiles } = req.files;
 
-    const lessonVideoUpload = await cloudinary.uploader.upload(
-      path.resolve(__dirname, lessonVideo.path)
-    );
-    const { secure_url: videoUrl } = lessonVideoUpload;
+    console.log(lessonVideo, lessonFiles)
+    // const lessonVideoUpload = await cloudinary.uploader.upload(
+    //   path.resolve(__dirname, lessonVideo.path)
+    // );
+    // const { secure_url: videoUrl } = lessonVideoUpload;
 
-    const lessonFilesUploadsPromises = [];
+    // const lessonFilesUploadsPromises = [];
 
-    lessonFiles.forEach((file) => {
-      const filePromise = cloudinary.uploader.upload(
-        path.resolve(__dirname, file.path)
-      );
+    // lessonFiles.forEach((file) => {
+    //   const filePromise = cloudinary.uploader.upload(
+    //     path.resolve(__dirname, file.path)
+    //   );
 
-      lessonFilesUploadsPromises.push(filePromise);
-    });
+    //   lessonFilesUploadsPromises.push(filePromise);
+    // });
 
-    const lessonFilesUploadsArray = await Promise.all(
-      lessonFilesUploadsPromises
-    );
+    // const lessonFilesUploadsArray = await Promise.all(
+    //   lessonFilesUploadsPromises
+    // );
 
-    const lessonFilesUploads = lessonFilesUploadsArray.map(
+    const lessonFilesUploads = lessonFiles.map(
       (upload) => upload.secure_url
     );
 

@@ -11,8 +11,10 @@ import {
   deleteLesson
 } from "../Controllers/course.controller.js";
 
+//Create a new course
 router.post("/create", upload.single("thumbnail"), createCourse);
 
+// Add new lesson to a course
 router.post(
   "/:courseId/lesson",
   upload.fields([
@@ -22,6 +24,9 @@ router.post(
   createLesson
 );
 
+// Delete a particular lesson 
 router.delete("/:courseId/lesson/:lessonId", deleteLesson);
+
+// Delete a particular course 
 router.delete("/:courseId/", deleteCourse);
 export default router;

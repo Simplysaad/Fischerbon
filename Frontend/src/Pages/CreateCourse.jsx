@@ -2,18 +2,22 @@ import React, { useState } from "react";
 import axiosInstance from "../Config/axios.config";
 
 const CreateCourse = () => {
-  const [thumbnail, setThumbnail] = useState(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState();
-  //   const [category, setCategory] = useState(0);
-  //   const [tags, setTags] = useState([]);
-  const [level, setLevel] = useState("");
+  const [data, setData] = useState({
+    title: "",
+    description: "",
+    price: "",
+    category: "",
+    level: "",
+    tags: [],
+    file: null
+  });
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const { title, level, description, price, category, tags } = data;
 
     const formdata = new FormData();
+
     formdata.append("title", title);
     formdata.append("level", level);
     formdata.append("description", description);
@@ -21,24 +25,31 @@ const CreateCourse = () => {
     // formdata.append("category", category);
     // formdata.append("tags", tags);
 
-    if (thumbnail) formdata.append("thumbnail", thumbnail);
+    if (data.thumbnail) formdata.append("thumbnail", thumbnail);
 
     let response = await axiosInstance.post("/course/create", formdata);
 
     let data = await response.json();
     console.log(data);
   }
+
+  function handleChange(e) {
+    const { name, files, value } = e.target;
+    if (name === "thumbnail") {
+      setData({ ...data, file: files });
+    } else {
+      setData({ ...data, [name]: value });
+    }
+  }
   return (
     <form onSubmit={(e) => handleSubmit(e)}>
       <fieldset>
-        {/* const {(title, description, price, category, tags, level)} =req.body; */}
-
         <figcaption></figcaption>
         <div id="title">
           <label htmlFor="inputTitle">Title</label>
           <input
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) => handleChange(e)}
             type="text"
             id="inputTitle"
             placeholder="title"
@@ -48,7 +59,7 @@ const CreateCourse = () => {
           <label htmlFor="inputDescription">Description</label>
           <input
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => handleChange(e)}
             type="text"
             id="inputDescription"
             placeholder="Description"
@@ -58,30 +69,32 @@ const CreateCourse = () => {
           <label htmlFor="inputPrice">Price</label>
           <input
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            onChange={(e) => handleChange(e)}
             type="number"
             id="inputPrice"
             placeholder="price"
           />
         </div>
 
-        {/* <div id="thumbnail">
+        <div id="thumbnail">
           <label htmlFor="inputThumbnail">thumbnail</label>
           <input
             value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.files[0])}
+            onChange={(e) => {
+              setThumbnail(e.target.files[0]);
+            }}
             type="file"
             accept="image/*"
             id="inputThumbnail"
             placeholder="thumbnail"
           />
-        </div> */}
-
+        </div>
+        {console.log("hello world")}
         <div id="level">
           <select
             name="level"
-            // value={e.target.value}
-            onChange={(e) => setLevel(e.target.value)}
+            value={level}
+            onChange={(e) => handleChange(e)}
             id="selectLevel"
           >
             <option value="beginner">beginner</option>

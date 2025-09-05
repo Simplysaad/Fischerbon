@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <form enctype="multipart/form-data" id="createCourseForm">
+      <fieldset>
+        <figcaption></figcaption>
+        <div id="title">
+          <label htmlFor="inputTitle">Title</label>
+          <input type="text" name="title" id="inputTitle" placeholder="title" />
+        </div>
+        <div id="description">
+          <label htmlFor="inputDescription">Description</label>
+          <input
+            type="text"
+            name="description"
+            id="inputDescription"
+            placeholder="Description"
+          />
+        </div>
+        <div id="price">
+          <label htmlFor="inputPrice">Price</label>
+          <input
+            type="number"
+            name="price"
+            id="inputPrice"
+            placeholder="price"
+          />
+        </div>
+
+        <div id="thumbnail">
+          <label htmlFor="inputThumbnail">thumbnail</label>
+          <input
+            type="file"
+            name="thumbnail"
+            accept="image/*"
+            id="inputThumbnail"
+            placeholder="thumbnail"
+          />
+        </div>
+        <div id="level">
+          <select name="level" id="selectLevel">
+            <option value="beginner">beginner</option>
+            <option value="intermediate">intermediate</option>
+            <option value="advanced">advanced</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <div className="button-container">
+        <button>Submit</button>
+      </div>
+    </form>
+
+    <script>
+      const createCourseForm = document.getElementById("createCourseForm");
+
+      createCourseForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const formdata = new FormData(createCourseForm);
+        console.log(formdata);
+
+        fetch("http://localhost:5000/course/create", {
+          method: "POST",
+          body: formdata
+        })
+          .then((response) => response.json())
+          .then((data) => console.log(data))
+          .catch((err) => console.error(err));
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      
+    </script>
+  </head>
+
+  <body>
+    <form action="/course/create">
+      <fieldset>
+        <figcaption></figcaption>
+        <div id="title">
+          <label htmlFor="inputTitle">Title</label>
+          <input type="text" id="inputTitle" placeholder="title" />
+        </div>
+        <div id="description">
+          <label htmlFor="inputDescription">Description</label>
+          <input type="text" id="inputDescription" placeholder="Description" />
+        </div>
+        <div id="price">
+          <label htmlFor="inputPrice">Price</label>
+          <input type="number" id="inputPrice" placeholder="price" />
+        </div>
+
+        <div id="thumbnail">
+          <label htmlFor="inputThumbnail">thumbnail</label>
+          <input
+            type="file"
+            accept="image/*"
+            id="inputThumbnail"
+            placeholder="thumbnail"
+          />
+        </div>
+        <div id="level">
+          <select name="level" id="selectLevel">
+            <option value="beginner">beginner</option>
+            <option value="intermediate">intermediate</option>
+            <option value="advanced">advanced</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <div className="button-container">
+        <button>Submit</button>
+      </div>
+    </form>
+  </body>
+</html>
