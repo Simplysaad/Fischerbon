@@ -7,7 +7,11 @@
   </head>
 
   <body>
-    <form enctype="multipart/form-data" id="createCourseForm">
+    <form
+      action="http://localhost:5000/course/create"
+      method="post"
+      enctype="multipart/form-data"
+    >
       <fieldset>
         <figcaption></figcaption>
         <div id="title">
@@ -38,7 +42,7 @@
           <input
             type="file"
             name="thumbnail"
-            accept="image/*"
+            accept="*"
             id="inputThumbnail"
             placeholder="thumbnail"
           />
@@ -55,25 +59,33 @@
       <div className="button-container">
         <button>Submit</button>
       </div>
+      <p id="output"></p>
     </form>
 
-    <script>
+    <!-- <script>
       const createCourseForm = document.getElementById("createCourseForm");
+      const output = document.getElementById("output");
 
-      createCourseForm.addEventListener("submit", (e) => {
+      createCourseForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const formdata = new FormData(createCourseForm);
         console.log(formdata);
 
-        fetch("http://localhost:5000/course/create", {
-          method: "POST",
-          body: formdata
-        })
-          .then((response) => response.json())
-          .then((data) => console.log(data))
-          .catch((err) => console.error(err));
+        try {
+          let response = await fetch("http://localhost:5000/course/create", {
+            method: "POST",
+            body: formdata
+          });
+
+          let data = await response.json();
+
+          output.textContent = JSON.stringify(data);
+          console.log(data);
+        } catch (err) {
+          console.error(err);
+        }
       });
-    </script>
+    </script> -->
   </body>
 </html>

@@ -25,14 +25,14 @@ export const createCourse = async (req, res, next) => {
     }
 
     // const { title, description, price, category, tags, level } = req.body;
-    let thumbnailUrl
-    if(req.file){
-        let upload = await uploadToCloud(req.file.path)
-        thumbnailUrl = upload?.secure_url
+    let thumbnailUrl;
+    if (!req.file) {
+      thumbnailUrl = "";
+    } else {
+      let upload = await uploadToCloud(req.file?.path);
+      thumbnailUrl = upload?.secure_url;
     }
 
-    console.log(thumbnailUrl);
-    
 
     const newCourse = new Course({
       ...req.body,
@@ -40,9 +40,8 @@ export const createCourse = async (req, res, next) => {
       instructorId: currentUser?._id
     });
 
-    await newCourse.save();
-console.log(newCourse);
-    
+    await newCourse.save()
+
     return res.status(201).json({
       success: true,
       message: "new course created",
@@ -64,8 +63,8 @@ export const createLesson = async (req, res, next) => {
 
     const currentUser = await User.findOne({ _id: req.userId });
 
-    const isAuthorized = true
-      currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized = true;
+    currentUser.role === "instructor" || currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
@@ -90,29 +89,9 @@ export const createLesson = async (req, res, next) => {
     const { title } = req.body;
     const { lessonVideo, lessonFiles } = req.files;
 
-    console.log(lessonVideo, lessonFiles)
-    // const lessonVideoUpload = await cloudinary.uploader.upload(
-    //   path.resolve(__dirname, lessonVideo.path)
-    // );
-    // const { secure_url: videoUrl } = lessonVideoUpload;
+    console.log(lessonVideo, lessonFiles);
 
-    // const lessonFilesUploadsPromises = [];
-
-    // lessonFiles.forEach((file) => {
-    //   const filePromise = cloudinary.uploader.upload(
-    //     path.resolve(__dirname, file.path)
-    //   );
-
-    //   lessonFilesUploadsPromises.push(filePromise);
-    // });
-
-    // const lessonFilesUploadsArray = await Promise.all(
-    //   lessonFilesUploadsPromises
-    // );
-
-    const lessonFilesUploads = lessonFiles.map(
-      (upload) => upload.secure_url
-    );
+    const lessonFilesUploads = lessonFiles.map((upload) => upload.secure_url);
 
     const newLesson = new Lesson({
       ...req.body,
