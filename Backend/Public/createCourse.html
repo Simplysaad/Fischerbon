@@ -4,33 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <script>
-      
-    </script>
   </head>
 
   <body>
-    <form action="/course/create">
+    <a href="/createLesson.html">Create Lesson</a>
+    <form
+      action="/course/create"
+      method="post"
+      enctype="multipart/form-data"
+    >
       <fieldset>
-        <figcaption></figcaption>
+        <figcaption></figcaption> 
         <div id="title">
           <label htmlFor="inputTitle">Title</label>
-          <input type="text" id="inputTitle" placeholder="title" />
+          <input type="text" name="title" id="inputTitle" placeholder="title" />
         </div>
         <div id="description">
           <label htmlFor="inputDescription">Description</label>
-          <input type="text" id="inputDescription" placeholder="Description" />
+          <input
+            type="text"
+            name="description"
+            id="inputDescription"
+            placeholder="Description"
+          />
         </div>
         <div id="price">
           <label htmlFor="inputPrice">Price</label>
-          <input type="number" id="inputPrice" placeholder="price" />
+          <input
+            type="number"
+            name="price"
+            id="inputPrice"
+            placeholder="price"
+          />
         </div>
 
         <div id="thumbnail">
           <label htmlFor="inputThumbnail">thumbnail</label>
           <input
             type="file"
-            accept="image/*"
+            name="thumbnail"
+            accept="*"
             id="inputThumbnail"
             placeholder="thumbnail"
           />
@@ -47,6 +60,33 @@
       <div className="button-container">
         <button>Submit</button>
       </div>
+      <p id="output"></p>
     </form>
+
+    <!-- <script>
+      const createCourseForm = document.getElementById("createCourseForm");
+      const output = document.getElementById("output");
+
+      createCourseForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formdata = new FormData(createCourseForm);
+        console.log(formdata);
+
+        try {
+          let response = await fetch("http://localhost:5000/course/create", {
+            method: "POST",
+            body: formdata
+          });
+
+          let data = await response.json();
+
+          output.textContent = JSON.stringify(data);
+          console.log(data);
+        } catch (err) {
+          console.error(err);
+        }
+      });
+    </script> -->
   </body>
 </html>

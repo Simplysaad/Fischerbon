@@ -1,4 +1,4 @@
-import uploadToCloud from "../Config/cloudinary.js";
+import { uploadMultipleToCloud, uploadToCloud } from "../Config/cloudinary.js";
 
 import Course from "../Models/course.model.js";
 import User from "../Models/user.model.js";
@@ -33,14 +33,13 @@ export const createCourse = async (req, res, next) => {
       thumbnailUrl = upload?.secure_url;
     }
 
-
     const newCourse = new Course({
       ...req.body,
       thumbnailUrl,
       instructorId: currentUser?._id
     });
 
-    await newCourse.save()
+    await newCourse.save();
 
     return res.status(201).json({
       success: true,
@@ -61,42 +60,44 @@ export const createLesson = async (req, res, next) => {
       });
     }
 
-    const currentUser = await User.findOne({ _id: req.userId });
+    // const currentUser = await User.findOne({ _id: req.userId });
 
-    const isAuthorized = true;
-    currentUser.role === "instructor" || currentUser.role === "admin";
-    if (!isAuthorized) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized - only instructor or admin can access this route"
-      });
-    }
-
-    // let x = {
-    //   title: String,
-    //   content: {
-    //     text: String,
-    //     videoUrl: String,
-    //     files: [String]
-    //   },
-    //   quizId: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "quiz"
-    //   }
-    // };
+    // const isAuthorized = true;
+    // currentUser.role === "instructor" || currentUser.role === "admin";
+    // if (!isAuthorized) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Unauthorized - only instructor or admin can access this route"
+    //   });
+    // }
 
     const { courseId } = req.params;
-    const { title } = req.body;
-    const { lessonVideo, lessonFiles } = req.files;
+    const { title, text } = req.body;
+    const { lessonFiles, lessonVideo } = req.files;
 
-    console.log(lessonVideo, lessonFiles);
+    const lessonFilesPaths = lessonFiles.map((file) => file.path);
+    // console.log("lessonFilesPaths", lessonFilesPaths);
 
-    const lessonFilesUploads = lessonFiles.map((upload) => upload.secure_url);
+    const lessonFilesUploads = await uploadMultipleToCloud(
+      lessonFilesPaths,
+      "raw"
+    );
+    // console.log("lessonFilesUploads", lessonFilesUploads);
+
+    const lessonVideoPath = lessonVideo[0].path;
+    // console.log("lessonVideoPath", lessonVideoPath);
+
+    const lessonVideoUpload = await uploadToCloud(lessonVideoPath);
+    // console.log("lessonVideoUploads", lessonVideoUploads);
 
     const newLesson = new Lesson({
-      ...req.body,
-      videoUrl,
-      files: lessonFilesUploads
+      courseId,
+      title,
+      content: {
+        text,
+        video: lessonVideoUpload,
+        files: lessonFilesUploads
+      }
     });
 
     await newLesson.save();
@@ -112,7 +113,7 @@ export const createLesson = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: "new lesson added successfully",
-      data: updatedCourse
+      data: { updatedCourse, newLesson }
     });
   } catch (err) {
     next(err);
@@ -126,8 +127,8 @@ export const deleteLesson = async (req, res, next) => {
     const currentUser = await User.findOne({ _id: req.userId });
     const currentCourse = await Course.findOne({ _id: courseId });
 
-    const isAuthorized =
-      currentCourse.instructorId === req.userId || currentUser.role === "admin";
+    const isAuthorized = true;
+    // currentCourse.instructorId === req.userId || currentUser.role === "admin";
 
     if (!isAuthorized) {
       return res.status(401).json({

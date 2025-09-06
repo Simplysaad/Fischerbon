@@ -24,9 +24,9 @@ router.post(
   createLesson
 );
 
-// Delete a particular lesson 
+// Delete a particular lesson
 router.delete("/:courseId/lesson/:lessonId", deleteLesson);
 
-// Delete a particular course 
+// Delete a particular course
 router.delete("/:courseId/", deleteCourse);
 export default router;
