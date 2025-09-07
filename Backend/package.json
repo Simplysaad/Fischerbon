@@ -22,7 +22,6 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@paystack/paystack-sdk": "^1.0.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
@@ -35,5 +34,8 @@
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^7.0.5"
+  },
+  "devDependencies": {
+    "@paystack/paystack-sdk": "^1.0.1"
   }
 }

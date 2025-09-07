@@ -3,33 +3,31 @@ import { Schema, model } from "mongoose";
 const paymentSchema = new Schema(
   {
     userId: {
-      type: Schema.Types.Objectid,
+      type: Schema.Types.ObjectId,
       ref: "user"
     },
     courseId: {
-      type: Schema.Types.Objectid,
+      type: Schema.Types.ObjectId,
       ref: "course"
-    },
-    method: {
-      type: String,
-      enum: ["debit_card", "bank_transfer"],
-      required: true
     },
     amount: {
       type: Number,
       required: true
     },
-    currrency: {
-      type: String,
-      enum: ["pending", "completed", "failed", "abandoned", "refunded"],
-      default: "pending"
-    },
+    access_code: String,
     transactionId: {
+      type: Number,
+    },
+    reference: {
       type: String,
       unique: true,
       required: true
     },
-    paymentDate: Date
+    status: {
+      type: String,
+      enum: ["pending", "success", "failed", "abandoned"],
+      default: "pending"
+    }
   },
   {
     timestamps: true

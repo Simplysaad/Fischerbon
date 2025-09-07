@@ -108,12 +108,12 @@ export const createLesson = async (req, res, next) => {
         $push: { lessons: newLesson._id }
       },
       { new: true }
-    );
+    ).populate("lessons");
 
     return res.status(201).json({
       success: true,
       message: "new lesson added successfully",
-      data: { updatedCourse, newLesson }
+      data: updatedCourse
     });
   } catch (err) {
     next(err);

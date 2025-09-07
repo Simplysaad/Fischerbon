@@ -20,9 +20,9 @@ Here's a feasible two-month timeline for building your paid AutoCAD tutorial lea
 
 ### Week 3: Courses & Content Management
 - Design and create Courses, Modules, Lessons schemas. ✅
-- Build APIs to create✅, update, delete✅ courses and lessons.
+- Build APIs to create✅, update, delete✅ courses and lessons.✅
 - Implement file uploads for videos and documents with Multer/cloud storage.✅
-- Build Instructor dashboard basics for course creation.
+- Build Instructor dashboard basics for course creation.✅
 
 ### Week 4: Student Enrollment & Progress Tracking
 - Develop enrollment logic, enrollment and payments schemas.
