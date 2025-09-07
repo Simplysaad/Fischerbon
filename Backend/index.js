@@ -23,6 +23,9 @@ app.use(morgan("dev"))
 app.use(express.static("./Public"))
 
 app.use(errorMiddleware);
+
+// TODO: npm i axios connect-mongo
+
 // app.use(Session({
 
 // }))
@@ -37,4 +40,4 @@ app.listen(process.env.PORT, (err) => {
 app.use("/auth", authRoutes);
 app.use("/course", courseRoutes);
 app.use("/admin", adminRoutes)
-app.use("/", enrollmentRoutes)
+app.use("/enroll", enrollmentRoutes)
