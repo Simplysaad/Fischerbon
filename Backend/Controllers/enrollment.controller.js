@@ -7,7 +7,7 @@ import User from "../Models/user.model.js";
 
 export const getEnroll = async (req, res, next) => {
   try {
-    const { userId } = req;
+    const { userId } = req.session
 
     const { reference } = req.query;
     const { courseId } = req.params;
@@ -48,7 +48,7 @@ export const getEnroll = async (req, res, next) => {
         message: "user is already enrolled to this course"
       });
     }
-
+ 
     const { price, title } = currentCourse;
     const priceInKobo = price * 100; // convert naira to kobo for paystack
 

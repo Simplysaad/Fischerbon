@@ -8,9 +8,16 @@ import {
   createCourse,
   createLesson,
   deleteCourse,
-  deleteLesson
+  deleteLesson,
+  getCourse
 } from "../Controllers/course.controller.js";
+import authMiddleware from "../Middleware/auth.middleware.js";
 
+router.use(authMiddleware);
+
+// Get a course
+
+router.get("/:courseId", getCourse);
 //Create a new course
 router.post("/create", upload.single("thumbnail"), createCourse);
 
