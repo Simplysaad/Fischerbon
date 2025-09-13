@@ -1,1 +1,7 @@
-@import "tailwindcss"
+/* @import "tailwindcss" */
+
+
+*{
+    background-color: black;
+    color: white;
+}
