@@ -25,8 +25,8 @@ export const createCourse = async (req, res, next) => {
       });
     }
 
-    const isAuthorized = true;
-    // currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized =
+      currentUser.role === "instructor" || currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
@@ -72,8 +72,8 @@ export const createLesson = async (req, res, next) => {
 
     const currentUser = await User.findOne({ _id: userId });
 
-    // const isAuthorized = true;
-    // currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized =
+      currentUser.role === "instructor" || currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
@@ -95,6 +95,7 @@ export const createLesson = async (req, res, next) => {
     // console.log("lessonFilesUploads", lessonFilesUploads);
 
     const lessonVideoPath = lessonVideo[0].path;
+    // when i implement the multer-storage-cloudinary, this will be the secure_url
     // console.log("lessonVideoPath", lessonVideoPath);
 
     const lessonVideoUpload = await uploadToCloud(lessonVideoPath);
@@ -151,8 +152,8 @@ export const deleteLesson = async (req, res, next) => {
       });
     }
 
-    const isAuthorized = true;
-    // currentCourse.instructorId === userId || currentUser.role === "admin";
+    const isAuthorized =
+      currentCourse.instructorId === userId || currentUser.role === "admin";
 
     if (!isAuthorized) {
       return res.status(401).json({
@@ -197,8 +198,8 @@ export const deleteCourse = async (req, res, next) => {
       });
     }
 
-    const isAuthorized = true;
-    // currentCourse.instructorId === userId || currentUser.role === "admin";
+    const isAuthorized =
+      currentCourse.instructorId === userId || currentUser.role === "admin";
 
     if (!isAuthorized) {
       return res.status(401).json({
@@ -219,9 +220,17 @@ export const deleteCourse = async (req, res, next) => {
   }
 };
 
+/**
+ * Check if the  user is logged in
+ * Checck if the current user  is enrolled to the coutrse
+ * * check for enrollments that links current userId with courseId
+ * * if it exists, return the course to the user
+ *
+ */
+
 export const getCourse = async (req, res, next) => {
   try {
-    const { userId = "68b1ba336127235c220314ee" } = req.session;
+    const { userId } = req;
     const { courseId } = req.params;
 
     const currentUser = await User.findOne({ _id: userId });
@@ -237,29 +246,81 @@ export const getCourse = async (req, res, next) => {
       $and: [{ instructorId: userId }, { courseId }]
     });
 
-
     const currentEnrollment = await Enrollment.findOne({
       $and: [{ userId }, { courseId }]
     })
-    .populate("courseId")
-    .populate("courseId.lessons");
-
+      .populate("courseId")
+      .populate("courseId.lessons");
 
     console.log("currentEnrollement", currentEnrollment);
     console.log("isInstructor", isInstructor);
 
-    const currentCourse = await Course.findOne({ _id: courseId });
-    if (!currentCourse) {
-      return res.status(400).json({
+    if (!currentEnrollment) {
+      return res.status(401).json({
         success: false,
-        message: "Invalid course Id "
+        message: "Unauthorized - User not enrolled for this course"
+      });
+    }
+
+    if (isInstructor) {
+      const currentCourse = await Course.findOne({ _id: courseId });
+      return res.status(200).json({
+        success: true,
+        message: "Course data retrieved successfully",
+        data: currentCourse
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "course retrieved successfully",
-      data: currentCourse
+      data: currentEnrollment
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getLesson = async (req, res, next) => {
+  try {
+    const { courseId, lessonId } = req.params;
+    const { completed } = req.query;
+    const { userId } = req;
+
+    const currentEnrollment = await Enrollment.findOne({
+      $and: [{ courseId }, { userId }]
+    });
+
+    if (!currentEnrollment) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden - User not enrolled to this course"
+      });
+    }
+
+    const currentLesson = await Lesson.findOne({ _id: lessonId });
+    if (!currentLesson) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid Lesson Id"
+      });
+    }
+
+    if (completed) {
+      currentEnrollment.completedLessons.push(currentLesson.Id);
+      await currentEnrollment.save();
+
+      return res.status(201).json({
+        success: true,
+        message: "Lesson completed successfully"
+        // data: currentLesson
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Lesson retrieved successfully",
+      data: currentLesson
     });
   } catch (err) {
     next(err);

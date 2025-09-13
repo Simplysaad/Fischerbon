@@ -9,7 +9,8 @@ import {
   createLesson,
   deleteCourse,
   deleteLesson,
-  getCourse
+  getCourse,
+  getLesson
 } from "../Controllers/course.controller.js";
 import authMiddleware from "../Middleware/auth.middleware.js";
 
@@ -33,6 +34,7 @@ router.post(
 
 // Delete a particular lesson
 router.delete("/:courseId/lesson/:lessonId", deleteLesson);
+router.get("/:courseId/lesson/:lessonId", getLesson);
 
 // Delete a particular course
 router.delete("/:courseId/", deleteCourse);

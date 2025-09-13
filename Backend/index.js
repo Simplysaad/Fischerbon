@@ -26,19 +26,7 @@ app.use(express.static("./Public"));
 
 app.use(errorMiddleware);
 
-// TODO: npm i axios connect-mongo : DONE
 
-app.use(
-  Session({
-    Store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    secret: process.env.SECRET_KEY,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 1000 * 60 * 60
-    }
-  })
-);
 
 app.listen(process.env.PORT, (err) => {
   if (!err) {

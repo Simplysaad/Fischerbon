@@ -2,9 +2,8 @@ import jwt from "jsonwebtoken";
 
 export default function authMiddleware(req, res, next) {
   try {
-   
     const { token } = req.cookies;
-    
+
     if (!token) {
       // return res.redirect("/auth/login");
       return res.status(401).json({
@@ -13,17 +12,17 @@ export default function authMiddleware(req, res, next) {
       });
     }
 
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    const { SECRET_KEY } = process.env;
+
+    if (!SECRET_KEY) throw new Error("Empty JWT secret");
+
+    const decoded = jwt.verify(token, SECRET_KEY);
 
     if (decoded) {
-      req.session.userId = decoded.userId;
+      req.userId = decoded.userId;
       next();
     }
   } catch (err) {
-    console.error(err)
-    return res.status(401).json({
-      success: false,
-      message: "invalid or expired token"
-    });
+    next(err);
   }
 }
