@@ -1,11 +1,14 @@
-import CreateCourse from "./Pages/CreateCourse";
 
-const App = () => {
-  return (
-    <div className="container min-w-screen min-h-screen bg-green-500 flex flex-col justify-center items-center">
-     <CreateCourse />
-    </div>
-  );
-};
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from './pages/Home';
+
+const App = () => (
+  <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/*" element={<Home />} />
+      </Routes>
+  </BrowserRouter>
+);
 
 export default App;
