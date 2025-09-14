@@ -9,15 +9,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// const storage = new CloudinaryStorage({
-//   cloudinary: cloudinary,
-//   params: {
-//     folder: "fischerbon media",
-//     resource_type: "raw"
-//   }
-// });
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "fischerbon media",
+    resource_type: "raw"
+  }
+});
 
-// export const uploadCloud = multer({ storage });
+export const uploadCloud = multer({ storage });
 
 export async function uploadToCloud(file_path, resource_type) {
   try {

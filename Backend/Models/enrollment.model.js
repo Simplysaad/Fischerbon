@@ -3,17 +3,21 @@ import { Schema, model } from "mongoose";
 const enrollmentSchema = new Schema(
   {
     userId: {
-      type: Schema.Types.Objectid,
+      type: Schema.Types.ObjectId,
       ref: "user"
     },
     courseId: {
-      type: Schema.Types.Objectid,
+      type: Schema.Types.ObjectId,
       ref: "course"
+    },
+    paymentId: {
+      type: Schema.Types.ObjectId,
+      ref: "payment"
     },
     completedLessons: [
       {
         lessonId: {
-          type: Schema.Types.Objectid,
+          type: Schema.Types.ObjectId,
           ref: "lesson"
         },
         completedAt: Date
@@ -22,7 +26,7 @@ const enrollmentSchema = new Schema(
     quizResults: [
       {
         quizId: {
-          type: Schema.Types.Objectid,
+          type: Schema.Types.ObjectId,
           ref: "quiz"
         },
         score: Number,

@@ -8,15 +8,28 @@ import {
   createCourse,
   createLesson,
   deleteCourse,
-  deleteLesson
+  deleteLesson,
+  getCourse,
+  getLesson,
+  getCourses
 } from "../Controllers/course.controller.js";
+import authMiddleware from "../Middleware/auth.middleware.js";
+
+router.use(authMiddleware);
+
+router.get("/", getCourses)
+
+
+// Get a course
+router.get("/:courseId", getCourse);
+
 
 //Create a new course
 router.post("/create", upload.single("thumbnail"), createCourse);
 
 // Add new lesson to a course
 router.post(
-  "/:courseId/lesson",
+  "/:courseId/lessons",
   upload.fields([
     { name: "lessonVideo", maxCount: 1 },
     { name: "lessonFiles", maxCount: 4 }
@@ -25,7 +38,8 @@ router.post(
 );
 
 // Delete a particular lesson
-router.delete("/:courseId/lesson/:lessonId", deleteLesson);
+router.delete("/:courseId/lessons/:lessonId", deleteLesson);
+router.get("/:courseId/lessons/:lessonId", getLesson);
 
 // Delete a particular course
 router.delete("/:courseId/", deleteCourse);
