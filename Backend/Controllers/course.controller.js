@@ -5,6 +5,36 @@ import User from "../Models/user.model.js";
 import Lesson from "../Models/lesson.model.js";
 import Enrollment from "../Models/enrollment.model.js";
 
+export const getCourses = async (req, res, next) => {
+  try {
+    const { page, limit, max_price, min_price, category, level } = req.query;
+
+    const filter = {};
+
+    if (max_price || min_price) {
+      filter.price = {};
+      if (max_price) filter.price.$lte = max_price;
+      if (min_price) filter.price.$gte = min_price;
+    }
+
+    if (category) filter.category = category;
+    if (level) filter.level = level;
+
+    const courses = await Course.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    return res.status(200).json({
+      success: true,
+      message: "courses successfully retrieved",
+      data: courses
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const createCourse = async (req, res, next) => {
   try {
     if (!req.body) {
@@ -70,6 +100,7 @@ export const createLesson = async (req, res, next) => {
       });
     }
 
+    const { userId } = req;
     const currentUser = await User.findOne({ _id: userId });
 
     const isAuthorized =
@@ -134,7 +165,7 @@ export const createLesson = async (req, res, next) => {
 export const deleteLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
-    const { userId } = req.session;
+    const { userId } = req;
 
     const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
@@ -162,7 +193,7 @@ export const deleteLesson = async (req, res, next) => {
       });
     }
 
-    const deletedLesson = await Lesson.findByIdAndDelete(lessonId);
+    await Lesson.findByIdAndDelete(lessonId);
 
     currentCourse.lessons.filter((l) => l !== lessonId);
     const updatedCourse = await currentCourse.save();
@@ -219,14 +250,6 @@ export const deleteCourse = async (req, res, next) => {
     next(err);
   }
 };
-
-/**
- * Check if the  user is logged in
- * Checck if the current user  is enrolled to the coutrse
- * * check for enrollments that links current userId with courseId
- * * if it exists, return the course to the user
- *
- */
 
 export const getCourse = async (req, res, next) => {
   try {
@@ -312,7 +335,7 @@ export const getLesson = async (req, res, next) => {
 
       return res.status(201).json({
         success: true,
-        message: "Lesson completed successfully"
+        message: "Lesson completed - progress saved "
         // data: currentLesson
       });
     }
