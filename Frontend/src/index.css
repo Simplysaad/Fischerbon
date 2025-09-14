@@ -1,7 +1,77 @@
-/* @import "tailwindcss" */
+@import "tailwindcss";
 
 
-*{
-    background-color: black;
-    color: white;
+hr{
+    opacity: 20%;
+}
+button{
+    outline: none;
+}
+
+summary::-webkit-details-marker {
+  display: none
+}
+
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-spinner {
+  -moz-appearance: textfield;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/HelveticaNeueLight.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/HelveticaNeueMedium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url("/fonts/HelveticaNeueBold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@theme {
+  --font-helvetica: "Helvetica", system-ui, sans-serif;
+
+  /* Fischerbon lms color palette */
+    --color-primary:   #2D89EF;   /* Primary – Blue for buttons, links, and key actions */
+    --color-secondary: #CED4DA;   /* Secondary – Light gray for borders, secondary text, and UI elements */
+    --color-grey: #6C757D;   /* Secondary – Light gray for borders, secondary text, and UI elements */
+    --color-primaryHover: #00B2FF;   /* Secondary – Light gray for borders, secondary text, and UI elements */
+    --color-secondary2: #4ECDC4;   /* Secondary – Light gray for borders, secondary text, and UI elements */
+    --color-accent:    #FF6B6B;   /* Accent – Coral red for highlights, alerts, or badges */
+    --color-muted:     #F5F7FA;   /* Muted – Soft background for cards, containers, and light mode */
+    --color-dark:      #1A1A1A;   /* Dark – Text, headers, and dark mode backgrounds */
+}
+
+@layer base {
+  body {
+    @apply font-helvetica font-normal;
+    background-color: var(--color-muted);
+    color: var(--color-dark);
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
