@@ -1,6 +1,16 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
-const userSchema = Schema(
+interface IUser extends Document {
+  name: string;
+  emailAddress: string;
+  password: string;
+  role: "student" | "instructor" | "admin";
+  profilePicture?: string;
+  bio?: string;
+  enrollments?: Schema.Types.ObjectId[]
+}
+
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -32,5 +42,5 @@ const userSchema = Schema(
   }
 );
 
-const User = model("user", userSchema);
+const User = model<IUser>("user", userSchema);
 export default User;

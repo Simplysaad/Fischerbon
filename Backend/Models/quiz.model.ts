@@ -1,10 +1,29 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, Document } from "mongoose";
 
-const quizSchema = Schema(
+interface IQuiz extends Document {
+  courseId: Schema.Types.ObjectId;
+  lessonId: Schema.Types.ObjectId;
+  title: string;
+  questions: IQuestion[];
+}
+
+interface IQuestion {
+  text: string;
+  options: {
+    text: string;
+    isCorrect: boolean;
+  }[];
+}
+
+const quizSchema = new Schema<IQuiz>(
   {
     courseId: {
       type: Schema.Types.ObjectId,
       ref: "course"
+    },
+    lessonId: {
+      type: Schema.Types.ObjectId,
+      ref: "lesson"
     },
     title: String,
     questions: [
@@ -31,5 +50,5 @@ const quizSchema = Schema(
   }
 );
 
-const Quiz = model("quiz", quizSchema);
+const Quiz = model<IQuiz>("quiz", quizSchema);
 export default Quiz;

@@ -1,4 +1,11 @@
-export default function errorMiddleware(err, req, res, next) {
+import { Response, Request, NextFunction } from "express";
+
+export default function errorMiddleware(
+  err,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   console.error("Error:", err);
 
   const status = err.statusCode || err.status || 500;

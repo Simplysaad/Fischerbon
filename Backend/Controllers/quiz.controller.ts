@@ -20,7 +20,6 @@ export const getQuiz = async (req, res, next) => {
       });
     }
 
-    // check if currentquiz.lessonId is in completd lessons
 
     const { completedLessons } = currentEnrollment;
 
@@ -52,6 +51,38 @@ export const getQuiz = async (req, res, next) => {
       success: true,
       message: "quiz retrieved successfully",
       data: currentQuiz
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const createQuiz = async (req, res, next) => {
+  try {
+    const { title, questions, lessonId } = req.body;
+    // const { lessonId } = req.params;
+
+    const currentLesson = await Lesson.findOne({ _id: lessonId }).select(
+      "_id courseId "
+    );
+
+    const { courseId } = currentLesson;
+
+    const newQuiz = new Quiz({
+      courseId,
+      title,
+      questions
+    });
+
+    await newQuiz.save();
+
+    currentLesson.quizId = newQuiz._id;
+    await currentLesson.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "New quiz created",
+      data: currentLesson
     });
   } catch (err) {
     next(err);
