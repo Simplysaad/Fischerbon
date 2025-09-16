@@ -4,17 +4,33 @@ import Course from "../Models/course.model.js";
 import User from "../Models/user.model.js";
 import Lesson from "../Models/lesson.model.js";
 import Enrollment from "../Models/enrollment.model.js";
+import { Request, Response, NextFunction } from "express";
+import changeTypes from "../Utils/change_type.js";
 
-export const getCourses = async (req, res, next) => {
+interface IFilter {
+  price?: {
+    $lte?: number;
+    $gte?: number;
+  };
+  category?: string;
+  level?: string;
+}
+
+export const getCourses = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const { page, limit, max_price, min_price, category, level } = req.query;
+    const query = changeTypes(req.query);
+    const { page, limit, max_price, min_price, category, level } = query;
 
-    const filter = {};
+    const filter: IFilter = {};
 
     if (max_price || min_price) {
       filter.price = {};
-      if (max_price) filter.price.$lte = max_price;
-      if (min_price) filter.price.$gte = min_price;
+      if (max_price) filter.price.$lte = parseFloat(max_price);
+      if (min_price) filter.price.$gte = parseFloat(min_price);
     }
 
     if (category) filter.category = category;
@@ -22,8 +38,8 @@ export const getCourses = async (req, res, next) => {
 
     const courses = await Course.find(filter)
       .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+      .skip(page ? Number((page - 1) * limit) : 0)
+      .limit(limit ?? null);
 
     return res.status(200).json({
       success: true,
@@ -35,7 +51,11 @@ export const getCourses = async (req, res, next) => {
   }
 };
 
-export const createCourse = async (req, res, next) => {
+export const createCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -44,7 +64,7 @@ export const createCourse = async (req, res, next) => {
       });
     }
 
-    const { userId } = req.session;
+    const { userId } = req;
     console.log(userId);
 
     const currentUser = await User.findOne({ _id: userId });
@@ -65,6 +85,7 @@ export const createCourse = async (req, res, next) => {
     }
 
     // const { title, description, price, category, tags, level } = req.body;
+
     let thumbnailUrl;
     if (!req.file) {
       thumbnailUrl = "";
@@ -91,7 +112,11 @@ export const createCourse = async (req, res, next) => {
   }
 };
 
-export const createLesson = async (req, res, next) => {
+export const createLesson = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -162,7 +187,11 @@ export const createLesson = async (req, res, next) => {
   }
 };
 
-export const deleteLesson = async (req, res, next) => {
+export const deleteLesson = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { courseId, lessonId } = req.params;
     const { userId } = req;
@@ -208,7 +237,11 @@ export const deleteLesson = async (req, res, next) => {
   }
 };
 
-export const deleteCourse = async (req, res, next) => {
+export const deleteCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { courseId } = req.params;
     const { userId } = req.session;
@@ -251,7 +284,11 @@ export const deleteCourse = async (req, res, next) => {
   }
 };
 
-export const getCourse = async (req, res, next) => {
+export const getCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { userId } = req;
     const { courseId } = req.params;
@@ -304,7 +341,11 @@ export const getCourse = async (req, res, next) => {
   }
 };
 
-export const getLesson = async (req, res, next) => {
+export const getLesson = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;

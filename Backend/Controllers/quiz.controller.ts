@@ -12,7 +12,7 @@ export const getQuiz = async (req, res, next) => {
     const currentEnrollment = await Enrollment.findOne({
       $and: [{ userId }, { courseId: currentQuiz.courseId }]
     });
-
+ 
     if (!currentEnrollment) {
       return res.status(403).json({
         success: false,
