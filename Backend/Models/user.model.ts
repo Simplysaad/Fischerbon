@@ -1,4 +1,4 @@
-import { Document, Schema, model } from "mongoose";
+import { Document, Schema, Types, model } from "mongoose";
 
 interface IUser extends Document {
   name: string;
@@ -7,7 +7,7 @@ interface IUser extends Document {
   role: "student" | "instructor" | "admin";
   profilePicture?: string;
   bio?: string;
-  enrollments?: Schema.Types.ObjectId[]
+  enrollments?: Types.ObjectId[];
 }
 
 const userSchema = new Schema<IUser>(
@@ -32,10 +32,12 @@ const userSchema = new Schema<IUser>(
     },
     profilePicture: String,
     bio: String,
-    enrollments: {
-      type: Schema.Types.ObjectId,
-      ref: "enrollment"
-    }
+    enrollments: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "enrollment"
+      }
+    ]
   },
   {
     timestamps: true

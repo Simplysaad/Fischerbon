@@ -1,7 +1,7 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
-interface ILesson {
-  courseId: Schema.Types.ObjectId;
+interface ILesson extends Document {
+  courseId: Types.ObjectId;
 
   title: string;
   content: {
@@ -9,7 +9,7 @@ interface ILesson {
     video: string;
     files: string[];
   };
-  quizId: Schema.Types.ObjectId;
+  quizId: Types.ObjectId;
 }
 
 const lessonSchema = new Schema<ILesson>({

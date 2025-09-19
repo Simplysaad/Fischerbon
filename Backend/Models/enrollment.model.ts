@@ -1,15 +1,16 @@
+import { ObjectId, Types } from "mongoose";
 import { Document, Schema, model } from "mongoose";
 
-interface IEnrollment  extends Document{
-  userId: Schema.Types.ObjectId;
-  courseId: Schema.Types.ObjectId;
-  paymentId: Schema.Types.ObjectId;
+interface IEnrollment extends Document {
+  userId: ObjectId;
+  courseId: ObjectId;
+  paymentId: ObjectId;
   completedLessons: {
     lessonId: Schema.Types.ObjectId;
     completedAt: Date;
   }[];
   quizResults: {
-    quizId: Schema.Types.ObjectId;
+    quizId: Types.ObjectId;
     score: number;
     attemptedAt: Date;
   }[];

@@ -7,4 +7,4 @@ import Quiz from "../Models/quiz.model";
 quizRouter.post("/:lessonId", createQuiz);
 quizRouter.get("/:quizId", getQuiz);
 
-export default quizeRouter;
+export default quizRouter;

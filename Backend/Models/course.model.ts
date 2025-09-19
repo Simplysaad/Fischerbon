@@ -1,16 +1,16 @@
-import { Document, Schema, model } from "mongoose";
+import { Document, Schema, model, Types } from "mongoose";
 
 interface ICourse extends Document {
   title: string;
   description: string;
-  instructorId: Schema.Types.ObjectId;
+  instructorId: Types.ObjectId;
   price: number;
   payment: "paid" | "free";
   category: string;
   tags: string[];
   level: "beginner" | "intermediate" | "advanced";
   thumbnailUrl: string;
-  lessons: Schema.Types.ObjectId[];
+  lessons: Types.ObjectId[];
   ratings: {
     userId: Schema.Types.ObjectId;
     rating: number;

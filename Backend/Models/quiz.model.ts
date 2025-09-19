@@ -1,8 +1,8 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 interface IQuiz extends Document {
-  courseId: Schema.Types.ObjectId;
-  lessonId: Schema.Types.ObjectId;
+  courseId: Types.ObjectId;
+  lessonId: Types.ObjectId;
   title: string;
   questions: IQuestion[];
 }

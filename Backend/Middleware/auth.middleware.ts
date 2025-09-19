@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 export interface JWTRequest extends Request {
-  
+  userId?: string;
 }
 
 export default function authMiddleware(

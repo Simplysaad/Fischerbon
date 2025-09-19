@@ -1,7 +1,15 @@
 import Quiz from "../Models/quiz.model";
 import Enrollment from "../Models/enrollment.model";
+import { NextFunction, Response } from "express";
+import Lesson from "../Models/lesson.model";
+import mongoose from "mongoose";
+import { JWTRequest } from "../Middleware/auth.middleware";
 
-export const getQuiz = async (req, res, next) => {
+export const getQuiz = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { quizId } = req.params;
     const { userId } = req;
@@ -12,7 +20,7 @@ export const getQuiz = async (req, res, next) => {
     const currentEnrollment = await Enrollment.findOne({
       $and: [{ userId }, { courseId: currentQuiz.courseId }]
     });
- 
+
     if (!currentEnrollment) {
       return res.status(403).json({
         success: false,
@@ -20,10 +28,12 @@ export const getQuiz = async (req, res, next) => {
       });
     }
 
-
     const { completedLessons } = currentEnrollment;
 
-    const hasCompletedLesson = completedLessons.includes(currentQuiz.lessonId);
+    const hasCompletedLesson = completedLessons.find(
+      (lesson) => lesson.lessonId.toString() === currentQuiz.lessonId.toString()
+    );
+
     if (!hasCompletedLesson) {
       return res.status(403).json({
         success: false,
@@ -34,9 +44,9 @@ export const getQuiz = async (req, res, next) => {
 
     if (completed) {
       currentEnrollment.quizResults.push({
-        quizId,
-        score,
-        attemptedAt: Date.now()
+        quizId: new mongoose.Types.ObjectId(quizId),
+        score: parseInt(score.toLocaleString()),
+        attemptedAt: new Date(Date.now())
       });
 
       await currentEnrollment.save();
@@ -57,27 +67,30 @@ export const getQuiz = async (req, res, next) => {
   }
 };
 
-export const createQuiz = async (req, res, next) => {
+export const createQuiz = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { title, questions, lessonId } = req.body;
     // const { lessonId } = req.params;
 
-    const currentLesson = await Lesson.findOne({ _id: lessonId }).select(
-      "_id courseId "
-    );
-
-    const { courseId } = currentLesson;
-
     const newQuiz = new Quiz({
-      courseId,
+      // courseId,
       title,
       questions
     });
 
-    await newQuiz.save();
+    const currentLesson = await Lesson.findOneAndUpdate(
+      { _id: lessonId },
+      { $set: { quizId: newQuiz._id } },
+      { new: true }
+    );
 
-    currentLesson.quizId = newQuiz._id;
-    await currentLesson.save();
+    newQuiz.courseId = currentLesson.courseId;
+
+    await newQuiz.save();
 
     return res.status(201).json({
       success: true,

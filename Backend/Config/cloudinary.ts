@@ -13,8 +13,8 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "fischerbon media",
-    resource_type: "raw"
+    // folder: "fischerbon media",
+    // resource_type: "raw"
   }
 });
 
