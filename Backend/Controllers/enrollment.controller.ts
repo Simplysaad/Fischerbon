@@ -4,10 +4,11 @@ import Course from "../Models/course.model.js";
 import Payment from "../Models/payment.model.js";
 import Enrollment from "../Models/enrollment.model.js";
 import User from "../Models/user.model.js";
+import mongoose, { ObjectId, Schema, Types } from "mongoose";
 
 export const getEnroll = async (req, res, next) => {
   try {
-    const { userId } = req.session
+    const { userId } = req.session;
 
     const { reference } = req.query;
     const { courseId } = req.params;
@@ -39,7 +40,7 @@ export const getEnroll = async (req, res, next) => {
 
     // Check User for enrollment status
     const isPreviouslyEnrolled = currentUserEnrollments.find(
-      (e) => e.courseId.toString() === courseId.toString()
+      (e) => e.toString() === courseId.toString()
     );
 
     if (isPreviouslyEnrolled) {
@@ -48,7 +49,7 @@ export const getEnroll = async (req, res, next) => {
         message: "user is already enrolled to this course"
       });
     }
- 
+
     const { price, title } = currentCourse;
     const priceInKobo = price * 100; // convert naira to kobo for paystack
 
@@ -56,12 +57,18 @@ export const getEnroll = async (req, res, next) => {
       reference || ""
     }`;
 
-    const options = {
+    interface IOption {
+      method: "get" | "post";
+      headers: { Authorization: string };
+      body?: any;
+    }
+    const options: IOption = {
       method: action === "verify" ? "get" : "post",
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
       }
     };
+
     if (action === "initialize") {
       options.body = JSON.stringify({
         amount: priceInKobo,
@@ -79,8 +86,6 @@ export const getEnroll = async (req, res, next) => {
 
       options.headers["Content-Type"] = "application/json";
     }
-
-    console.log(method, body);
 
     // Initialize transaction
     const response = await fetch(apiUrl, options);
@@ -122,20 +127,24 @@ export const getEnroll = async (req, res, next) => {
 
     // On verification, create enrollment
     if (data.status === "success" && action === "verify") {
-      const newEnrollment = new Enrollment({
+      const newEnrollment = await Enrollment.create({
         userId,
         courseId,
         paymentId: currentPayment?._id,
         lastAccessed: new Date()
       });
 
-      await newEnrollment.save();
+      // Add new enrollment to user's enrollments if not already present
+      const isEnrolled = currentUser.enrollments.some(
+        (e: any) => e.toString() === newEnrollment._id.toString()
+      );
 
-      const newSet = new Set(currentUser.enrollments);
-      newSet.add(newEnrollment._id);
+      let enrollmentId = new Types.ObjectId(newEnrollment._id.toString());
 
-      currentUser.enrollments = Array.from(newSet);
-      await currentUser.save();
+      if (!isEnrolled) {
+        currentUser.enrollments.push(enrollmentId);
+        await currentUser.save();
+      }
 
       return res.status(201).json({
         success: true,

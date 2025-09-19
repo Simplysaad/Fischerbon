@@ -5,16 +5,44 @@ import User from "../Models/user.model.js";
 import Lesson from "../Models/lesson.model.js";
 import Enrollment from "../Models/enrollment.model.js";
 
-export const getCourses = async (req, res, next) => {
-  try {
-    const { page, limit, max_price, min_price, category, level } = req.query;
+import { Response, NextFunction } from "express";
+import { JWTRequest } from "../Middleware/auth.middleware.js";
+import { Schema, Types } from "mongoose";
 
-    const filter = {};
+
+interface IFilter {
+  price?: {
+    $lte?: number;
+    $gte?: number;
+  };
+  category?: string;
+  level?: string;
+}
+
+type Query = {
+  page?: string;
+  limit?: string;
+  max_price?: string;
+  min_price?: string;
+  category?: string;
+  level?: string;
+};
+
+export const getCourses = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { page, limit, max_price, min_price, category, level } =
+      req.query as Query;
+
+    const filter: IFilter = {};
 
     if (max_price || min_price) {
       filter.price = {};
-      if (max_price) filter.price.$lte = max_price;
-      if (min_price) filter.price.$gte = min_price;
+      if (max_price) filter.price.$lte = parseFloat(max_price);
+      if (min_price) filter.price.$gte = parseFloat(min_price);
     }
 
     if (category) filter.category = category;
@@ -22,8 +50,8 @@ export const getCourses = async (req, res, next) => {
 
     const courses = await Course.find(filter)
       .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+      .skip(page ? Number((parseInt(page) - 1) * parseInt(limit)) : 0)
+      .limit(parseInt(limit) ?? null);
 
     return res.status(200).json({
       success: true,
@@ -35,7 +63,11 @@ export const getCourses = async (req, res, next) => {
   }
 };
 
-export const createCourse = async (req, res, next) => {
+export const createCourse = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -44,7 +76,7 @@ export const createCourse = async (req, res, next) => {
       });
     }
 
-    const { userId } = req.session;
+    const { userId } = req;
     console.log(userId);
 
     const currentUser = await User.findOne({ _id: userId });
@@ -65,6 +97,7 @@ export const createCourse = async (req, res, next) => {
     }
 
     // const { title, description, price, category, tags, level } = req.body;
+
     let thumbnailUrl;
     if (!req.file) {
       thumbnailUrl = "";
@@ -91,7 +124,11 @@ export const createCourse = async (req, res, next) => {
   }
 };
 
-export const createLesson = async (req, res, next) => {
+export const createLesson = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -114,7 +151,19 @@ export const createLesson = async (req, res, next) => {
 
     const { courseId } = req.params;
     const { title, text } = req.body;
-    const { lessonFiles, lessonVideo } = req.files;
+
+    const files = req.files; // as MulterFiles;
+    // console.log("files", files);
+
+    if (!files || (files as any).length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: "Please upload all required files"
+      });
+    }
+
+    const lessonFiles = files[0] as Express.Multer.File[];
+    const lessonVideo = files[1] as Express.Multer.File[];
 
     const lessonFilesPaths = lessonFiles.map((file) => file.path);
     // console.log("lessonFilesPaths", lessonFilesPaths);
@@ -162,7 +211,11 @@ export const createLesson = async (req, res, next) => {
   }
 };
 
-export const deleteLesson = async (req, res, next) => {
+export const deleteLesson = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { courseId, lessonId } = req.params;
     const { userId } = req;
@@ -184,7 +237,8 @@ export const deleteLesson = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId === userId || currentUser.role === "admin";
+      currentCourse.instructorId.toString() === userId ||
+      currentUser.role === "admin";
 
     if (!isAuthorized) {
       return res.status(401).json({
@@ -195,7 +249,7 @@ export const deleteLesson = async (req, res, next) => {
 
     await Lesson.findByIdAndDelete(lessonId);
 
-    currentCourse.lessons.filter((l) => l !== lessonId);
+    currentCourse.lessons.filter((lesson) => lesson.toString() !== lessonId);
     const updatedCourse = await currentCourse.save();
 
     return res.status(201).json({
@@ -208,10 +262,14 @@ export const deleteLesson = async (req, res, next) => {
   }
 };
 
-export const deleteCourse = async (req, res, next) => {
+export const deleteCourse = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { courseId } = req.params;
-    const { userId } = req.session;
+    const { userId } = req;
 
     const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
@@ -230,7 +288,8 @@ export const deleteCourse = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId === userId || currentUser.role === "admin";
+      currentCourse.instructorId.toString() === userId ||
+      currentUser.role === "admin";
 
     if (!isAuthorized) {
       return res.status(401).json({
@@ -251,7 +310,11 @@ export const deleteCourse = async (req, res, next) => {
   }
 };
 
-export const getCourse = async (req, res, next) => {
+export const getCourse = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { userId } = req;
     const { courseId } = req.params;
@@ -304,7 +367,11 @@ export const getCourse = async (req, res, next) => {
   }
 };
 
-export const getLesson = async (req, res, next) => {
+export const getLesson = async (
+  req: JWTRequest,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;
@@ -330,7 +397,12 @@ export const getLesson = async (req, res, next) => {
     }
 
     if (completed) {
-      currentEnrollment.completedLessons.push(currentLesson.Id);
+      const completedLesson = {
+        lessonId: new Schema.Types.ObjectId(lessonId),
+        completedAt: new Date(Date.now())
+      };
+
+      currentEnrollment.completedLessons.push(completedLesson);
       await currentEnrollment.save();
 
       return res.status(201).json({

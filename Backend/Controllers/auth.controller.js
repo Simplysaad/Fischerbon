@@ -70,7 +70,7 @@ export const postLogin = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: "user does not exist, sign up instead"
-      });
+      }); 
     }
 
     const isCorrectPassword = await bcrypt.compare(

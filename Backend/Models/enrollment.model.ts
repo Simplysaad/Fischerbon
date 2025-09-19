@@ -1,6 +1,24 @@
-import { Schema, model } from "mongoose";
+import { ObjectId, Types } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 
-const enrollmentSchema = new Schema(
+interface IEnrollment extends Document {
+  userId: ObjectId;
+  courseId: ObjectId;
+  paymentId: ObjectId;
+  completedLessons: {
+    lessonId: Schema.Types.ObjectId;
+    completedAt: Date;
+  }[];
+  quizResults: {
+    quizId: Types.ObjectId;
+    score: number;
+    attemptedAt: Date;
+  }[];
+  status: "in progress" | "abandoned" | "completed";
+  lastAccessed: Date;
+}
+
+const enrollmentSchema = new Schema<IEnrollment>(
   {
     userId: {
       type: Schema.Types.ObjectId,
@@ -45,5 +63,5 @@ const enrollmentSchema = new Schema(
   }
 );
 
-const Enrollment = model("enrollment", enrollmentSchema);
+const Enrollment = model<IEnrollment>("enrollment", enrollmentSchema);
 export default Enrollment;
