@@ -4,6 +4,7 @@ import LoginPage from "./Pages/Auth/Login";
 import SignupPage from './Pages/Auth/Signup'
 import ResetPasswordPage from "./Pages/Auth/ResetPassword";
 import ForgotPasswordPage from "./Pages/Auth/ForgotPassword";
+import Dashboard from "./Pages/Dashboard/Dashboard";
 
 const App = () => (
   <BrowserRouter>
@@ -13,6 +14,10 @@ const App = () => (
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Dashboard */}
+        <Route path="/dashboard" element={<Dashboard />} />
+
         <Route path="/*" element={<LoginPage />} />
       </Routes>
   </BrowserRouter>

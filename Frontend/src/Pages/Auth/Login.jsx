@@ -24,6 +24,7 @@ const LoginPage = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        //Get fetch await logic goes here
         console.log('Login form submitted:', formData);
     };
     return (
@@ -32,8 +33,8 @@ const LoginPage = () => {
             <AuthContainer>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <h5 className="text-[#2F3437] font-medium text-[16px] lg:text-[22px] leading-6 lg:leading-9">Login</h5>
-                    <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-[#919BA1] font-normal">
+                    <h5 className="text-dark text-2xl leading-9">Login</h5>
+                    <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
                         Enter your details to access your dashboard
                     </p>
                 </div>
@@ -42,7 +43,7 @@ const LoginPage = () => {
                 <div>
                 <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-medium text-gray mb-1"
                 >
                     Email Address
                 </label>
@@ -53,14 +54,14 @@ const LoginPage = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="Enter your email address"
-                    className="w-full p-3 border-2 rounded-md border-[#C8CDD0] outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+                    className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
                 />
                 </div>
 
                 <div className="relative">
                 <label
                     htmlFor="password"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+                    className="block text-sm font-medium text-gray mb-1"
                 >
                     Enter your password
                 </label>
@@ -70,11 +71,11 @@ const LoginPage = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Password"
-                    className="w-full p-3 border-2 rounded-md border-[#C8CDD0] outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+                    className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
                 />
                 <span
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-10 cursor-pointer text-[#ACB4B9]"
+                    className="absolute right-3 top-10 cursor-pointer text-accent"
                 >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                 </span>

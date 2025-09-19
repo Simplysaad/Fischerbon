@@ -30,6 +30,7 @@ const SignupPage = () => {
   };
 
   const handleSubmit = (e) => {
+    //Post fetch await logic goes here
     e.preventDefault();
 
     const newErrors = {
@@ -52,10 +53,10 @@ const SignupPage = () => {
   return (
     <div>
       <AuthContainer>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-            <h5 className="text-[#2F3437] font-medium text-[16px] lg:text-[22px] leading-6 lg:leading-9">Sign up</h5>
-            <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-[#919BA1] font-normal">
+            <h5 className="text-dark text-2xl leading-9">Sign up</h5>
+            <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
                 Create your account to start your journey with us
             </p>
         </div>
@@ -63,7 +64,7 @@ const SignupPage = () => {
         <div>
             <label
               htmlFor="fullName"
-              className="block text-[16px] font-medium text-[#2F3437] leading-6 mb-1"
+              className="block text-[16px] font-medium text-gray leading-6 mb-1"
             >
               Full name
             </label>
@@ -74,7 +75,7 @@ const SignupPage = () => {
               value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Enter your full name"
-              className="w-full p-3 border-2 rounded-md outline-none border-[#C8CDD0] placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+              className="w-full p-3 border-2 rounded-md outline-none border-accent placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
             />
             {errors.fullName && (
               <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
@@ -84,7 +85,7 @@ const SignupPage = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray mb-1"
             >
               Email Address
             </label>
@@ -95,7 +96,7 @@ const SignupPage = () => {
               value={formData.email}
               onChange={handleInputChange}
               placeholder="Enter your email address"
-              className="w-full p-3 border-2 rounded-md border-[#C8CDD0] outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+              className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -105,7 +106,7 @@ const SignupPage = () => {
           <div className="relative">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-gray mb-1"
             >
               Password
             </label>
@@ -115,11 +116,11 @@ const SignupPage = () => {
               value={formData.password}
               onChange={handleInputChange}
               placeholder="Enter your password"
-              className="w-full p-3 border-2 rounded-md border-[#C8CDD0] outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+              className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
             />
             <span
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-10 cursor-pointer text-[#ACB4B9]"
+              className="absolute right-3 top-10 cursor-pointer text-accent"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </span>
