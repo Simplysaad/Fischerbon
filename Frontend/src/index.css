@@ -47,14 +47,13 @@ summary::-webkit-details-marker {
   --font-helvetica: "Helvetica", system-ui, sans-serif;
 
   /* Fischerbon lms color palette */
-    --color-primary:   #2D89EF;   /* Primary – Blue for buttons, links, and key actions */
-    --color-secondary: #CED4DA;   /* Secondary – Light gray for borders, secondary text, and UI elements */
-    --color-grey: #6C757D;   /* Secondary – Light gray for borders, secondary text, and UI elements */
-    --color-primaryHover: #00B2FF;   /* Secondary – Light gray for borders, secondary text, and UI elements */
-    --color-secondary2: #4ECDC4;   /* Secondary – Light gray for borders, secondary text, and UI elements */
-    --color-accent:    #FF6B6B;   /* Accent – Coral red for highlights, alerts, or badges */
-    --color-muted:     #F5F7FA;   /* Muted – Soft background for cards, containers, and light mode */
-    --color-dark:      #1A1A1A;   /* Dark – Text, headers, and dark mode backgrounds */
+    --color-primary:      #3c97d0;   /* Primary – Blue for buttons, links, and key actions */
+    --color-primaryHover: #174579;   
+    --color-secondary:    #2D89EF;   /* Secondary – Light gray for borders, secondary text, and UI elements */
+    --color-accent:       #ACB4B9;   
+    --color-gray:         #364153;   
+    --color-muted:        #F5F7FA;   /* Muted – Soft background for cards, containers, and light mode */
+    --color-dark:         #1A1A1A;   /* Dark – Text, headers, and dark mode backgrounds */
 }
 
 @layer base {
