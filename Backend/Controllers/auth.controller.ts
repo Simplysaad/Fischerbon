@@ -3,9 +3,35 @@ import jwt from "jsonwebtoken";
 
 import User from "../Models/user.model.js";
 import transporter from "../Utils/nodemailer.util.js";
+import { NextFunction, Request, Response } from "express";
+import { JWTRequest } from "../Middleware/auth.middleware.js";
 
 
-export const postRegister = async (req, res, next) => {
+export const checkAuthStatus = async (req: JWTRequest, res: Response, next: NextFunction) => {
+  try {
+    const { userId } = req;
+
+    const currentUser = await User.findOne({ _id: userId })
+
+    if (!currentUser) {
+      return res.status(400).json({
+        success: false,
+        message: "user is not logged in",
+      })
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "user is logged in "
+    })
+
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const postRegister = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -14,7 +40,7 @@ export const postRegister = async (req, res, next) => {
       });
     }
 
-    const { name, emailAddress, password } = req.body;
+    const { fullName: name, email: emailAddress, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -26,6 +52,7 @@ export const postRegister = async (req, res, next) => {
         message: "user exist already, log in instead"
       });
     }
+
     const newUser = new User({
       name,
       emailAddress,
@@ -34,7 +61,10 @@ export const postRegister = async (req, res, next) => {
 
     await newUser.save();
 
-    const token = jwt.sign({ userId: newUser._id }, process.env.SECRET_KEY);
+    const { SECRET_KEY } = process.env;
+    if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
+
+    const token = jwt.sign({ userId: newUser._id }, SECRET_KEY);
 
     res.cookie("token", token, {
       maxAge: 60 * 60 * 1000,
@@ -51,7 +81,7 @@ export const postRegister = async (req, res, next) => {
   }
 };
 
-export const postLogin = async (req, res, next) => {
+export const postLogin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -70,7 +100,7 @@ export const postLogin = async (req, res, next) => {
       return res.status(401).json({
         success: false,
         message: "user does not exist, sign up instead"
-      }); 
+      });
     }
 
     const isCorrectPassword = await bcrypt.compare(
@@ -85,7 +115,10 @@ export const postLogin = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign({ userId: currentUser._id }, process.env.SECRET_KEY);
+    const { SECRET_KEY } = process.env;
+    if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
+
+    const token = jwt.sign({ userId: currentUser?._id }, SECRET_KEY);
 
     res.cookie("token", token, {
       maxAge: 60 * 60 * 1000,
@@ -102,7 +135,7 @@ export const postLogin = async (req, res, next) => {
   }
 };
 
-export const logout = async (req, res, next) => {
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.clearCookie("token");
 
@@ -116,11 +149,14 @@ export const logout = async (req, res, next) => {
 };
 
 
-export const getResetPassword = async (req, res, next) => {
+export const getResetPassword = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { token } = req.params;
 
-    let { emailAddress } = jwt.verify(token, process.env.SECRET_KEY);
+    const { SECRET_KEY } = process.env;
+    if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
+
+    let { emailAddress } = jwt.verify(token, SECRET_KEY) as { emailAddress: string };
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
     const updatedUser = await User.findOneAndUpdate(
@@ -153,7 +189,11 @@ export const postResetPassword = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign({ emailAddress }, process.env.SECRET_KEY);
+
+    const { SECRET_KEY } = process.env;
+    if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
+
+    const token = jwt.sign({ emailAddress }, SECRET_KEY);
 
     const url = `http://localhost:5000/auth/reset-password/${token}`;
 
