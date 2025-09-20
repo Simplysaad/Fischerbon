@@ -25,7 +25,7 @@ export default function authMiddleware(
 
     if (!SECRET_KEY) throw new Error("Empty JWT secret");
 
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, SECRET_KEY) as { userId: string }
 
     if (decoded) {
       req.userId = decoded.userId;

@@ -8,6 +8,10 @@ interface IUser extends Document {
   profilePicture?: string;
   bio?: string;
   enrollments?: Types.ObjectId[];
+  authentication?: {
+    token?: string,
+    tokenExpiry?: Date
+  }
 }
 
 const userSchema = new Schema<IUser>(
@@ -37,7 +41,14 @@ const userSchema = new Schema<IUser>(
         type: Schema.Types.ObjectId,
         ref: "enrollment"
       }
-    ]
+    ],
+    authentication: {
+      token: String,
+      tokenExpiry: {
+        type: Date,
+        default: new Date(Date.now() + (5 * 60 * 1000))
+      },
+    }
   },
   {
     timestamps: true

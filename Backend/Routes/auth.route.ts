@@ -1,7 +1,9 @@
 import { Router } from "express";
 const router = Router();
 
-import { getResetPassword, logout, postLogin, postRegister, postResetPassword } from "../Controllers/auth.controller.js";
+import { checkAuthStatus, getResetPassword, logout, postLogin, postRegister, postResetPassword } from "../Controllers/auth.controller.js";
+
+router.get("/status", checkAuthStatus);
 
 router.post("/register", postRegister);
 
