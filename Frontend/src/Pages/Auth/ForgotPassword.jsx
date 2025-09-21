@@ -81,7 +81,7 @@ export default function ForgotPasswordPage() {
                 <button type="submit" 
                 className="mb-3 bg-primary text-white hover:bg-primaryHover w-full font-medium py-3 px-4 rounded-md cursor-pointer transition-colors"
                     >    
-                        Back to Login
+                      Back to Login
                 </button>
             </Link>
             
@@ -89,7 +89,7 @@ export default function ForgotPasswordPage() {
                 type="submit"
                 className="border-1 border-primary text-primary w-full font-medium py-3 px-4 rounded-md cursor-pointer"
               >
-                Resend Email
+                Resend Link
               </button>
             </div>
           </div>

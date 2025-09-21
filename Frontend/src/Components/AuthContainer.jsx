@@ -8,6 +8,8 @@ const AuthContainer = ({ title, subtitle, children }) => {
         src={logo}
         alt="Fischerbon-logo"
         className="m-5"
+        width={200}
+        height={100}
       />
 
       <div className="text-center mb-5">

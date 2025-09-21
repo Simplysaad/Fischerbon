@@ -29,9 +29,28 @@ const SignupPage = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    //Post fetch await logic goes here
+  const BASE_URL = 'https://fischerbon.onrender.com'
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      const response = await fetch(`${BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const {success, message, data} = await response.json();
+
+      if (!success) {
+        console.error(message);
+        throw new Error(message || 'Signup failed');
+      }
+    } catch(error){
+      console.log('Error', error)
+    }
 
     const newErrors = {
       fullName: formData.fullName ? '' : 'Full name is required',

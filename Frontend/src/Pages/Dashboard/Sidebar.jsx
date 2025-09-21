@@ -1,27 +1,23 @@
-'use client';
+
 import {
-  DocumentText1,
-  Element4,
+  Settings,
   Folder,
-  LogoutCurve,
-  Messages1,
-  Setting2,
   User,
-} from 'iconsax-reactjs';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+} from 'lucide-react';
+import logo from '../../assets/logo.png'
+import { Link } from 'react-router-dom';
+
 
 export const navItems = [
   {
     name: 'Dashboard',
-    icon: Element4,
+    icon: Settings,
     link: '/dashboard',
     tag: 'Overview of your IP Submission',
   },
   {
-    name: 'Submissions',
-    icon: DocumentText1,
+    name: 'Courses',
+    icon: Settings,
     link: '/submissions',
     tag: 'Manage all your intellectual property submissions.',
   },
@@ -33,7 +29,7 @@ export const navItems = [
   },
   {
     name: 'Messages',
-    icon: Messages1,
+    icon: Settings,
     link: '/messages',
     tag: 'Manage all your intellectual property submissions.',
   },
@@ -45,33 +41,32 @@ export const navItems = [
   },
   {
     name: 'Settings',
-    icon: Setting2,
+    icon: Settings,
     link: '/settings',
     tag: 'Manage all your intellectual property submissions.',
   },
 ];
 
 const Sidebar = () => {
-  const pathname = usePathname();
-
   return (
     <>
-      <div className="bg-[#F1F2F3] text-[#919BA1] w-[20rem] h-screen overflow-y-auto flex flex-col px-3 pt-4 pb-4 no-scrollbar ml-4 rounded-lg">
-        <Image
-          src="/images/logo.svg"
-          alt="Iphive-Logo"
-          width={125}
-          height={51}
+      <div className="bg-[#F1F2F3] text-[#919BA1] w-[20rem] h-screen overflow-y-auto hidden md:flex flex-col px-3 pt-4 pb-4 no-scrollbar ml-4 rounded-lg">
+        <img
+          src={logo}
+          alt="Fischerbon-Logo"
+          width={150}
+          height={50}
         />
         <div className="flex-grow">
           <div className="flex flex-col space-y-4 py-4">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.link;
+              // const isActive = pathname === item.link;
+              const isActive = true;
 
               return (
                 <Link
-                  href={item.link}
+                  to={item.link}
                   key={item.name}
                   className={`
                     flex items-center space-x-2 py-3 px-5 rounded-full text-sm font-normal leading-6 
@@ -92,10 +87,10 @@ const Sidebar = () => {
         </div>
         <div>
           <Link
-            href="/login"
+            to="/login"
             className="  flex items-center space-x-2 py-3 px-5 rounded-full text-sm font-normal leading-6"
           >
-            <LogoutCurve className="rotate-180" size="22" variant="Outline" />
+            <Settings className="rotate-180" size="22" variant="Outline" />
             <span>Logout</span>
           </Link>
         </div>

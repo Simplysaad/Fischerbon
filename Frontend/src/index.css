@@ -18,10 +18,6 @@ summary::-webkit-details-marker {
   margin: 0;
 }
 
-.no-spinner {
-  -moz-appearance: textfield;
-}
-
 @font-face {
   font-family: "Helvetica";
   src: url("/fonts/HelveticaNeueLight.otf") format("opentype");
