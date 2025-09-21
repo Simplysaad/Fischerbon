@@ -4,6 +4,13 @@ import Sidebar from './Sidebar';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+
+    // useEffect() to check authentication status
+
+    // GET /auth/status
+    // success: bool
+    // message: string
+
     const navigate = useNavigate()
     return (
         <div className="bg-[#E3E6E8] flex gap-4 h-screen overflow-y-hidden pt-3">

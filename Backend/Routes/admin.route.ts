@@ -1,15 +1,15 @@
-import { Router } from "express";
+import { NextFunction, Response, Router } from "express";
 const router = Router();
 
 import multer from "multer";
 import User from "../Models/user.model.js";
 import Course from "../Models/course.model.js";
-import authMiddleware from "../Middleware/auth.middleware.js";
+import authMiddleware, { JWTRequest } from "../Middleware/auth.middleware.js";
 const upload = multer({ dest: "./Uploads" });
 
 //Get all courses from a single instructor
 router.use(authMiddleware)
-router.get("/", async (req, res, next) => {
+router.get("/", async (req:JWTRequest, res:Response, next:NextFunction) => {
   try {
     if (!req.userId) {
       return res.status(401).json({

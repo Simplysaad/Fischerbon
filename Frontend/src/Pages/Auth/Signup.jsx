@@ -4,9 +4,9 @@ import React, { useState } from 'react';
 import AuthContainer from '../../Components/AuthContainer'
 import { Link } from 'react-router-dom';
 
-const SignupPage = () => {  
+const SignupPage = () => {
 
-    const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -32,6 +32,13 @@ const SignupPage = () => {
   const BASE_URL = 'https://fischerbon.onrender.com'
 
   const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
+    //Post fetch await logic goes here
+
+    // POST /auth/register
+    // email, password, fullName
+
+
     e.preventDefault();
     try {
       const response = await fetch(`${BASE_URL}/auth/register`, {
@@ -64,6 +71,7 @@ const SignupPage = () => {
     if (hasErrors) return;
 
     alert('Form submitted');
+
     console.log({
       ...formData,
     });
@@ -73,14 +81,14 @@ const SignupPage = () => {
     <div>
       <AuthContainer>
         <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
+          <div>
             <h5 className="text-dark text-2xl leading-9">Sign up</h5>
             <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
-                Create your account to start your journey with us
+              Create your account to start your journey with us
             </p>
-        </div>
-        <hr />
-        <div>
+          </div>
+          <hr />
+          <div>
             <label
               htmlFor="fullName"
               className="block text-[16px] font-medium text-gray leading-6 mb-1"

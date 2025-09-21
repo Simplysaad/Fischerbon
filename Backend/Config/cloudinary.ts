@@ -1,3 +1,4 @@
+import { UploadApiResponse } from "cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 
@@ -9,29 +10,33 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// const storage = new CloudinaryStorage({
-//   cloudinary: cloudinary,
-//   params: {
-//     folder: "fischerbon media",
-//     resource_type: "raw"
-//   }
-// });
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    // folder: "fischerbon media",
+    // resource_type: "raw"
+  }
+});
 
-// export const uploadCloud = multer({ storage });
+export const uploadCloud = multer({ storage });
 
-export async function uploadToCloud(file_path, resource_type) {
+export async function uploadToCloud(file_path: string, resource_type?: any) {
   try {
-    const uploadedFile = await cloudinary.uploader.upload(file_path, {
-      resource_type
-    });
+    const uploadedFile = (await cloudinary.uploader.upload(file_path, {
+      resource_type: resource_type || "auto"
+    })) as UploadApiResponse;
+
     // console.log("uploadedFile", uploadedFile);
-    return uploadedFile.secure_url;
+    return uploadedFile;
   } catch (err) {
-    console.error(err);
+    throw err;
   }
 }
 
-export async function uploadMultipleToCloud(paths, resource_type) {
+export async function uploadMultipleToCloud(
+  paths: string[],
+  resource_type?: any
+) {
   const uploadedFiles = await Promise.all(
     paths.map((path) => {
       return cloudinary.uploader.upload(path, { resource_type });

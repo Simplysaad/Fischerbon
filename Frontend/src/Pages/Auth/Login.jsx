@@ -25,6 +25,11 @@ const LoginPage = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         //Get fetch await logic goes here
+
+        // POST - /auth/login
+        // email, password
+
+
         console.log('Login form submitted:', formData);
     };
     return (
