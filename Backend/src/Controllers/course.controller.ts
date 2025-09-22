@@ -1,9 +1,9 @@
 import { uploadMultipleToCloud, uploadToCloud } from "../Config/cloudinary.js";
 
-import Course from "../Models/course.model.js";
-import User from "../Models/user.model.js";
-import Lesson from "../Models/lesson.model.js";
-import Enrollment from "../Models/enrollment.model.js";
+import Course from ".bin/Models/course.model.js";
+import User from ".bin/Models/user.model.js";
+import Lesson from ".bin/Models/lesson.model.js";
+import Enrollment from ".bin/Models/enrollment.model.js";
 
 import { Response, NextFunction } from "express";
 import { JWTRequest } from "../Middleware/auth.middleware.js";

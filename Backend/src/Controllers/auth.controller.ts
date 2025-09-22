@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-import User from "../Models/user.model.js";
+import User from ".bin/Models/user.model.js";
 import transporter from "../Utils/nodemailer.util.js";
 import { NextFunction, Request, Response } from "express";
 import { JWTRequest } from "../Middleware/auth.middleware.js";
@@ -149,12 +149,53 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 
-export const getResetPassword = async (req: Request, res: Response, next: NextFunction) => {
+
+export const forgotPassword = async (req, res, next) => {
   try {
-    const { token } = req.params;
+    const { emailAddress } = req.body;
+    const currentUser = await User.findOneA({ emailAddress });
+
+    if (!currentUser) {
+      return res.status(400).json({
+        success: false,
+        message: "user does not exist, sign up first"
+      });
+    }
+
 
     const { SECRET_KEY } = process.env;
     if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
+
+    const token = jwt.sign({ emailAddress }, SECRET_KEY);
+
+return res.status(200).json({
+  success: true,
+  message: "password reset token created successfully",
+  data: {token}
+})
+    // transporter.sendMail({
+    //   from: "simplysaad <saadidris23@gmail.com>",
+    //   to: emailAddress,
+    //   subject: "Request to Reset Password",
+    //   html: `<p>
+    //   This is to inform you that a request was made to reset your password. ignore if this was not you, otherwise click the link below to proceed
+    //     <a href='${url}' class='background-color=green; display: block; padding: 10px 16px;'> reset password </a>
+    //   </p>`
+    // });
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+
+export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    
+    const { SECRET_KEY } = process.env;
+    if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
+
+      const { password, token } = req.body;
 
     let { emailAddress } = jwt.verify(token, SECRET_KEY) as { emailAddress: string };
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
@@ -176,39 +217,3 @@ export const getResetPassword = async (req: Request, res: Response, next: NextFu
     next(err);
   }
 }
-
-export const postResetPassword = async (req, res, next) => {
-  try {
-    const { emailAddress } = req.body;
-    const currentUser = await User.findOne({ emailAddress });
-
-    if (!currentUser) {
-      return res.status(400).json({
-        success: false,
-        message: "user does not exist, sign up first"
-      });
-    }
-
-
-    const { SECRET_KEY } = process.env;
-    if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
-
-    const token = jwt.sign({ emailAddress }, SECRET_KEY);
-
-    const url = `http://localhost:5000/auth/reset-password/${token}`;
-
-    console.log(url);
-
-    // transporter.sendMail({
-    //   from: "simplysaad <saadidris23@gmail.com>",
-    //   to: emailAddress,
-    //   subject: "Request to Reset Password",
-    //   html: `<p>
-    //   This is to inform you that a request was made to reset your password. ignore if this was not you, otherwise click the link below to proceed
-    //     <a href='${url}' class='background-color=green; display: block; padding: 10px 16px;'> reset password </a>
-    //   </p>`
-    // });
-  } catch (err) {
-    next(err);
-  }
-};
