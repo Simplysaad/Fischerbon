@@ -1,78 +1,106 @@
-
-import { Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
-import AuthContainer from '../../Components/AuthContainer'
-import { Link } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthContainer from '../../Components/AuthContainer';
+import AuthAlert from '../../Components/AuthAlert';
 
 const SignupPage = () => {
 
-  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
+  let registeredMails = ["mechseiko@gmail.com", "qoyumolohuntomi@gmail.com", "saadidris@gmail.com"]
+
+  const BASE_URL = 'https://fischerbon.onrender.com';
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
   });
 
-  const [errors, setErrors] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-  });
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (
-    e
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const [alert, setAlert] = useState('')
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (!formData.email.trim()) newErrors.email = 'Email is required';
+    if (registeredMails.some(mail => mail === formData.email)) newErrors.email = 'An account with that mail already exists!';
+    if (!formData.password.trim()) newErrors.password = 'Password is required';
+    if (formData.password.trim().length < 8) newErrors.password = 'Password must have a minimum of 8 characters';
+    if (formData.password.split('').some(character => character === '' || character === ' ')) newErrors.password = 'Spaces are not allowed in password';
+    return newErrors;
   };
 
-  const handleSubmit = (e) => {
-    //Post fetch await logic goes here
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
 
-    // POST /auth/register
-    // email, password, fullName
-
-
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newErrors = {
-      fullName: formData.fullName ? '' : 'Full name is required',
-      email: formData.email ? '' : 'Email is required',
-      password: formData.password ? '' : 'Password is required',
-    };
 
-    setErrors(newErrors);
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-    const hasErrors = Object.values(newErrors).some((error) => error !== '');
-    if (hasErrors) return;
+    setLoading(true);
 
-    alert('Form submitted');
+    try {
+      const response = await fetch(`${BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    console.log({
-      ...formData,
-    });
+      const result = response.json();
+
+      if(!result.success){
+        setAlert('failure')
+      } else{
+          setAlert('success');
+          // navigate('/login');
+      }
+
+    } catch (error) {
+        setAlert('network')
+        console.log(error)
+    } finally {
+        setLoading(false);
+    }    
   };
 
   return (
     <div>
+      {
+        alert === 'success' ? <AuthAlert header={'Logged In'} message={'You can now access your dashboard'} iconType={'success'} border={'#3c97d0'} onClose={() => setAlert('')}/> 
+        :
+        alert === 'failure' ? <AuthAlert header={'Oops'} message={"Something went wrong, try that again later"} iconType={'error'} onClose={() => setAlert('')}/> 
+        :
+        alert === 'network' ? <AuthAlert header={'Network Error'} message={"You're not connected to the internet"} iconType={'error'} onClose={() => setAlert('')}/> 
+        :
+        ''
+      }
       <AuthContainer>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <h5 className="text-dark text-2xl leading-9">Sign up</h5>
-            <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
-              Create your account to start your journey with us
+            <h2 className="text-2xl font-semibold text-dark">Sign up</h2>
+            <p className="text-gray text-base mt-1">
+              Create an account to start your journey with us
             </p>
           </div>
-          <hr />
+
+
           <div>
-            <label
-              htmlFor="fullName"
-              className="block text-[16px] font-medium text-gray leading-6 mb-1"
-            >
-              Full name
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray mb-1">
+              Full Name
             </label>
             <input
               type="text"
@@ -81,18 +109,13 @@ const SignupPage = () => {
               value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Enter your full name"
-              className="w-full p-3 border-2 rounded-md outline-none border-accent placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+              className="w-full p-3 border-2 rounded-md border-accent placeholder:text-accent focus:border-primary outline-none"
             />
-            {errors.fullName && (
-              <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
-            )}
+            {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
           </div>
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray mb-1">
               Email Address
             </label>
             <input
@@ -101,54 +124,51 @@ const SignupPage = () => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              placeholder="Enter your email address"
-              className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+              placeholder="Enter your email"
+              className="w-full p-3 border-2 rounded-md border-accent placeholder:text-accent focus:border-primary outline-none"
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-            )}
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           <div className="relative">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray mb-1"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray mb-1">
               Password
             </label>
             <input
               type={showPassword ? 'text' : 'password'}
+              id="password"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
               placeholder="Enter your password"
-              className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+              className="w-full p-3 border-2 rounded-md border-accent placeholder:text-accent focus:border-primary outline-none"
             />
             <span
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={() => setShowPassword(prev => !prev)}
               className="absolute right-3 top-10 cursor-pointer text-accent"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </span>
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-            )}
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
           <button
             type="submit"
-            className="mb-2 bg-primary text-white hover:bg-primaryHover w-full font-medium py-3 px-4 rounded-md cursor-pointer transition-colors"
+            disabled={loading}
+            className={`cursor-pointer w-full py-3 px-4 rounded-md font-medium text-white transition-colors ${
+              loading ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-primaryHover'
+            }`}
           >
-            Sign Up
+            {loading ? 'Signing up...' : 'Sign Up'}
           </button>
-        </form>
 
-        <p className="text-[14px] text-[#69757C] leading-5">
-          Already have an account?{' '}
-          <Link to="/login">
-            <span className="text-primary">Login</span>
-          </Link>
-        </p>
+          <p className="text-sm text-[#69757C] leading-5">
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary font-medium">
+              Login
+            </Link>
+          </p>
+        </form>
       </AuthContainer>
     </div>
   );
