@@ -1,9 +1,11 @@
-import Quiz from ".bin/Models/quiz.model";
-import Enrollment from ".bin/Models/enrollment.model";
 import { NextFunction, Response } from "express";
-import Lesson from ".bin/Models/lesson.model";
 import mongoose from "mongoose";
 import { JWTRequest } from "../Middleware/auth.middleware";
+
+
+import Quiz from "../Models/quiz.model";
+import Enrollment from "../Models/enrollment.model";
+import Lesson from "../Models/lesson.model";
 
 export const getQuiz = async (
   req: JWTRequest,

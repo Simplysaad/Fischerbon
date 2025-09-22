@@ -1,9 +1,9 @@
 import paystack from "@paystack/paystack-sdk";
 
-import Course from ".bin/Models/course.model.js";
-import Payment from ".bin/Models/payment.model.js";
-import Enrollment from ".bin/Models/enrollment.model.js";
-import User from ".bin/Models/user.model.js";
+import Course from "../Models/course.model";
+import Payment from "../Models/payment.model";
+import Enrollment from "../Models/enrollment.model";
+import User from "../Models/user.model";
 import mongoose, { ObjectId, Schema, Types } from "mongoose";
 
 export const getEnroll = async (req, res, next) => {

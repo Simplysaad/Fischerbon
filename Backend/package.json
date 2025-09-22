@@ -17,11 +17,12 @@
   "main": "./dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index",
-    "dev": "nodemon index",
+    "start": "node ./dist/index",
+    "dev": "nodemon --exec ts-node src/index",
     "build": "tsc"
   },
   "dependencies": {
+    "@paystack/paystack-sdk": "^1.0.1",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^1.41.3",
@@ -36,15 +37,14 @@
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
     "multer-storage-cloudinary": "^4.0.0",
+    "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5"
   },
   "devDependencies": {
-    "@paystack/paystack-sdk": "^1.0.1",
-    "@types/jsonwebtoken": "^9.0.10",
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.4.0",
-    "@types/multer": "^2.0.0"
+    "ts-node": "^10.9.2"
   }
 }
-
-

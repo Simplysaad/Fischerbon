@@ -4,14 +4,15 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
-import connectDB from "./Config/db.js";
-import errorMiddleware from "./Middleware/error.middleware.js";
+import connectDB from "./Config/db";
+import errorMiddleware from "./Middleware/error.middleware";
 
-import authRoutes from "./Routes/auth.route.js";
-import courseRoutes from "./Routes/course.route.js";
-import adminRoutes from "./Routes/admin.route.js";
-import enrollmentRoutes from "./Routes/enrollment.route.js";
-import quizeRouter from "./Routes/quiz.route.js";
+import authRoutes from "./Routes/auth.route";
+import courseRoutes from "./Routes/course.route";
+import adminRoutes from "./Routes/admin.route";
+import enrollmentRoutes from "./Routes/enrollment.route";
+import quizeRouter from "./Routes/quiz.route";
+import { keepAlive } from "./Cron/keep-alive";
 
 const app = express();
 
@@ -31,6 +32,20 @@ app.listen(process.env.PORT, (err) => {
     console.log(`server live at http://localhost:${process.env.PORT}`);
   }
 });
+
+keepAlive()
+
+app.get("/", (req, res, next) => {
+  try {
+    return res.status(200).json({
+    success: true,
+    message: "Backend is up and running",
+  })
+  } catch (err) {
+    next(err)
+  }
+})
+
 
 app.use("/auth", authRoutes);
 app.use("/course", courseRoutes);

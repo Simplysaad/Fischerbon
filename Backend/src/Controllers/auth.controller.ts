@@ -1,10 +1,10 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-import User from ".bin/Models/user.model.js";
-import transporter from "../Utils/nodemailer.util.js";
+import User from "../Models/user.model";
+import transporter from "../Utils/nodemailer.util";
 import { NextFunction, Request, Response } from "express";
-import { JWTRequest } from "../Middleware/auth.middleware.js";
+import { JWTRequest } from "../Middleware/auth.middleware";
 
 
 export const checkAuthStatus = async (req: JWTRequest, res: Response, next: NextFunction) => {
@@ -153,7 +153,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 export const forgotPassword = async (req, res, next) => {
   try {
     const { emailAddress } = req.body;
-    const currentUser = await User.findOneA({ emailAddress });
+    const currentUser = await User.findOne({ emailAddress });
 
     if (!currentUser) {
       return res.status(400).json({
