@@ -81,7 +81,7 @@ const Sidebar = ({onClick}) => {
         </section>
         
         <div className="flex-grow mt-1.5">
-          <div className="flex flex-col space-y-2 py-4">
+          <div className="flex flex-col space-y-3 py-4">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.link;

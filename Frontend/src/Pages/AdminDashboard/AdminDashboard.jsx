@@ -14,42 +14,45 @@ const AdminDashboard = () => {
             Icon: BookOpen,
             label: "Create a course",
             description: "Create a new course for students",
-            button: "create a course",
+            button: "Create a course",
             link: "/createCourse"
         },
         {
             Icon: HardHat,
             label: "Register a student",
             description: "Create an account for a new student",
-            button: "register a new student",
+            button: "Register a new student",
             link: "/registerStudent"
         },
         {
             Icon: Puzzle,
             label: "Post a challenge",
             description: "Post a new CAD challenge for all students",
-            button: "post a challenge",
+            button: "Post a challenge",
             link: "/addChallenge"
         }
     ]
     return (
         <>
             <AdminDashboardLayout>
-                <div className='grid md:grid-cols-2 grid-cols-1'>
+                <div className='grid lg:grid-cols-2 grid-cols-1'>
                     {quickActions.map((action, index) => {
                         const Icon = action.Icon
                         return(
-                            <div className='flex md:flex-row flex-col w-full gap-0 grow md:m-5 mb-5'>
-                                <div className='rounded-l-md h-[120px] flex py-20 md:w-[50%] w-full text-white bg-primary hover:bg-primaryHover text-center items-center justify-center'>
+                            <div className='flex md:flex-row flex-col w-full gap-0 grow md:m-5 mt-10'>
+                                <div className='rounded-l-md h-[100px] flex md:py-20 py-15 md:w-[30%] w-full text-white bg-primary hover:bg-primaryHover duration-300 ease-in-out text-center items-center justify-center'>
                                     <Icon size={50}/>
                                 </div>
 
-                                <div className='rounded-r-md bg-white p-5'>
-                                    <h4 className='text-dark leading-9 text-lg font-bold'>{action.label}</h4>
-                                    <p className='leading-6 text-gray text-md'>{action.description}</p>
+                                <div className='rounded-r-md md:h-[160px] md:w-[65%] w-full bg-white p-5 flex flex-col justify-between'>
+                                    <div>
+                                        <h4 className='text-dark leading-10 text-xl font-bold'>{action.label}</h4>
+                                        <p className='text-gray mb-1 md:mb-0 text-md'>{action.description}</p>
+                                    </div>
+                                    
 
                                     <Link to={action.link}>
-                                        <p className="mt-2 flex text-md hover:scale-105 hover:text-primaryHover text-primary xduration-300 ease-in-out cursor-pointer leading-5 items-center gap-2">
+                                        <p className="mt-3 flex text-sm hover:scale-x-[102%] hover:text-primaryHover text-primary duration-300 ease-in-out cursor-pointer items-center gap-2">
                                         <span>{action.button}</span>
                                         <span><ArrowRight size="20" /></span>
                                         </p>

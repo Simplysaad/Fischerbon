@@ -1,13 +1,16 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, ArrowLeft, X, CheckCircle } from "lucide-react";
 import AuthContainer from "../../Components/AuthContainer";
-import { Link } from "react-router-dom";
+import { Link, useRouteLoaderData } from "react-router-dom";
 import AuthAlert from "../../Components/AuthAlert";
 
 const ResetPasswordPage = () => {
+
+  let token = new URLSearchParams("https://fischerbon.com/reset-password?t=fischerbon&token=mf8934awfkn8i").getAll("token");
+
   const [passwords, setPasswords] = useState({
     newPassword: "",
-    token: "",
+    token: token,
     confirmPassword: "",
     showPassword: false,
     showConfirmPassword: false,
@@ -61,13 +64,6 @@ const ResetPasswordPage = () => {
 
   const [status, setStatus] = useState("");
 
-  let newQuery = new URLSearchParams(
-    "https://fischerbon.com/reset-password?t=fischerbon&token=mf8934awfkn8i"
-  );
-
-  let queryKeys = newQuery.getAll("token");
-  console.log(queryKeys);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -88,7 +84,7 @@ const ResetPasswordPage = () => {
       const response = await fetch(`${BASE_URL}/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: passwords.newPassword }),
+        body: JSON.stringify({ password: passwords.newPassword , token: passwords.token }),
       });
 
       const result = await response.json();
@@ -100,7 +96,7 @@ const ResetPasswordPage = () => {
       }
     } catch (error) {
       setAlert("network");
-      console.error(error);
+      // console.error(error);
     }
   };
 

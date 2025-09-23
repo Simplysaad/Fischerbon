@@ -71,7 +71,7 @@ const SignupPage = () => {
 
     } catch (error) {
         setAlert('network')
-        console.log(error)
+        // console.log(error)
     } finally {
         setLoading(false);
     }    

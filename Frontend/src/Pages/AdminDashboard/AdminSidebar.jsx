@@ -15,43 +15,43 @@ const date = new Date();
 const hours = date.getHours();
 const getHours = (greeting) => {
   if(hours >= 5 && hours < 12)
-    return `${greeting}morning`
+    return `${greeting} morning`
   else if(hours >=12 && hours < 17)
-    return `${greeting}afternoon`
+    return `${greeting} afternoon`
   else if(hours >=17 && hours < 20)
-    return `${greeting}evening`
-  return `${greeting}night`
+    return `${greeting} evening`
+  return `${greeting} night`
 };
 
 export const navItems = [
   {
     name: 'Dashboard',
     icon: Home,
-    link: '/adminDashboard',
-    subTag: `What would you like to do this ${getHours("")}?`,
+    link: '/dashboard/admin',
+    subTag: `${getHours("Good")}, what would you like to do now?`,
   },
   {
     name: 'Create Course',
     icon: BookOpen,
-    link: '/createCourse',
+    link: '/course/create',
     subTag: `Create a new course for students`,
   },
   {
     name: 'Register Student',
     icon: PersonStanding,
-    link: '/registerStudent',
+    link: '/student/register',
     subTag: `Create an account for a new student`,
   },
   {
     name: 'Add Challenge',
     icon: Puzzle,
-    link: '/addChallenge',
+    link: '/challenge/add',
     subTag: `Post a new CAD challenge for students`,
   },
   {
     name: 'Profile',
     icon: User,
-    link: '/adminProfile',
+    link: '/profile/admin',
     subTag: `You can view and edit your personal information from here`,
   },
 ];
@@ -75,7 +75,7 @@ const AdminSidebar = ({onClick}) => {
             </section>
             
             <div className="flex-grow mt-1.5">
-            <div className="flex flex-col space-y-2 py-4">
+            <div className="flex flex-col space-y-3 py-4">
                 {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.link;

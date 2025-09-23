@@ -5,49 +5,26 @@ import {
   BookOpen,
 } from 'lucide-react';
 import Start from "./Start";
-// import { Controller, Control, useFormContext } from 'react-hook-form';
 import AuthAlert from "../../Components/AuthAlert";
 
 const CreateCourse = () => {
 
-  // const {
-  //   formState: { errors },
-  // } = useFormContext();
+  const [createdCourses, setCreatedCourses] = useState( 0 );
+  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
 
   const [data, setData] = useState({
     title: "",
     description: "",
     price: "",
+    thumbnail: File,
     category: "",
     level: "",
     tags: [],
     file: null
   });
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    const { title, level, description, price, category, tags } = data;
-
-    const formdata = new FormData();
-
-    formdata.append("title", title);
-    formdata.append("level", level);
-    formdata.append("description", description);
-    formdata.append("price", price);
-    // formdata.append("category", category);
-    // formdata.append("tags", tags);
-
-    if (data.thumbnail) formdata.append("thumbnail", thumbnail);
-
-    // let response = await axiosInstance.post("/course/create", formdata);
-
-    // let data = await response.json();
-    // console.log(data);
-  }
-  
-  const [createdCourses, setCreatedCourses] = useState(0);
-
-  function handleChange(e) {
+  const handleInputChange = (e) => {
     const { name, files, value } = e.target;
     if (name === "thumbnail") {
       setData({ ...data, file: files });
@@ -55,68 +32,148 @@ const CreateCourse = () => {
       setData({ ...data, [name]: value });
     }
   }
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const inputName = e.target.name;
+    if (!file) return;
+    const previewURL = URL.createObjectURL(file);
+
+    setThumbnail(file);
+    setThumbnailPreview(previewURL);
+    
+    setData((prev) => ({
+      ...prev,
+      [inputName]: file,
+      [`${inputName}Preview`]: previewURL,
+    }));
+  };
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const { title, level, description, price, category, tags } = data;
+
+    // const formdata = new FormData();
+    
+    // formdata.append("title", title);
+    // formdata.append("level", level);
+    // formdata.append("description", description);
+    // formdata.append("price", price);
+    // formdata.append("category", category);
+    // formdata.append("tags", tags);
+    // if (data.thumbnail) formdata.append("thumbnail", thumbnail);
+
+    // let response = await axiosInstance.post("https://fischerbon.onrender.com/course/create", formdata);
+    // let data = await response.json();
+    // console.log(data);
+  }
+
+  const labelStyle = "text-gray font-bold leading-9 text-lg";
+  const inputStyle = "w-full p-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
+
   return (
     <>
       <AdminDashboardLayout>
-      <section>
+      <section className="bg-[#F1F2F3] rounded-lg p-3">
         {createdCourses === 0 ? 
         <Start Icon={BookOpen} message="You haven't created any course yet" button="Create your first course" onClick={() => setCreatedCourses(prev=>prev+1)}/>
 
           :
         
-        <form onSubmit={(e) => handleSubmit(e)} className="text-center items-center">
-          <fieldset>
-            <figcaption></figcaption>
-            <div id="title">
-              <label htmlFor="inputTitle">Title</label>
+        <form onSubmit={(e) => handleSubmit(e)} className="space-y-5 mt-5 p-5 bg-white rounded-lg">
+            <div>
+              <label
+                htmlFor="title"
+                className={labelStyle}
+              >
+                Course Title
+              </label>
               <input
-                // value={title}
-                onChange={(e) => handleChange(e)}
                 type="text"
-                id="inputTitle"
-                placeholder="title"
-              />
-            </div>
-            <div id="description">
-              <label htmlFor="inputDescription">Description</label>
-              <input
-                // value={description}
-                onChange={(e) => handleChange(e)}
-                type="text"
-                id="inputDescription"
-                placeholder="Description"
-              />
-            </div>
-            <div id="price">
-              <label htmlFor="inputPrice">Price</label>
-              <input
-                // value={price}
-                onChange={(e) => handleChange(e)}
-                type="number"
-                id="inputPrice"
-                placeholder="price"
+                id="title"
+                onChange={handleInputChange}
+                placeholder="Enter a title for the course"
+                className={inputStyle}
               />
             </div>
 
-            <div id="thumbnail">
-              <label htmlFor="inputThumbnail">thumbnail</label>
+            <div>
+              <label
+                htmlFor="description"
+                className={labelStyle}
+              >
+                Course Description
+              </label>
               <input
-                // value={thumbnail}
-                onChange={(e) => {
-                  setThumbnail(e.target.files[0]);
-                }}
-                type="file"
-                accept="image/*"
-                id="inputThumbnail"
-                placeholder="thumbnail"
+                type="text"
+                id="description"
+                onChange={handleInputChange}
+                placeholder="Enter a description title for the course"
+                className={inputStyle}
               />
             </div>
-            {console.log("hello world")}
-            <div id="level">
+
+            <div>
+              <label
+                htmlFor="price"
+                className={labelStyle}
+              >
+                Course Price
+              </label>
+              <input
+                type="number"
+                id="price"
+                onChange={handleInputChange}
+                placeholder="Enter a price for the course"
+                className={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="price"
+                className={labelStyle}
+              >
+                Upload Thumbnail
+              </label>
+              <input
+                id="price"
+                // onChange={(e) => {
+                //   setThumbnail(e.target.files[0])
+                // }}
+                onChange={() => {
+                  handleImageChange
+                }}
+                name="thumbnail"
+                type="file"
+                accept="image/*"
+                placeholder="Upload a thumbnail image for the course"
+                className={inputStyle}
+              />
+              {data.thumbnail && (
+                <img
+                  src={data.thumbnailPreview}
+                  style={{
+                    width: `100%`,
+                    height: `auto`,
+                  }}
+                  alt="thumbnail"
+                />
+              )}
+            </div>
+
+            <div>
+              <label
+                id="level"
+                className={labelStyle}
+              >
+                Level
+              </label>
               <select
                 name="level"
-                // value={level}
-                onChange={(e) => handleChange(e)}
+                onChange={handleInputChange}
+                placeholder="Enter a price for the course"
+                className={inputStyle}
                 id="selectLevel"
               >
                 <option value="beginner">beginner</option>
@@ -124,162 +181,16 @@ const CreateCourse = () => {
                 <option value="advanced">advanced</option>
               </select>
             </div>
-          </fieldset>
 
-          <div className="button-container">
-            <button>Submit</button>
-          </div>
-          <div className="flex items-center justify-between gap-2">
-        <div>
-          <h4 className="text-[#2F3437] font-medium text-2xl leading-9">
-            Basic Information
-          </h4>
-          <p className="text-[#75828A] text-base leading-6">
-            Provide the essential details about your IP
-          </p>
-        </div>
-        <p className="cursor-pointer text-primary text-base leading-6">
-          Save to draft
-        </p>
-      </div>
-      <div className="flex flex-col gap-y-6 mt-7">
-        <div>
-          <label
-            htmlFor="title"
-            className="text-[#2F3437] font-medium leading-6"
-          >
-            Copyright Title
-          </label>
-          <Controller
-            name="basicInfo.title"
-            control={control}
-            rules={{ required: 'Copyright Title is required' }}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                id="title"
-                placeholder="Enter a descriptive title for your copyright"
-                className="w-full p-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-              />
-            )}
-          />
-          {errors.basicInfo?.title && (
-            <p className="text-red-500 text-sm mt-2">
-              {errors.basicInfo.title.message}
-            </p>
-          )}
-        </div>
-        <div>
-          <label
-            htmlFor="desc"
-            className="text-[#2F3437] font-medium leading-6"
-          >
-            Description
-          </label>
-          <Controller
-            name="basicInfo.description"
-            control={control}
-            rules={{ required: 'Description is required' }}
-            render={({ field }) => (
-              <textarea
-                {...field}
-                id="desc"
-                placeholder="Provide a clear description of your copyright"
-                className="w-full p-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-              />
-            )}
-          />
-          {errors.basicInfo?.description && (
-            <p className="text-red-500 text-sm mt-2">
-              {errors.basicInfo.description.message}
-            </p>
-          )}
-        </div>
-      </div>
-      <div className="mt-7">
-        <h4 className="text-[#2F3437] font-medium text-2xl leading-9">
-          Milestones (Optional)
-        </h4>
-        <p className="text-[#75828A] text-base leading-6">
-          Set milestone for your idea
-        </p>
-        <div className="flex flex-col gap-y-6 mt-7">
-          <div>
-            <label
-              htmlFor="milestone"
-              className="text-[#2F3437] font-medium leading-6"
+            <div className="text-right">
+            <button
+                type="submit"
+                className="py-3 px-4 rounded-sm bg-primary font-medium text-sm leading-6 text-white hover:bg-primaryHover ease-in-out duration-300 cursor-pointer mt-2"
             >
-              Milestone Title
-            </label>
-            <Controller
-              name="basicInfo.milestone"
-              control={control}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  type="text"
-                  id="milestone"
-                  placeholder="Enter milestone name"
-                  className="w-full p-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-                />
-              )}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="brief"
-              className="text-[#2F3437] font-medium leading-6"
-            >
-              Description
-            </label>
-            <Controller
-              name="basicInfo.milestoneDescription"
-              control={control}
-              render={({ field }) => (
-                <textarea
-                  {...field}
-                  id="brief"
-                  placeholder="Provide a brief description of your idea"
-                  className="w-full p-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-                />
-              )}
-            />
-          </div>
-          <div className="mb-6">
-            <label
-              htmlFor="date"
-              className="text-[#2F3437] font-medium leading-6 block mb-2"
-            >
-              Target Date
-            </label>
-            <div className="relative">
-              <Controller
-                name="basicInfo.targetDate"
-                control={control}
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    type="date"
-                    id="date"
-                    ref={dateInputRef}
-                    placeholder="Enter milestone name"
-                    className="w-full pl-3 pr-12 py-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-inner-spin-button]:hidden [&::-webkit-clear-button]:hidden"
-                  />
-                )}
-              />
-              <div
-                className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
-                onClick={handleCalendarClick}
-              >
-                <Calendar size="20" color="#ACB4B9" />
-              </div>
+                Create Course
+            </button>
             </div>
-          </div>
-        </div>
-      </div>
         </form> 
-        
         }
       </section>
       </AdminDashboardLayout>

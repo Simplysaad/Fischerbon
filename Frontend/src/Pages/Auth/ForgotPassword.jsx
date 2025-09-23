@@ -27,6 +27,8 @@ const ForgotPasswordPage = () => {
     setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
+  const BASE_URL = "https://fischerbon.onrender.com";
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,9 +50,8 @@ const ForgotPasswordPage = () => {
 
         if(!result.success){
           setAlert('failure');
-          setEmailError(result.message)
         } else{
-            let url = `https://fischerbon.com/reset-password?t=fischerbon&token=${result?.data?.token}`
+            let url = `https://fischerbon.vercel.app/reset-password?t=fischerbon&token=${result?.data?.token}`
             
             const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
               method: 'POST',

@@ -34,11 +34,11 @@ const App = () => (
         <Route path="/profile" element={<Profile />} />
 
         {/* AdminDashboard */}
-        <Route path="/adminDashboard" element={<AdminDashboard />} />
-        <Route path="/createCourse" element={<CreateCourse />} />
-        <Route path="/registerStudent" element={<RegisterStudent />} />
-        <Route path="/addChallenge" element={<AddChallenge />} />
-        <Route path="/adminProfile" element={<AdminProfile />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />} />
+        <Route path="/course/create" element={<CreateCourse />} />
+        <Route path="/student/register" element={<RegisterStudent />} />
+        <Route path="/challenge/add" element={<AddChallenge />} />
+        <Route path="/profile/admin" element={<AdminProfile />} />
 
         {/* Not found page */}
         <Route path="/*" element={<LoginPage />} />
