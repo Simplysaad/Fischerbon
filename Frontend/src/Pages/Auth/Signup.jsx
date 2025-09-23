@@ -8,29 +8,28 @@ const SignupPage = () => {
 
   const navigate = useNavigate();
 
-  let registeredMails = ["mechseiko@gmail.com", "qoyumolohuntomi@gmail.com", "saadidris@gmail.com"]
-
   const BASE_URL = 'https://fischerbon.onrender.com';
 
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
+    role: 'student',
   });
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [emailError, setEmailError] = useState('')
   const [alert, setAlert] = useState('')
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (registeredMails.some(mail => mail === formData.email)) newErrors.email = 'An account with that mail already exists!';
     if (!formData.password.trim()) newErrors.password = 'Password is required';
-    if (formData.password.trim().length < 8) newErrors.password = 'Password must have a minimum of 8 characters';
+    if (emailError !== '') newErrors.email = 'An account with that mail already exists';
+    if (formData.password.trim().length < 8 && formData.password.trim()) newErrors.password = 'Password must have a minimum of 8 characters';
     if (formData.password.split('').some(character => character === '' || character === ' ')) newErrors.password = 'Spaces are not allowed in password';
     return newErrors;
   };
@@ -63,10 +62,11 @@ const SignupPage = () => {
       const result = response.json();
 
       if(!result.success){
-        setAlert('failure')
+        setAlert('failure');
+        setEmailError(result.message)
       } else{
           setAlert('success');
-          // navigate('/login');
+          navigate('/login');
       }
 
     } catch (error) {

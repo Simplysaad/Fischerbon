@@ -52,6 +52,18 @@ summary::-webkit-details-marker {
     --color-dark:         #1A1A1A;   /* Dark – Text, headers, and dark mode backgrounds */
 }
 
+@theme {
+  --animate-navBar: navBar 0.7s ease-out 0s 1;
+  @keyframes navBar {
+    0% {
+      transform: translateX(-120px);
+    }
+    100% {
+      transform: translateX(0px);
+    }
+  }
+}
+
 @layer base {
   body {
     @apply font-helvetica font-normal;

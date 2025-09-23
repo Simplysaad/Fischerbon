@@ -10,19 +10,14 @@ const ForgotPasswordPage = () => {
 
   const [formData, setFormData] = useState({
     email: '',
-    token: '',
   })
 
   const [alert, setAlert] = useState('')
-  const [errors, setErrors] = useState({});
-
-  let registeredMails = ["mechseiko@gmail.com", "qoyumolohuntomi@gmail.com", "saadidris@gmail.com"]
-  
+  const [errors, setErrors] = useState({});  
   
   const validateForm = () => {
     const newErrors = {};
     if (!formData.email.trim()) newErrors.email = 'Email is required';
-    if (registeredMails.every(mail => mail != formData.email) && formData.email.trim()) newErrors.email = 'No account with the provided email exists';
     return newErrors;
   };
 
@@ -43,30 +38,45 @@ const ForgotPasswordPage = () => {
     }
 
     try {
-        const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              service_id: 'service_zh0vj84', // EmailJS service ID
-              template_id: 'template_ol09wxr', // EmailJS template ID
-              user_id: '9nHCjbJ8w8yQTswge', // EmailJS user ID
-
-              template_params: {
-                user_email: formData.email,
-                name: 'Fischerbon Engineering LTD.',
-                time: `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
-                subject: 'Password reset link',
-                message: `😃Hi! You requested a password reset link, note that this link will expire in 5 minutes: \n`,
-              },
-            }),
+        const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
         });
 
-        if (response.ok) {
-          setAlert('success');
-        } else {
-          setAlert('failure')
+        const result = await response.json();
+
+        if(!result.success){
+          setAlert('failure');
+          setEmailError(result.message)
+        } else{
+            let url = `https://fischerbon.com/reset-password?t=fischerbon&token=${result?.data?.token}`
+            
+            const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                service_id: 'service_zh0vj84', // EmailJS service ID
+                template_id: 'template_ol09wxr', // EmailJS template ID
+                user_id: '9nHCjbJ8w8yQTswge', // EmailJS user ID
+
+                template_params: {
+                  user_email: formData.email,
+                  name: 'Fischerbon Engineering LTD.',
+                  time: `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
+                  subject: 'Password reset link',
+                  message: `😃Hi! You requested a password reset link, note that this link will expire in 5 minutes: ${url}`,
+                },
+              }),
+          });
+
+          if (response.ok) {
+            setAlert('success');
+          } else {
+            setAlert('failure')
+          }
         }
       } catch (error) {
         setAlert('network')
@@ -127,7 +137,7 @@ const ForgotPasswordPage = () => {
         >
           <form
             onSubmit={handleSubmit}
-            className="space-y-12"
+            className="space-y-10"
           >
             <div>
               <label
@@ -155,7 +165,7 @@ const ForgotPasswordPage = () => {
             </button>
           </form>
           <Link to="/login">
-            <p className="text-center flex justify-center text-[14px] text-dark cursor-pointer leading-5 items-center gap-2">
+            <p className="text-center mt-1 flex justify-center text-[14px] text-dark cursor-pointer leading-5 items-center gap-2">
               <span className="text-center">
                 <ArrowLeft size="20" />
               </span>
