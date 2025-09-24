@@ -6,10 +6,11 @@ import {
 } from 'lucide-react';
 import Start from "./Start";
 import AuthAlert from "../../Components/AuthAlert";
+import AdminButton from "./AdminButton";
 
 const CreateCourse = () => {
 
-  const [createdCourses, setCreatedCourses] = useState( 0 );
+  const [state, setState] = useState( true );
   const [thumbnail, setThumbnail] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
 
@@ -20,8 +21,8 @@ const CreateCourse = () => {
     thumbnail: File,
     category: "",
     level: "",
-    tags: [],
-    file: null
+    // tags: [],
+    // file: null
   });
 
   const handleInputChange = (e) => {
@@ -36,7 +37,7 @@ const CreateCourse = () => {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const inputName = e.target.name;
-    if (!file) return;
+    // if (!file) return;
     const previewURL = URL.createObjectURL(file);
 
     setThumbnail(file);
@@ -51,7 +52,7 @@ const CreateCourse = () => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const { title, level, description, price, category, tags } = data;
+    // const { title, level, description, price, category, tags } = data;
 
     // const formdata = new FormData();
     
@@ -68,15 +69,15 @@ const CreateCourse = () => {
     // console.log(data);
   }
 
-  const labelStyle = "text-gray font-bold leading-9 text-lg";
+  const labelStyle = "text-gray font-serif leading-9 md:text-lg text-md";
   const inputStyle = "w-full p-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
 
   return (
     <>
       <AdminDashboardLayout>
-      <section className="bg-[#F1F2F3] rounded-lg p-3">
-        {createdCourses === 0 ? 
-        <Start Icon={BookOpen} message="You haven't created any course yet" button="Create your first course" onClick={() => setCreatedCourses(prev=>prev+1)}/>
+      <div className="md:bg-[#F1F2F3] bg-none rounded-lg md:p-3">
+        {state ? 
+        <Start Icon={BookOpen} message="You haven't created any course yet" button="Create your first course" onClick={() => setState(false)}/>
 
           :
         
@@ -131,16 +132,13 @@ const CreateCourse = () => {
 
             <div>
               <label
-                htmlFor="price"
+                htmlFor="thumbnail"
                 className={labelStyle}
               >
                 Upload Thumbnail
               </label>
               <input
-                id="price"
-                // onChange={(e) => {
-                //   setThumbnail(e.target.files[0])
-                // }}
+                id="thumbnail"
                 onChange={() => {
                   handleImageChange
                 }}
@@ -150,16 +148,13 @@ const CreateCourse = () => {
                 placeholder="Upload a thumbnail image for the course"
                 className={inputStyle}
               />
-              {data.thumbnail && (
+              {/* {data.thumbnail && ( */}
                 <img
                   src={data.thumbnailPreview}
-                  style={{
-                    width: `100%`,
-                    height: `auto`,
-                  }}
+                  className="w-full"
                   alt="thumbnail"
                 />
-              )}
+              {/* )} */}
             </div>
 
             <div>
@@ -182,17 +177,10 @@ const CreateCourse = () => {
               </select>
             </div>
 
-            <div className="text-right">
-            <button
-                type="submit"
-                className="py-3 px-4 rounded-sm bg-primary font-medium text-sm leading-6 text-white hover:bg-primaryHover ease-in-out duration-300 cursor-pointer mt-2"
-            >
-                Create Course
-            </button>
-            </div>
+            <AdminButton text={state ? 'Creating Course...' : 'Create Course'} disabled={state}/>
         </form> 
         }
-      </section>
+      </div>
       </AdminDashboardLayout>
     </>
   );

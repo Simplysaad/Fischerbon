@@ -10,7 +10,7 @@ const Quizzes = () => {
                     {
                         quizzes.map((quiz, index) => {
                             return(
-                                <div className='bg-primary text-center md:p-25 p-15 m-5 rounded-xl cursor-pointer hover:bg-primaryHover ease-in-out transition-all duration-300'>
+                                <div className='bg-primary text-center md:p-20 p-15 m-5 rounded-xl cursor-pointer hover:bg-primaryHover ease-in-out transition-all duration-300'>
                                     <h4 className='text-4xl text-white'>{quiz.toLocaleUpperCase()}</h4>
                                 </div>
                             )

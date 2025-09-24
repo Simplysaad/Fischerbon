@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, ArrowLeft, X, CheckCircle } from "lucide-react";
 import AuthContainer from "../../Components/AuthContainer";
-import { Link, useRouteLoaderData } from "react-router-dom";
+import { Link, useLocation, useRouteLoaderData } from "react-router-dom";
 import AuthAlert from "../../Components/AuthAlert";
 
 const ResetPasswordPage = () => {
-
-  let token = new URLSearchParams("https://fischerbon.com/reset-password?t=fischerbon&token=mf8934awfkn8i").getAll("token");
+  
+  const location = useLocation();
+  let token = new URLSearchParams(location.search).get("token");
 
   const [passwords, setPasswords] = useState({
     newPassword: "",

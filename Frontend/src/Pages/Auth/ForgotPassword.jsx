@@ -51,12 +51,13 @@ const ForgotPasswordPage = () => {
         if(!result.success){
           setAlert('failure');
         } else{
-            let url = `https://fischerbon.vercel.app/reset-password?t=fischerbon&token=${result?.data?.token}`
+          
+            let url = `https://fischerbon.vercel.app/reset-password?token=${result.data?.token}`
             
             const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
               method: 'POST',
               headers: {
-                  'Content-Type': 'application/json',
+                  'Content-Type': 'application/jsCon',
               },
               body: JSON.stringify({
                 service_id: 'service_zh0vj84', // EmailJS service ID
@@ -68,7 +69,7 @@ const ForgotPasswordPage = () => {
                   name: 'Fischerbon Engineering LTD.',
                   time: `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
                   subject: 'Password reset link',
-                  message: `😃Hi! You requested a password reset link, note that this link will expire in 5 minutes: ${url}`,
+                  message: `😃Hi, You requested a password reset link, use the link below to reset your password, note that this link will expire in 5 minutes: ${url}`,
                 },
               }),
           });

@@ -46,7 +46,7 @@ export const navItems = [
     name: 'Add Challenge',
     icon: Puzzle,
     link: '/challenge/add',
-    subTag: `Post a new CAD challenge for students`,
+    subTag: `Post a new challenge for students`,
   },
   {
     name: 'Profile',
@@ -75,7 +75,7 @@ const AdminSidebar = ({onClick}) => {
             </section>
             
             <div className="flex-grow mt-1.5">
-            <div className="flex flex-col space-y-3 py-4">
+            <div className="flex flex-col space-y-5 py-4">
                 {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.link;
