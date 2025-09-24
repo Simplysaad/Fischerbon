@@ -18,10 +18,6 @@ summary::-webkit-details-marker {
   margin: 0;
 }
 
-.no-spinner {
-  -moz-appearance: textfield;
-}
-
 @font-face {
   font-family: "Helvetica";
   src: url("/fonts/HelveticaNeueLight.otf") format("opentype");
@@ -54,6 +50,18 @@ summary::-webkit-details-marker {
     --color-gray:         #364153;   
     --color-muted:        #F5F7FA;   /* Muted – Soft background for cards, containers, and light mode */
     --color-dark:         #1A1A1A;   /* Dark – Text, headers, and dark mode backgrounds */
+}
+
+@theme {
+  --animate-navBar: navBar 0.7s ease-out 0s 1;
+  @keyframes navBar {
+    0% {
+      transform: translateX(-120px);
+    }
+    100% {
+      transform: translateX(0px);
+    }
+  }
 }
 
 @layer base {

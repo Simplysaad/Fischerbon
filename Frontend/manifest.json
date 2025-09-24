@@ -1,0 +1,25 @@
+{
+  "short_name": "Fischerbon Engineering LTD",
+  "name": "Fischerbon Engineering LTD",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/jpg"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/jpg"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "24x24",
+      "type": "image/jpg"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

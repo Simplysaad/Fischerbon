@@ -8,29 +8,45 @@ const SignupPage = () => {
 
   const navigate = useNavigate();
 
+<<<<<<< HEAD
   let registeredMails = ["mechseiko@gmail.com", "qoyumolohuntomi@gmail.com", "saadidris@gmail.com"]
 
+=======
+>>>>>>> dashboard
   const BASE_URL = 'https://fischerbon.onrender.com';
 
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
     password: '',
+    role: 'student',
   });
 
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+<<<<<<< HEAD
 
   const [alert, setAlert] = useState('')
 
+=======
+  const [emailError, setEmailError] = useState('')
+  const [alert, setAlert] = useState('')
+
+>>>>>>> dashboard
   const validateForm = () => {
     const newErrors = {};
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
+<<<<<<< HEAD
     if (registeredMails.some(mail => mail === formData.email)) newErrors.email = 'An account with that mail already exists!';
     if (!formData.password.trim()) newErrors.password = 'Password is required';
     if (formData.password.trim().length < 8) newErrors.password = 'Password must have a minimum of 8 characters';
+=======
+    if (!formData.password.trim()) newErrors.password = 'Password is required';
+    if (emailError !== '') newErrors.email = 'An account with that mail already exists';
+    if (formData.password.trim().length < 8 && formData.password.trim()) newErrors.password = 'Password must have a minimum of 8 characters';
+>>>>>>> dashboard
     if (formData.password.split('').some(character => character === '' || character === ' ')) newErrors.password = 'Spaces are not allowed in password';
     return newErrors;
   };
@@ -63,15 +79,27 @@ const SignupPage = () => {
       const result = response.json();
 
       if(!result.success){
+<<<<<<< HEAD
         setAlert('failure')
       } else{
           setAlert('success');
           // navigate('/login');
+=======
+        setAlert('failure');
+        setEmailError(result.message)
+      } else{
+          setAlert('success');
+          navigate('/login');
+>>>>>>> dashboard
       }
 
     } catch (error) {
         setAlert('network')
+<<<<<<< HEAD
         console.log(error)
+=======
+        // console.log(error)
+>>>>>>> dashboard
     } finally {
         setLoading(false);
     }    

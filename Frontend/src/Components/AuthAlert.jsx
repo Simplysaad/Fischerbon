@@ -57,7 +57,11 @@ const AuthAlert = ({
             <X size={20} />
             </button>
         </div>
+<<<<<<< HEAD
         <div style={{width: `${bar}%`}} className={`mx-1 h-0.5 rounded-xl ${border ? `bg-primary` : 'bg-red-400'}`} />
+=======
+        <div style={{width: `${bar}%`}} className={`mx-1.5 h-[2.5px] -mb-[0.5px] rounded-xl ${border ? `bg-primary` : 'bg-red-400'}`} />
+>>>>>>> dashboard
       </div>
       <style>
         {`
