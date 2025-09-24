@@ -10,29 +10,14 @@ const ForgotPasswordPage = () => {
 
   const [formData, setFormData] = useState({
     email: '',
-<<<<<<< HEAD
-    token: '',
-  })
-
-  const [alert, setAlert] = useState('')
-  const [errors, setErrors] = useState({});
-
-  let registeredMails = ["mechseiko@gmail.com", "qoyumolohuntomi@gmail.com", "saadidris@gmail.com"]
-  
-=======
   })
 
   const [alert, setAlert] = useState('')
   const [errors, setErrors] = useState({});  
->>>>>>> dashboard
   
   const validateForm = () => {
     const newErrors = {};
     if (!formData.email.trim()) newErrors.email = 'Email is required';
-<<<<<<< HEAD
-    if (registeredMails.every(mail => mail != formData.email) && formData.email.trim()) newErrors.email = 'No account with the provided email exists';
-=======
->>>>>>> dashboard
     return newErrors;
   };
 
@@ -42,11 +27,8 @@ const ForgotPasswordPage = () => {
     setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-<<<<<<< HEAD
-=======
   const BASE_URL = "https://fischerbon.onrender.com";
 
->>>>>>> dashboard
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -58,32 +40,6 @@ const ForgotPasswordPage = () => {
     }
 
     try {
-<<<<<<< HEAD
-        const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              service_id: 'service_zh0vj84', // EmailJS service ID
-              template_id: 'template_ol09wxr', // EmailJS template ID
-              user_id: '9nHCjbJ8w8yQTswge', // EmailJS user ID
-
-              template_params: {
-                user_email: formData.email,
-                name: 'Fischerbon Engineering LTD.',
-                time: `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
-                subject: 'Password reset link',
-                message: `😃Hi! You requested a password reset link, note that this link will expire in 5 minutes: \n`,
-              },
-            }),
-        });
-
-        if (response.ok) {
-          setAlert('success');
-        } else {
-          setAlert('failure')
-=======
         const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -123,7 +79,6 @@ const ForgotPasswordPage = () => {
           } else {
             setAlert('failure')
           }
->>>>>>> dashboard
         }
       } catch (error) {
         setAlert('network')
@@ -146,86 +101,6 @@ const ForgotPasswordPage = () => {
             <div className="rounded-full bg-[#c1d4de] text-primary p-5 opacity-90">
               <CheckCircle />
             </div>
-<<<<<<< HEAD
-
-            <div className="max-w-md">
-              <h5 className="text-dark font-medium text-[16px] lg:text-[22px] leading-6 lg:leading-9">
-                Check Your Mail
-              </h5>
-              <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
-                An email reset link has been sent to your mail, this link will expire in 5 minutes
-              </p>
-            </div>
-
-            <div className="w-full">
-            <Link to="/login">
-                <button type="submit" 
-                className="mb-3 bg-primary text-white hover:bg-primaryHover w-full font-medium py-3 px-4 rounded-md cursor-pointer transition-colors"
-                    >    
-                      Back to Login
-                </button>
-            </Link>
-            
-              <button
-                onClick={handleSubmit}
-                className="border-1 border-primary text-primary w-full font-medium py-3 px-4 rounded-md cursor-pointer"
-              >
-                Resend Link
-              </button>
-            </div>
-          </div>
-        </AuthContainer>
-
-      :
-      
-        <AuthContainer
-          title="Forgot Your Password"
-          subtitle="Enter your email and we'll send you a reset link"
-        >
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-12"
-          >
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray mb-1 text-left"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter your email address"
-                className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-              />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-            </div>
-            <button
-              type="submit"
-              className="mb-2 bg-primary text-white hover:bg-primaryHover w-full font-medium py-3 px-4 rounded-md cursor-pointer transition-colors"
-            >
-              Send reset link
-            </button>
-          </form>
-          <Link to="/login">
-            <p className="text-center flex justify-center text-[14px] text-dark cursor-pointer leading-5 items-center gap-2">
-              <span className="text-center">
-                <ArrowLeft size="20" />
-              </span>
-              <span className="text-center">Back to Login</span>
-            </p>
-          </Link>
-        </AuthContainer>
-      }
-    </div>
-  )
-};
-
-=======
 
             <div className="max-w-md">
               <h5 className="text-dark font-medium text-[16px] lg:text-[22px] leading-6 lg:leading-9">
@@ -305,5 +180,4 @@ const ForgotPasswordPage = () => {
   )
 };
 
->>>>>>> dashboard
 export default ForgotPasswordPage;
