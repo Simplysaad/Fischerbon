@@ -24,9 +24,14 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.static("./Public"));
 
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
   connectDB();
   console.log(`server live at http://localhost:${process.env.PORT}`);
+});
+
+server.on("error", (err) => {
+  console.error("Server startup error:", err);
+  process.exit(1);
 });
 
 keepAlive();

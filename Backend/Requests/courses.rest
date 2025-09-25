@@ -52,7 +52,7 @@ Content-Type: application/json
 
 {
     "title": "lorem ipsum",
-    "text": "lorem ipsum dolor sit amet",
+    "text": "lorem ipsum dolor sit amet"
 }
 
 ------xyz--

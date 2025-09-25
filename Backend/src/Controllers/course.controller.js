@@ -4,6 +4,7 @@ import Course from "../Models/course.model.js";
 import User from "../Models/user.model.js";
 import Lesson from "../Models/lesson.model.js";
 import Enrollment from "../Models/enrollment.model.js";
+import mongoose from "mongoose";
 
 export const getCourses = async (req, res, next) => {
   try {
@@ -127,8 +128,6 @@ export const createLesson = async (req, res, next) => {
     }
 
     if (req.files) {
-      console.log(files);
-
       const { lessonVideo, lessonFiles } = req.files;
 
       const lessonFilesPaths = lessonFiles.map((file) => file.path);
@@ -143,9 +142,7 @@ export const createLesson = async (req, res, next) => {
     const newLesson = new Lesson({
       courseId,
       title,
-      content: {
-        text
-      }
+      content
     });
 
     await newLesson.save();
@@ -217,16 +214,19 @@ export const deleteLesson = async (req, res, next) => {
       });
     }
 
+
     await Lesson.findByIdAndDelete(lessonId);
 
-    currentCourse.lessons.filter((lesson) => lesson.toString() !== lessonId);
-    const updatedCourse = await currentCourse.save();
+    currentCourse.lessons = currentCourse.lessons.filter((lesson) => lesson.toString() !== lessonId);
+    await currentCourse.save();
+
 
     return res.status(201).json({
       success: true,
       message: "lesson deleted successfully",
-      data: updatedCourse
-    });
+      data: currentCourse
+    })
+
   } catch (err) {
     next(err);
   }
@@ -356,11 +356,11 @@ export const getLesson = async (req, res, next) => {
 
     if (completed) {
       const completedLesson = {
-        lessonId: new Schema.Types.ObjectId(lessonId),
+        lessonId: new mongoose.Types.ObjectId(lessonId),
         completedAt: new Date(Date.now())
       };
 
-      currentEnrollment.completedLessons.push(completedLesson);
+        lessonId: new mongoose.Types.ObjectId(lessonId),
       await currentEnrollment.save();
 
       return res.status(201).json({
