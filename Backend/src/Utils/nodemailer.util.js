@@ -1,28 +1,34 @@
 import nodemailer from "nodemailer";
 import ejs from "ejs";
 import path from "path";
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const transporter = nodemailer.createTransport({
-  host: "localhost",
-  port: 1025,
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
   secure: false,
-  tls: {
-    rejectUnauthorized: false
-  }
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
+  },
 });
 
 export const sendEmail = async (emailOptions) => {
   try {
     const { to, subject, template, data } = emailOptions;
     // Generate HTML using EJS template
-    const templatePath = path.join(__dirname, '..', 'Templates', `${template}.ejs`);
-    
+    const templatePath = path.join(
+      __dirname,
+      "..",
+      "Templates",
+      `${template}.ejs`
+    );
+
     if (!template) {
-      throw new Error('Email template name is required');
+      throw new Error("Email template name is required");
     }
 
     const html = await ejs.renderFile(templatePath, data);

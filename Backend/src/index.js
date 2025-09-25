@@ -12,6 +12,7 @@ import courseRoutes from "./Routes/course.route.js";
 import adminRoutes from "./Routes/admin.route.js";
 import enrollmentRoutes from "./Routes/enrollment.route.js";
 import quizeRouter from "./Routes/quiz.route.js";
+import keepAlive from "./Cron/keep-alive.js";
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.listen(process.env.PORT, (err) => {
     console.log(`server live at http://localhost:${process.env.PORT}`);
   }
 });
+
+keepAlive()
 
 app.use("/auth", authRoutes);
 app.use("/course", courseRoutes);
