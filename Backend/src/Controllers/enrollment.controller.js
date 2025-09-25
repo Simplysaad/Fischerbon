@@ -4,7 +4,6 @@ import Course from "../Models/course.model.js";
 import Payment from "../Models/payment.model.js";
 import Enrollment from "../Models/enrollment.model.js";
 import User from "../Models/user.model.js";
-import mongoose, { ObjectId, Schema, Types } from "mongoose";
 
 export const getEnroll = async (req, res, next) => {
   try {
@@ -56,18 +55,6 @@ export const getEnroll = async (req, res, next) => {
     const apiUrl = `https://api.paystack.co/transaction/${action}/${
       reference || ""
     }`;
-
-    interface IOption {
-      method: "get" | "post";
-      headers: { Authorization: string };
-      body?: any;
-    }
-    const options: IOption = {
-      method: action === "verify" ? "get" : "post",
-      headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-      }
-    };
 
     if (action === "initialize") {
       options.body = JSON.stringify({
@@ -136,7 +123,7 @@ export const getEnroll = async (req, res, next) => {
 
       // Add new enrollment to user's enrollments if not already present
       const isEnrolled = currentUser.enrollments.some(
-        (e: any) => e.toString() === newEnrollment._id.toString()
+        (e) => e.toString() === newEnrollment._id.toString()
       );
 
       let enrollmentId = new Types.ObjectId(newEnrollment._id.toString());

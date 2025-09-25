@@ -1,22 +1,9 @@
-import { Response, Request, NextFunction } from "express";
-
-interface IResponse {
-  status: "error";
-  success: boolean;
-  message: string;
-  stack?: string;
-}
-export default function errorMiddleware(
-  err,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export default function errorMiddleware(err, req, res, next) {
   console.error("Error:", err);
 
   const status = err.statusCode || err.status || 500;
 
-  const response: IResponse = {
+  const response = {
     status: "error",
     success: false,
     message: err.message || "Internal Server Error"

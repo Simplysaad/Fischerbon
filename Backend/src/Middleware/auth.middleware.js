@@ -1,15 +1,6 @@
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
 
-export interface JWTRequest extends Request {
-  userId?: string;
-}
-
-export default function authMiddleware(
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) {
+export default function authMiddleware(req, res, next) {
   try {
     const { token } = req.cookies;
 
@@ -25,7 +16,7 @@ export default function authMiddleware(
 
     if (!SECRET_KEY) throw new Error("Empty JWT secret");
 
-    const decoded = jwt.verify(token, SECRET_KEY) as { userId: string }
+    const decoded = jwt.verify(token, SECRET_KEY);
 
     if (decoded) {
       req.userId = decoded.userId;

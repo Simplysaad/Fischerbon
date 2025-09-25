@@ -1,24 +1,6 @@
-import { Document, Schema, model, Types } from "mongoose";
+import { Schema, model } from "mongoose";
 
-interface ICourse extends Document {
-  title: string;
-  description: string;
-  instructorId: Types.ObjectId;
-  price: number;
-  payment: "paid" | "free";
-  category: string;
-  tags: string[];
-  level: "beginner" | "intermediate" | "advanced";
-  thumbnailUrl: string;
-  lessons: Types.ObjectId[];
-  ratings: {
-    userId: Schema.Types.ObjectId;
-    rating: number;
-    message: string;
-  }[];
-}
-
-const courseSchema = new Schema<ICourse>(
+const courseSchema = new Schema(
   {
     title: String,
     description: String,
@@ -61,5 +43,5 @@ const courseSchema = new Schema<ICourse>(
   { timestamps: true }
 );
 
-const Course = model<ICourse>("course", courseSchema);
+const Course = model("course", courseSchema);
 export default Course;

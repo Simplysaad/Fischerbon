@@ -1,20 +1,6 @@
-import { Document, Schema, Types, model } from "mongoose";
+import { Schema, model } from "mongoose";
 
-interface IUser extends Document {
-  name: string;
-  emailAddress: string;
-  password: string;
-  role: "student" | "instructor" | "admin";
-  profilePicture?: string;
-  bio?: string;
-  enrollments?: Types.ObjectId[];
-  authentication?: {
-    token?: string,
-    tokenExpiry?: Date
-  }
-}
-
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema(
   {
     name: {
       type: String,
@@ -46,8 +32,8 @@ const userSchema = new Schema<IUser>(
       token: String,
       tokenExpiry: {
         type: Date,
-        default: new Date(Date.now() + (5 * 60 * 1000))
-      },
+        default: new Date(Date.now() + 5 * 60 * 1000)
+      }
     }
   },
   {
@@ -55,5 +41,5 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-const User = model<IUser>("user", userSchema);
+const User = model("user", userSchema);
 export default User;

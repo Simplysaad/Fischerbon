@@ -1,15 +1,9 @@
 import Quiz from "../Models/quiz.model";
 import Enrollment from "../Models/enrollment.model";
-import { NextFunction, Response } from "express";
 import Lesson from "../Models/lesson.model";
 import mongoose from "mongoose";
-import { JWTRequest } from "../Middleware/auth.middleware";
 
-export const getQuiz = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const getQuiz = async (req, res, next) => {
   try {
     const { quizId } = req.params;
     const { userId } = req;
@@ -67,11 +61,7 @@ export const getQuiz = async (
   }
 };
 
-export const createQuiz = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const createQuiz = async (req, res, next) => {
   try {
     const { title, questions, lessonId } = req.body;
     // const { lessonId } = req.params;

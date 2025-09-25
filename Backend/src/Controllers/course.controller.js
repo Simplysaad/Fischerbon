@@ -6,38 +6,12 @@ import Lesson from "../Models/lesson.model.js";
 import Enrollment from "../Models/enrollment.model.js";
 
 import { Response, NextFunction } from "express";
-import { JWTRequest } from "../Middleware/auth.middleware.js";
-import { Schema, Types } from "mongoose";
 
-
-interface IFilter {
-  price?: {
-    $lte?: number;
-    $gte?: number;
-  };
-  category?: string;
-  level?: string;
-}
-
-type Query = {
-  page?: string;
-  limit?: string;
-  max_price?: string;
-  min_price?: string;
-  category?: string;
-  level?: string;
-};
-
-export const getCourses = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const getCourses = async (req, res, next) => {
   try {
-    const { page, limit, max_price, min_price, category, level } =
-      req.query as Query;
+    const { page, limit, max_price, min_price, category, level } = req.query;
 
-    const filter: IFilter = {};
+    const filter = {};
 
     if (max_price || min_price) {
       filter.price = {};
@@ -63,11 +37,7 @@ export const getCourses = async (
   }
 };
 
-export const createCourse = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const createCourse = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -124,11 +94,7 @@ export const createCourse = async (
   }
 };
 
-export const createLesson = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const createLesson = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -152,18 +118,18 @@ export const createLesson = async (
     const { courseId } = req.params;
     const { title, text } = req.body;
 
-    const files = req.files; // as MulterFiles;
+    const files = req.files;
     // console.log("files", files);
 
-    if (!files || (files as any).length < 2) {
+    if (!files || files.length < 2) {
       return res.status(400).json({
         success: false,
         message: "Please upload all required files"
       });
     }
 
-    const lessonFiles = files[0] as Express.Multer.File[];
-    const lessonVideo = files[1] as Express.Multer.File[];
+    const lessonFiles = files[0];
+    const lessonVideo = files[1];
 
     const lessonFilesPaths = lessonFiles.map((file) => file.path);
     // console.log("lessonFilesPaths", lessonFilesPaths);
@@ -211,11 +177,7 @@ export const createLesson = async (
   }
 };
 
-export const deleteLesson = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
     const { userId } = req;
@@ -262,11 +224,7 @@ export const deleteLesson = async (
   }
 };
 
-export const deleteCourse = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteCourse = async (req, res, next) => {
   try {
     const { courseId } = req.params;
     const { userId } = req;
@@ -310,11 +268,7 @@ export const deleteCourse = async (
   }
 };
 
-export const getCourse = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const getCourse = async (req, res, next) => {
   try {
     const { userId } = req;
     const { courseId } = req.params;
@@ -367,11 +321,7 @@ export const getCourse = async (
   }
 };
 
-export const getLesson = async (
-  req: JWTRequest,
-  res: Response,
-  next: NextFunction
-) => {
+export const getLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;

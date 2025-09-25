@@ -3,11 +3,9 @@ import jwt from "jsonwebtoken";
 
 import User from "../Models/user.model.js";
 import transporter from "../Utils/nodemailer.util.js";
-import { NextFunction, Request, Response } from "express";
-import { JWTRequest } from "../Middleware/auth.middleware.js";
 
 
-export const checkAuthStatus = async (req: JWTRequest, res: Response, next: NextFunction) => {
+export const checkAuthStatus = async (req, res, next) => {
   try {
     const { userId } = req;
 
@@ -31,7 +29,7 @@ export const checkAuthStatus = async (req: JWTRequest, res: Response, next: Next
   }
 }
 
-export const postRegister = async (req: Request, res: Response, next: NextFunction) => {
+export const postRegister = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -81,7 +79,7 @@ export const postRegister = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const postLogin = async (req: Request, res: Response, next: NextFunction) => {
+export const postLogin = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -135,7 +133,7 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
+export const logout = async (req, res, next) => {
   try {
     res.clearCookie("token");
 
@@ -149,14 +147,14 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 
-export const getResetPassword = async (req: Request, res: Response, next: NextFunction) => {
+export const getResetPassword = async (req, res, next) => {
   try {
     const { token } = req.params;
 
     const { SECRET_KEY } = process.env;
     if (SECRET_KEY) throw new Error("SECRET_KEY is not defined in environment variables")
 
-    let { emailAddress } = jwt.verify(token, SECRET_KEY) as { emailAddress: string };
+    let { emailAddress } = jwt.verify(token, SECRET_KEY)
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
 
     const updatedUser = await User.findOneAndUpdate(

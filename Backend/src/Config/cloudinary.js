@@ -20,11 +20,11 @@ const storage = new CloudinaryStorage({
 
 export const uploadCloud = multer({ storage });
 
-export async function uploadToCloud(file_path: string, resource_type?: any) {
+export async function uploadToCloud(file_path, resource_type) {
   try {
     const uploadedFile = (await cloudinary.uploader.upload(file_path, {
       resource_type: resource_type || "auto"
-    })) as UploadApiResponse;
+    }))
 
     // console.log("uploadedFile", uploadedFile);
     return uploadedFile;
@@ -34,8 +34,8 @@ export async function uploadToCloud(file_path: string, resource_type?: any) {
 }
 
 export async function uploadMultipleToCloud(
-  paths: string[],
-  resource_type?: any
+  paths,
+  resource_type
 ) {
   const uploadedFiles = await Promise.all(
     paths.map((path) => {
