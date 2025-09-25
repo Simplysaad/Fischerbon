@@ -17,7 +17,7 @@ const storage = new CloudinaryStorage({
   }
 });
 
-export const uploadCloud = multer({ storage });
+export const upload = multer({ storage });
 
 export async function uploadToCloud(file_path, resource_type) {
   try {

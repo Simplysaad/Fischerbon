@@ -5,7 +5,6 @@ import User from "../Models/user.model.js";
 import Lesson from "../Models/lesson.model.js";
 import Enrollment from "../Models/enrollment.model.js";
 
-
 export const getCourses = async (req, res, next) => {
   try {
     const { page, limit, max_price, min_price, category, level } = req.query;
@@ -46,7 +45,7 @@ export const createCourse = async (req, res, next) => {
     }
 
     const { userId } = req;
-    console.log(userId);
+    // console.log(userId);
 
     const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
@@ -56,8 +55,8 @@ export const createCourse = async (req, res, next) => {
       });
     }
 
-    const isAuthorized = true
-      // currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized =
+      currentUser.role === "instructor" || currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
@@ -67,13 +66,10 @@ export const createCourse = async (req, res, next) => {
 
     // const { title, description, price, category, tags, level } = req.body;
 
-    let thumbnailUrl;
-    if (!req.file) {
-      thumbnailUrl = "";
-    } else {
-      let upload = await uploadToCloud(req.file?.path);
-      thumbnailUrl = upload?.secure_url;
-    }
+    if (!req.file)
+      throw new Error("thumbnail is not uploaded ", { cause: "no req.file" });
+
+    const { path: thumbnailUrl } = req.file;
 
     const newCourse = new Course({
       ...req.body,
@@ -117,42 +113,38 @@ export const createLesson = async (req, res, next) => {
     const { courseId } = req.params;
     const { title, text } = req.body;
 
-    const files = req.files;
-    // console.log("files", files);
-
-    if (!files || files.length < 2) {
+    if (!text && !req.files) {
       return res.status(400).json({
         success: false,
-        message: "Please upload all required files"
+        message: "neither text nor file is uploaded"
       });
     }
 
-    const lessonFiles = files[0];
-    const lessonVideo = files[1];
+    const content = {};
 
-    const lessonFilesPaths = lessonFiles.map((file) => file.path);
-    // console.log("lessonFilesPaths", lessonFilesPaths);
+    if (text) {
+      content.text = text;
+    }
 
-    const lessonFilesUploads = await uploadMultipleToCloud(
-      lessonFilesPaths,
-      "raw"
-    );
-    // console.log("lessonFilesUploads", lessonFilesUploads);
+    if (req.files) {
+      console.log(files);
 
-    const lessonVideoPath = lessonVideo[0].path;
-    // when i implement the multer-storage-cloudinary, this will be the secure_url
-    // console.log("lessonVideoPath", lessonVideoPath);
+      const { lessonVideo, lessonFiles } = req.files;
 
-    const lessonVideoUpload = await uploadToCloud(lessonVideoPath);
-    // console.log("lessonVideoUploads", lessonVideoUploads);
+      const lessonFilesPaths = lessonFiles.map((file) => file.path);
+      console.log("lessonFilesPaths", lessonFilesPaths);
+
+      const lessonVideoPath = lessonVideo[0].path;
+      console.log("lessonVideoPath", lessonVideoPath);
+
+      (content.video = lessonVideoPath), (content.files = lessonFilesPaths);
+    }
 
     const newLesson = new Lesson({
       courseId,
       title,
       content: {
-        text,
-        video: lessonVideoUpload,
-        files: lessonFilesUploads
+        text
       }
     });
 
@@ -164,12 +156,29 @@ export const createLesson = async (req, res, next) => {
         $push: { lessons: newLesson._id }
       },
       { new: true }
-    ).populate("lessons");
+    );
 
     return res.status(201).json({
       success: true,
       message: "new lesson added successfully",
-      data: updatedCourse
+      data: newLesson
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getLessons = async (req, res, next) => {
+  try {
+    const { courseId } = req.params;
+    const currentCourse = await Course.findOne({ _id: courseId })
+      .populate("lessons")
+      .select("_id title description lessons");
+
+    return res.status(200).json({
+      success: true,
+      message: `${currentCourse?.lessons?.length ?? 0} lesson retrieved`,
+      data: currentCourse
     });
   } catch (err) {
     next(err);

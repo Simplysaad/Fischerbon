@@ -1,16 +1,48 @@
 GET http://localhost:5000/courses/
 
 
+###
+POST  http://localhost:5000/courses/create
+Content-Type: multipart/form-data; boundary=----xyz
 
 
+------xyz
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+    "title": "Advanced Course",
+    "description": "This is an advanced course with multiple materials",
+    "price": 345.99
+}
+
+------xyz--
 ###
 
-POST  http://localhost:5000/course/create
+POST  http://localhost:5000/courses/68d511081722d20c44b21bcf/lessons
 Content-Type: multipart/form-data; boundary=----xyz
 
 ------xyz
-Content-Disposition: form-data; name="thumbnail"; filename="test.jpg"
+Content-Disposition: form-data; name="lessonFiles"; filename="thumbnail1.jpg"
 Content-Type: image/jpeg
+
+< ./test.jpg
+
+------xyz
+Content-Disposition: form-data; name="lessonFiles"; filename="thumbnail2.jpg"
+Content-Type: image/jpeg
+
+< ./test.jpg
+
+------xyz
+Content-Disposition: form-data; name="lessonFiles"; filename="material1.pdf"
+Content-Type: application/pdf
+
+< ./test.jpg
+
+------xyz
+Content-Disposition: form-data; name="lessonVideo"; filename="intro.mp4"
+Content-Type: video/mp4
 
 < ./test.jpg
 
@@ -20,8 +52,7 @@ Content-Type: application/json
 
 {
     "title": "lorem ipsum",
-    "description": "lorem ipsum dolor sit amet",
-    "price": 345.99
+    "text": "lorem ipsum dolor sit amet",
 }
 
 ------xyz--

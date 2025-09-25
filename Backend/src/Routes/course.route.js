@@ -1,9 +1,6 @@
 import { Router } from "express";
 const router = Router();
 
-import multer from "multer";
-const upload = multer({ dest: "./Uploads" });
-
 import {
   createCourse,
   createLesson,
@@ -11,18 +8,18 @@ import {
   deleteLesson,
   getCourse,
   getLesson,
-  getCourses
+  getCourses,
+  getLessons
 } from "../Controllers/course.controller.js";
 import authMiddleware from "../Middleware/auth.middleware.js";
+import { upload } from "../Config/cloudinary.js";
 
 router.use(authMiddleware);
 
-router.get("/", getCourses)
-
+router.get("/", getCourses);
 
 // Get a course
 router.get("/:courseId", getCourse);
-
 
 //Create a new course
 router.post("/create", upload.single("thumbnail"), createCourse);
@@ -39,8 +36,13 @@ router.post(
 
 // Delete a particular lesson
 router.delete("/:courseId/lessons/:lessonId", deleteLesson);
+
+
+router.get("/:courseId/lessons/", getLessons);
+
 router.get("/:courseId/lessons/:lessonId", getLesson);
 
 // Delete a particular course
 router.delete("/:courseId/", deleteCourse);
+
 export default router;

@@ -24,18 +24,22 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.static("./Public"));
 
-
-app.listen(process.env.PORT, (err) => {
-  if (!err) {
-    connectDB();
-    console.log(`server live at http://localhost:${process.env.PORT}`);
-  }
+app.listen(process.env.PORT, () => {
+  connectDB();
+  console.log(`server live at http://localhost:${process.env.PORT}`);
 });
 
-keepAlive()
+keepAlive();
+
+app.get("/", (req, res, next) => {
+  return res.status(200).json({
+    success: true,
+    message: "Backend is up and running"
+  });
+});
 
 app.use("/auth", authRoutes);
-app.use("/course", courseRoutes);
+app.use("/courses", courseRoutes);
 app.use("/admin", adminRoutes);
 app.use("/enroll", enrollmentRoutes);
 app.use("/quiz", quizeRouter);
