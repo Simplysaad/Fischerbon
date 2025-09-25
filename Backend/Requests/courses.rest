@@ -1,0 +1,27 @@
+GET http://localhost:5000/courses/
+
+
+
+
+###
+
+POST  http://localhost:5000/course/create
+Content-Type: multipart/form-data; boundary=----xyz
+
+------xyz
+Content-Disposition: form-data; name="thumbnail"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./test.jpg
+
+----xyz
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+    "title": "lorem ipsum",
+    "description": "lorem ipsum dolor sit amet",
+    "price": 345.99
+}
+
+------xyz--

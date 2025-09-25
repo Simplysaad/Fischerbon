@@ -23,7 +23,6 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(express.static("./Public"));
 
-app.use(errorMiddleware);
 
 app.listen(process.env.PORT, (err) => {
   if (!err) {
@@ -37,3 +36,12 @@ app.use("/course", courseRoutes);
 app.use("/admin", adminRoutes);
 app.use("/enroll", enrollmentRoutes);
 app.use("/quiz", quizeRouter);
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Missing Route ${req.originalUrl}`
+  });
+});
+
+app.use(errorMiddleware);

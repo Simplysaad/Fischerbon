@@ -1,6 +1,6 @@
-import Quiz from "../Models/quiz.model";
-import Enrollment from "../Models/enrollment.model";
-import Lesson from "../Models/lesson.model";
+import Quiz from "../Models/quiz.model.js";
+import Enrollment from "../Models/enrollment.model.js";
+import Lesson from "../Models/lesson.model.js";
 import mongoose from "mongoose";
 
 export const getQuiz = async (req, res, next) => {

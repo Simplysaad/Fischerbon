@@ -1,7 +1,14 @@
 import { Router } from "express";
 const router = Router();
 
-import { checkAuthStatus, getResetPassword, logout, postLogin, postRegister, postResetPassword } from "../Controllers/auth.controller.js";
+import {
+  checkAuthStatus,
+  postRegister,
+  postLogin,
+  forgotPassword,
+  resetPassword,
+  logout
+} from "../Controllers/auth.controller.js";
 
 router.get("/status", checkAuthStatus);
 
@@ -11,8 +18,8 @@ router.post("/login", postLogin);
 
 router.all("/logout", logout);
 
-router.post("/reset-password/:token", getResetPassword);
+router.post("/forgot-password", forgotPassword);
 
-router.post("/reset-password", postResetPassword);
+router.post("/reset-password", resetPassword);
 
-export default router  
+export default router;

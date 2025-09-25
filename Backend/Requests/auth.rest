@@ -1,0 +1,96 @@
+GET http://localhost:5000/auth/status
+
+###
+POST  http://localhost:5000/auth/login
+Content-Type: application/json
+
+{
+    "email": "saadidris560@gmail.com",
+    "password": "saad1234"
+}
+
+
+###
+POST  http://localhost:5000/auth/register
+Content-Type: application/json
+
+{
+    "email": "saadidris560@gmail.com",
+    "password": "saad1234",
+    "fullName": "saad idris"
+}
+
+###
+
+GET  http://localhost:5000/auth/logout
+
+###
+POST  http://localhost:5000/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "saadidris560@gmail.com"
+}
+
+
+###
+POST  http://localhost:5000/auth/reset-password
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhYWRpZHJpczU2MEBnbWFpbC5jb20iLCJpYXQiOjE3NTg3OTQ0ODR9.Ob69PNymJap40K0030ArrXKH-Oq0ZtY6yTppfoQQQEc",
+    "password": "saad12345"
+}
+
+###
+# Single File Upload
+POST http://localhost:5000/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./Config/test.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+# Multiple Files Upload with Additional Fields
+POST http://localhost:5000/upload-multiple
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="test1.jpg"
+Content-Type: image/jpeg
+
+< ./Config/test.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="test2.jpg"
+Content-Type: image/jpeg
+
+< ./Config/test.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="description"
+
+This is a test upload
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+# Upload with JSON and File
+POST http://localhost:5000/upload-with-json
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./Config/test.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="data"
+Content-Type: application/json
+
+{
+    "name": "Test Upload",
+    "description": "This is a test upload with JSON data"
+}
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

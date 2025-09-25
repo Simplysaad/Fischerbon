@@ -1,9 +1,7 @@
 import { Schema, model } from "mongoose";
 
-const quizSchema =
-  new Schema() <
-  IQuiz >
-  ({
+const quizSchema = new Schema(
+  {
     courseId: {
       type: Schema.Types.ObjectId,
       ref: "course"
@@ -34,7 +32,8 @@ const quizSchema =
   },
   {
     timestamps: true
-  });
+  }
+);
 
 const Quiz = model("quiz", quizSchema);
 export default Quiz;
