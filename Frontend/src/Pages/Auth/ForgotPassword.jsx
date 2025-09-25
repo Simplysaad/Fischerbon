@@ -166,14 +166,15 @@ const ForgotPasswordPage = () => {
               Send reset link
             </button>
           </form>
-          <Link to="/login">
-            <p className="text-center mt-1 flex justify-center text-[14px] text-dark cursor-pointer leading-5 items-center gap-2">
-              <span className="text-center">
-                <ArrowLeft size="20" />
-              </span>
-              <span className="text-center">Back to Login</span>
+          
+            <p>
+              <Link to="/login" className='mt-1 flex justify-center text-[14px] text-dark cursor-pointer leading-5 items-center gap-2'>
+                <span className="text-center">
+                  <ArrowLeft size="20" />
+                </span>
+                <span className="text-center">Back to Login</span></Link>
             </p>
-          </Link>
+          
         </AuthContainer>
       }
     </div>

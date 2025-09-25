@@ -13,7 +13,7 @@ import AdminDashboard from "./Pages/AdminDashboard/AdminDashboard";
 import CreateCourse from './Pages/AdminDashboard/CreateCourse'
 import RegisterStudent from './Pages/AdminDashboard/RegisterStudent'
 import AdminProfile from './Pages/AdminDashboard/AdminProfile'
-import AddChallenge from "./Pages/AdminDashboard/AddChallenge";
+import PostChallenge from "./Pages/AdminDashboard/PostChallenge";
 
 const App = () => (
   <BrowserRouter>
@@ -37,7 +37,7 @@ const App = () => (
         <Route path="/dashboard/admin" element={<AdminDashboard />} />
         <Route path="/course/create" element={<CreateCourse />} />
         <Route path="/student/register" element={<RegisterStudent />} />
-        <Route path="/challenge/add" element={<AddChallenge />} />
+        <Route path="/challenge/post" element={<PostChallenge />} />
         <Route path="/profile/admin" element={<AdminProfile />} />
 
         {/* Not found page */}

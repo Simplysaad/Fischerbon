@@ -43,9 +43,9 @@ export const navItems = [
     subTag: `Create an account for a new student`,
   },
   {
-    name: 'Add Challenge',
+    name: 'Post Challenge',
     icon: Puzzle,
-    link: '/challenge/add',
+    link: '/challenge/post',
     subTag: `Post a new challenge for students`,
   },
   {

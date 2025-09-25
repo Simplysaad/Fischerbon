@@ -30,7 +30,6 @@ const SignupPage = () => {
     if (!formData.password.trim()) newErrors.password = 'Password is required';
     if (emailError !== '') newErrors.email = 'An account with that mail already exists';
     if (formData.password.trim().length < 8 && formData.password.trim()) newErrors.password = 'Password must have a minimum of 8 characters';
-    if (formData.password.split('').some(character => character === '' || character === ' ')) newErrors.password = 'Spaces are not allowed in password';
     return newErrors;
   };
 

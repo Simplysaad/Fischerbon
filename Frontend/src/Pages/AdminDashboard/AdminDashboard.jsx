@@ -29,7 +29,7 @@ const AdminDashboard = () => {
             label: "Post a challenge",
             description: "Post a new challenge for all students",
             button: "Post a challenge",
-            link: "/challenge/add"
+            link: "/challenge/post"
         }
     ]
     return (

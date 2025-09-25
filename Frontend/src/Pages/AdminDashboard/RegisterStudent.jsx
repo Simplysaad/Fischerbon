@@ -72,7 +72,6 @@ const RegisterStudent = () =>{
             setEmailError(result.message)
         } else{
             setAlert('success');
-            navigate('/login');
         }
 
         } catch (error) {
@@ -88,7 +87,7 @@ const RegisterStudent = () =>{
     return (
         <>
             {
-                alert === 'success' ? <AuthAlert header={'Logged In'} message={'You can now access your dashboard'} iconType={'success'} border={'#3c97d0'} onClose={() => setAlert('')}/> 
+                alert === 'success' ? <AuthAlert header={'Successful'} message={`You've successfully registered ${formData.fullName}`} iconType={'success'} border={'#3c97d0'} onClose={() => setAlert('')}/> 
                 :
                 alert === 'failure' ? <AuthAlert header={'Oops'} message={"Something went wrong, try that again later"} iconType={'error'} onClose={() => setAlert('')}/> 
                 :

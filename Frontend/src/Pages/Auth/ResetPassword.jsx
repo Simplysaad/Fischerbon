@@ -36,18 +36,6 @@ const ResetPasswordPage = () => {
     )
       newErrors.confirmPassword =
         "Password must have a minimum of 8 characters";
-    if (
-      passwords.newPassword
-        .split("")
-        .some((character) => character === "" || character === " ")
-    )
-      newErrors.newPassword = "Spaces are not allowed in password";
-    if (
-      passwords.confirmPassword
-        .split("")
-        .some((character) => character === "" || character === " ")
-    )
-      newErrors.confirmPassword = "Spaces are not allowed in password";
     return newErrors;
   };
 

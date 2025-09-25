@@ -61,18 +61,18 @@ const AuthAlert = ({
       </div>
       <style>
         {`
-            @keyframes jump-in {
-            0% { transform: translateY(-60px) scale(0.8); opacity: 0; }
-            60% { transform: translateY(10px) scale(1.05); opacity: 1; }
-            80% { transform: translateY(-2px) scale(0.98); }
-            100% { transform: translateY(0) scale(1); }
-            }
-            @keyframes jump-out {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
-            }
-            .animate-jump-in { animation: jump-in 0.4s cubic-bezier(.4,2,.6,1) both; }
-            .animate-jump-out { animation: jump-out 0.4s cubic-bezier(.4,2,.6,1) both; }
+          @keyframes jump-in {
+          0% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+          60% { transform: translateY(10px) scale(1.05); opacity: 1; }
+          80% { transform: translateY(-2px) scale(0.98); }
+          100% { transform: translateY(0) scale(1); }
+          }
+          @keyframes jump-out {
+          0% { transform: translateY(0) scale(1); opacity: 1; }
+          100% { transform: translateY(-60px) scale(0.8); opacity: 0; }
+          }
+          .animate-jump-in { animation: jump-in 0.4s cubic-bezier(.4,2,.6,1) both; }
+          .animate-jump-out { animation: jump-out 0.4s cubic-bezier(.4,2,.6,1) both; }
         `}
       </style>
     </div>

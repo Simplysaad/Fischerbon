@@ -134,9 +134,9 @@ const LoginPage = () => {
                     {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                     </div>
 
-                    <Link to="/forgot-password"><p className="text-right text-[13px] text-primary leading-5">
+                    <p className="text-right text-[13px] text-primary leading-5"><Link to="/forgot-password">
                     Forgot password?
-                    </p></Link>
+                    </Link></p>
                 </div>
 
 
