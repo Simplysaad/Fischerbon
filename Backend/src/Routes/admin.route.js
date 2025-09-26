@@ -5,7 +5,8 @@ import multer from "multer";
 import User from "../Models/user.model.js";
 import Course from "../Models/course.model.js";
 import authMiddleware from "../Middleware/auth.middleware.js";
-const upload = multer({ dest: "./Uploads" });
+import { upload } from "../Config/cloudinary.js";
+
 
 //Get all courses from a single instructor
 router.use(authMiddleware);
