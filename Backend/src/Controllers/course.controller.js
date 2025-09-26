@@ -1,5 +1,3 @@
-import { uploadMultipleToCloud, uploadToCloud } from "../Config/cloudinary.js";
-
 import Course from "../Models/course.model.js";
 import User from "../Models/user.model.js";
 import Lesson from "../Models/lesson.model.js";
@@ -28,7 +26,7 @@ export const getCourses = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "courses successfully retrieved",
+      message: `${courses.length} courses successfully retrieved`,
       data: courses
     });
   } catch (err) {
@@ -44,6 +42,7 @@ export const createCourse = async (req, res, next) => {
         message: "Bad request - Nothing is being sent"
       });
     }
+    console.log(JSON.stringify(req.body));
 
     const { userId } = req;
     // console.log(userId);
@@ -70,8 +69,7 @@ export const createCourse = async (req, res, next) => {
     if (!req.file)
       throw new Error("thumbnail is not uploaded ", { cause: "no req.file" });
 
-    const { path: thumbnailUrl } = req.file;
-
+    const thumbnailUrl = req.file?.path;
     const newCourse = new Course({
       ...req.body,
       thumbnailUrl,
@@ -84,6 +82,59 @@ export const createCourse = async (req, res, next) => {
       success: true,
       message: "new course created",
       data: newCourse
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateCourse = async (req, res, next) => {
+  try {
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad Request - Nothing is being sent"
+      });
+    }
+    console.log(req.body);
+
+    const { courseId } = req.params;
+    const { title, description, price, category, level, tags } = req.body;
+
+    let thumbnailUrl = req.file?.path;
+
+    const update = {};
+
+    if (title || description || price || category || level) {
+      update.$set = {};
+
+      if (title) update.$set.title = title;
+      if (description) update.$set.description = description;
+      if (price) update.$set.price = price;
+      if (category) update.$set.category = category;
+      if (level) update.$set.level = level;
+      if (thumbnailUrl) update.$set.thumbnailUrl = thumbnailUrl;
+    }
+
+    if (tags) {
+      update.$addToSet = { $each: tags };
+    }
+
+    const updatedCourse = await Course.findByIdAndUpdate(courseId, update, {
+      new: true
+    });
+
+    if (!updatedCourse) {
+      return res.status(404).json({
+        success: false,
+        message: "course could not be found "
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "course updated successfully",
+      data: updatedCourse
     });
   } catch (err) {
     next(err);
@@ -187,19 +238,19 @@ export const deleteLesson = async (req, res, next) => {
     const { courseId, lessonId } = req.params;
     const { userId } = req;
 
-    const currentUser = await User.findOne({ _id: userId });
+    const currentUser = await User.findById(userId);
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id "
+        message: "Invalid user Id"
       });
     }
 
-    const currentCourse = await Course.findOne({ _id: courseId });
+    const currentCourse = await Course.findById(courseId);
     if (!currentCourse) {
       return res.status(400).json({
         success: false,
-        message: "Invalid course Id "
+        message: "Invalid course Id"
       });
     }
 
@@ -214,19 +265,26 @@ export const deleteLesson = async (req, res, next) => {
       });
     }
 
+    // Check if lesson exists before deleting
+    const deletedLesson = await Lesson.findByIdAndDelete(lessonId);
+    if (!deletedLesson) {
+      return res.status(404).json({
+        success: false,
+        message: "Lesson not found"
+      });
+    }
 
-    await Lesson.findByIdAndDelete(lessonId);
-
-    currentCourse.lessons = currentCourse.lessons.filter((lesson) => lesson.toString() !== lessonId);
+    // Update course lessons array
+    currentCourse.lessons = currentCourse.lessons.filter(
+      (lesson) => lesson.toString() !== lessonId
+    );
     await currentCourse.save();
 
-
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      message: "lesson deleted successfully",
+      message: "Lesson deleted successfully",
       data: currentCourse
-    })
-
+    });
   } catch (err) {
     next(err);
   }
@@ -237,19 +295,19 @@ export const deleteCourse = async (req, res, next) => {
     const { courseId } = req.params;
     const { userId } = req;
 
-    const currentUser = await User.findOne({ _id: userId });
+    const currentUser = await User.findById(userId);
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id "
+        message: "Invalid user Id"
       });
     }
 
-    const currentCourse = await Course.findOne({ _id: courseId });
+    const currentCourse = await Course.findById(courseId);
     if (!currentCourse) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        message: "Invalid course Id "
+        message: "Course not found"
       });
     }
 
@@ -265,10 +323,16 @@ export const deleteCourse = async (req, res, next) => {
     }
 
     const deletedCourse = await Course.findByIdAndDelete(courseId);
+    if (!deletedCourse) {
+      return res.status(404).json({
+        success: false,
+        message: "Course already deleted or not found"
+      });
+    }
 
-    return res.status(201).json({
+    return res.status(200).json({
       success: true,
-      message: "course deleted successfully",
+      message: "Course deleted successfully",
       data: deletedCourse
     });
   } catch (err) {
@@ -281,48 +345,39 @@ export const getCourse = async (req, res, next) => {
     const { userId } = req;
     const { courseId } = req.params;
 
-    const currentUser = await User.findOne({ _id: userId });
+    const currentUser = await User.findById(userId);
     if (!currentUser) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid user Id - user not logged in "
-      });
-    }
-
-    // Check if user is enrolled or is instructor or is admin
-    const isInstructor = await Course.findOne({
-      $and: [{ instructorId: userId }, { courseId }]
-    });
-
-    const currentEnrollment = await Enrollment.findOne({
-      $and: [{ userId }, { courseId }]
-    })
-      .populate("courseId")
-      .populate("courseId.lessons");
-
-    console.log("currentEnrollement", currentEnrollment);
-    console.log("isInstructor", isInstructor);
-
-    if (!currentEnrollment) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - User not enrolled for this course"
+        message: "User not authenticated"
       });
     }
 
-    if (isInstructor) {
-      const currentCourse = await Course.findOne({ _id: courseId });
-      return res.status(200).json({
-        success: true,
-        message: "Course data retrieved successfully",
-        data: currentCourse
+    // Uncomment and implement enrollment and instructor checks before sending course data
+    /*
+    const isInstructor = await Course.exists({ _id: courseId, instructorId: userId });
+    const isEnrolled = await Enrollment.exists({ userId, courseId });
+
+    if (!isInstructor && !isEnrolled && currentUser.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied - not enrolled or instructor",
+      });
+    }
+    */
+
+    const currentCourse = await Course.findById(courseId).populate("lessons");
+    if (!currentCourse) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found"
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "course retrieved successfully",
-      data: currentEnrollment
+      message: "Course data retrieved successfully",
+      data: currentCourse
     });
   } catch (err) {
     next(err);
@@ -335,16 +390,16 @@ export const getLesson = async (req, res, next) => {
     const { completed } = req.query;
     const { userId } = req;
 
-    const currentEnrollment = await Enrollment.findOne({
-      $and: [{ courseId }, { userId }]
-    });
+    // const currentEnrollment = await Enrollment.findOne({
+    //   $and: [{ courseId }, { userId }]
+    // });
 
-    if (!currentEnrollment) {
-      return res.status(403).json({
-        success: false,
-        message: "Forbidden - User not enrolled to this course"
-      });
-    }
+    // if (!currentEnrollment) {
+    //   return res.status(403).json({
+    //     success: false,
+    //     message: "Forbidden - User not enrolled to this course"
+    //   });
+    // }
 
     const currentLesson = await Lesson.findOne({ _id: lessonId });
     if (!currentLesson) {
@@ -360,13 +415,12 @@ export const getLesson = async (req, res, next) => {
         completedAt: new Date(Date.now())
       };
 
-        lessonId: new mongoose.Types.ObjectId(lessonId),
-      await currentEnrollment.save();
+      // await currentEnrollment.save();
 
       return res.status(201).json({
         success: true,
-        message: "Lesson completed - progress saved "
-        // data: currentLesson
+        message: "Lesson completed - progress saved",
+        data: completedLesson
       });
     }
 

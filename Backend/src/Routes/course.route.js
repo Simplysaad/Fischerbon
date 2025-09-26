@@ -3,6 +3,7 @@ const router = Router();
 
 import {
   createCourse,
+  updateCourse,
   createLesson,
   deleteCourse,
   deleteLesson,
@@ -21,8 +22,12 @@ router.get("/", getCourses);
 // Get a course
 router.get("/:courseId", getCourse);
 
-//Create a new course
+// Create a new course
 router.post("/create", upload.single("thumbnail"), createCourse);
+
+// Update course
+router.post("/:courseId", upload.single("thumbnail"), updateCourse);
+// router.post("/:courseId",  updateCourse);
 
 // Add new lesson to a course
 router.post(
@@ -36,9 +41,6 @@ router.post(
 
 // Delete a particular lesson
 router.delete("/:courseId/lessons/:lessonId", deleteLesson);
-
-
-router.get("/:courseId/lessons/", getLessons);
 
 router.get("/:courseId/lessons/:lessonId", getLesson);
 

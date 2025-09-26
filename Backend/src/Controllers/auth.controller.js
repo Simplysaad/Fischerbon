@@ -35,7 +35,7 @@ export const postRegister = async (req, res, next) => {
       });
     }
 
-    const { fullName: name, email, password } = req.body;
+    const { fullName: name, email, password, role } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -51,7 +51,8 @@ export const postRegister = async (req, res, next) => {
     const newUser = new User({
       name,
       email,
-      password: hashedPassword
+      role,
+      password: hashedPassword, 
     });
 
     await newUser.save();

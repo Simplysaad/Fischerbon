@@ -1,58 +1,130 @@
-GET http://localhost:5000/courses/
+@base_url = http://localhost:5000
+@course_id = 68d6f224b63b94d581c583d5
+@lesson_id = 68d7066f44ad3fe970376bcf
+
+# GEt all courses
+GET {{base_url}}/courses/
 
 
 ###
-POST  http://localhost:5000/courses/create
-Content-Type: multipart/form-data; boundary=----xyz
 
+# Get a single course
+GET {{base_url}}/courses/{{course_id}}
 
-------xyz
-Content-Disposition: form-data; name="data"
-Content-Type: application/json
-
-{
-    "title": "Advanced Course",
-    "description": "This is an advanced course with multiple materials",
-    "price": 345.99
-}
-
-------xyz--
 ###
 
-POST  http://localhost:5000/courses/68d511081722d20c44b21bcf/lessons
-Content-Type: multipart/form-data; boundary=----xyz
+# Delete a single course
+DELETE  {{base_url}}/courses/{{course_id}}
 
-------xyz
-Content-Disposition: form-data; name="lessonFiles"; filename="thumbnail1.jpg"
+###
+
+# Create a course
+POST {{base_url}}/courses/create
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="thumbnail"; filename="thumbnail.jpg"
+Content-Type: image/jpeg
+
+< ./test.jpg 
+
+--boundary
+Content-Disposition: form-data; name="title"
+
+lorem ipsum dolor
+--boundary
+Content-Disposition: form-data; name="description"
+
+lorem ipsum dolor
+--boundary
+Content-Disposition: form-data; name="price"
+
+5000
+--boundary--
+
+
+###
+
+# Edit a course 
+POST {{base_url}}/courses/{{course_id}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="thumbnail"; filename="thumbnail.jpg"
 Content-Type: image/jpeg
 
 < ./test.jpg
 
-------xyz
-Content-Disposition: form-data; name="lessonFiles"; filename="thumbnail2.jpg"
-Content-Type: image/jpeg
+--boundary
+Content-Disposition: form-data; name="title"
 
-< ./test.jpg
+a very good course 
+--boundary--
 
-------xyz
-Content-Disposition: form-data; name="lessonFiles"; filename="material1.pdf"
+# Content-Disposition: form-data; name="thumbnail"; filename="thumbnail.jpg"
+# Content-Type: image/jpeg
+
+# < ./test.jpg 
+
+# --boundary
+
+
+###
+POST {{base_url}}/courses/{{course_id}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="title"
+
+lorem ipsum 
+--boundary
+Content-Disposition: form-data; name="description"
+
+lorem ipsum dolor
+--boundary
+Content-Disposition: form-data; name="price"
+
+78000
+--boundary--
+
+###
+
+# Add a new lesson
+POST {{base_url}}/courses/{{course_id}}/lessons
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="title"
+
+great lesson
+--boundary
+Content-Disposition: form-data; name="text"
+
+lorem ipsum dolor sit amet kwmxlmk  kcllnpkewnoepo jkenofcm mdpo3k kjmcjnd nnm jjndoi
+--boundary
+Content-Disposition: form-data; name="lessonFiles"; filename="lessonFile1.pdf"
 Content-Type: application/pdf
 
-< ./test.jpg
+< ./test.pdf
+--boundary
+Content-Disposition: form-data; name="lessonFiles"; filename="lessonFile2.pdf"
+Content-Type: application/pdf
 
-------xyz
-Content-Disposition: form-data; name="lessonVideo"; filename="intro.mp4"
+< ./test.pdf
+--boundary
+Content-Disposition: form-data; name="lessonVideo"; filename="lessonVideo.mp4"
 Content-Type: video/mp4
 
-< ./test.jpg
+< ./test.mp4
+--boundary--
 
-----xyz
-Content-Disposition: form-data; name="data"
-Content-Type: application/json
+###
 
-{
-    "title": "lorem ipsum",
-    "text": "lorem ipsum dolor sit amet"
-}
+# Get a single lesson
 
-------xyz--
+GET {{base_url}}/courses/{{course_id}}/lessons/{{lesson_id}}
+
+### 
+
+# Delete a lesson
+DELETE  {{base_url}}/courses/{{course_id}}/lessons/{{lesson_id}}

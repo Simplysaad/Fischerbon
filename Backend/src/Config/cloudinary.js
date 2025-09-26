@@ -11,37 +11,14 @@ cloudinary.config({
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    // folder: "fischerbon media",
-    // resource_type: "raw"
+  params: async (req, file) => {
+    const isImage = file.mimetype.startsWith("image/");
+    const isVideo = file.mimetype.startsWith("video/");
+    return {
+      folder: "fischerbon",
+      resource_type: isImage ? "image" : isVideo ? "video" : "raw"
+    };
   }
 });
 
 export const upload = multer({ storage });
-
-export async function uploadToCloud(file_path, resource_type) {
-  try {
-    const uploadedFile = (await cloudinary.uploader.upload(file_path, {
-      resource_type: resource_type || "auto"
-    }))
-
-    // console.log("uploadedFile", uploadedFile);
-    return uploadedFile;
-  } catch (err) {
-    throw err;
-  }
-}
-
-export async function uploadMultipleToCloud(
-  paths,
-  resource_type
-) {
-  const uploadedFiles = await Promise.all(
-    paths.map((path) => {
-      return cloudinary.uploader.upload(path, { resource_type });
-    })
-  );
-  // console.log("uploadedFiles", uploadedFiles);
-
-  if (uploadedFiles) return uploadedFiles.map((r) => r.secure_url);
-}

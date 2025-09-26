@@ -22,7 +22,7 @@ app.use(cors());
 
 app.use(cookieParser());
 app.use(morgan("dev"));
-app.use(express.static("./Public"));
+app.use(express.static("./src/Public"));
 
 const server = app.listen(process.env.PORT, () => {
   connectDB();
