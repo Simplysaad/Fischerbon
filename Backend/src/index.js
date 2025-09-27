@@ -9,9 +9,9 @@ import errorMiddleware from "./Middleware/error.middleware.js";
 
 import authRoutes from "./Routes/auth.route.js";
 import courseRoutes from "./Routes/course.route.js";
-import adminRoutes from "./Routes/admin.route.js";
 import enrollmentRoutes from "./Routes/enrollment.route.js";
-import quizeRouter from "./Routes/quiz.route.js";
+import quizRouter from "./Routes/quiz.route.js";
+
 import keepAlive from "./Cron/keep-alive.js";
 
 const app = express();
@@ -48,8 +48,7 @@ app.use("/auth", authRoutes);
 app.use("/courses", courseRoutes);
 app.use("/enrollments", enrollmentRoutes);
 
-app.use("/admin", adminRoutes);
-app.use("/quiz", quizeRouter);
+app.use("/quiz", quizRouter);
 
 app.use((req, res) => {
   res.status(404).json({

@@ -8,4 +8,77 @@ POST  {{base_url}}/new/{{course_id}}
 Content-Type: application/json
 
 ###
-GET http://localhost:5000/enrollments/verify/68bf0923de9feb5594dcc06e?trxref=3buj387750&reference=3buj387750
+GET http://localhost:5000/enrollments/verify/68bf0923de9feb5594dcc06e?trxref=r8yfshdflx&reference=r8yfshdflx
+###
+
+# {
+#   status: true,
+#   message: 'Verification successful',
+#   data: {
+#     id: 5378205981,
+#     domain: 'test',
+#     status: 'success',
+#     reference: 'ybxswdpg8r',
+#     receipt_number: null,
+#     amount: 90805,
+#     message: 'test-3ds',
+#     gateway_response: '[Test] Approved',
+#     paid_at: '2025-09-27T21:12:50.000Z',
+#     created_at: '2025-09-27T21:11:36.000Z',
+#     channel: 'card',
+#     currency: 'NGN',
+#     ip_address: '105.113.111.250',
+#     metadata: '',
+#     log: {
+#       start_time: 1759007542,
+#       time_spent: 28,
+#       attempts: 2,
+#       errors: 1,
+#       success: true,
+#       mobile: false,
+#       input: [],
+#       history: [Array]
+#     },
+#     fees: 1363,
+#     fees_split: null,
+#     authorization: {
+#       authorization_code: 'AUTH_wllrihqhzd',
+#       bin: '408408',
+#       last4: '0409',
+#       exp_month: '01',
+#       exp_year: '2030',
+#       channel: 'card',
+#       card_type: 'visa ',
+#       bank: 'TEST BANK',
+#       country_code: 'NG',
+#       brand: 'visa',
+#       reusable: true,
+#       signature: 'SIG_1y2j8MJILSrk9nWqyXSs',
+#       account_name: null
+#     },
+#     customer: {
+#       id: 304376447,
+#       first_name: null,
+#       last_name: null,
+#       email: 'saadidris23@gmail.com',
+#       customer_code: 'CUS_doxapjqh7fp9h9n',
+#       phone: null,
+#       metadata: null,
+#       risk_action: 'default',
+#       international_format_phone: null
+#     },
+#     plan: null,
+#     split: {},
+#     order_id: null,
+#     paidAt: '2025-09-27T21:12:50.000Z',
+#     createdAt: '2025-09-27T21:11:36.000Z',
+#     requested_amount: 90805,
+#     pos_transaction_data: null,
+#     source: null,
+#     fees_breakdown: null,
+#     connect: null,
+#     transaction_date: '2025-09-27T21:11:36.000Z',
+#     plan_object: {},
+#     subaccount: {}
+#   }
+# }

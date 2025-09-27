@@ -1,6 +1,6 @@
 
 
-Here's a feasible two-month timeline for building your paid AutoCAD tutorial learning platform with PDF-to-audio conversion feature, assuming solo work. The timeline balances design, development, testing, and deployment phases.
+Here's a feasible two-month timeline for building your paid AutoCAD tutorial learning platform, assuming solo work. The timeline balances design, development, testing, and deployment phases.
 
 ***
 
@@ -10,7 +10,7 @@ Here's a feasible two-month timeline for building your paid AutoCAD tutorial lea
 - Define detailed project requirements and features. ✅
 - Design overall architecture (frontend, backend, database). ✅
 - Setup dev environment & repositories.✅
-- Choose tech stack (Express, MongoDB, React, TTS APIs).✅
+- Choose tech stack (Express, MongoDB, React).✅
 - Setup basic Express backend and MongoDB connection.✅
 
 ### Week 2: User Management & Authentication
@@ -19,7 +19,7 @@ Here's a feasible two-month timeline for building your paid AutoCAD tutorial lea
 - Create User schema and APIs for profile management.✅
 
 ### Week 3: Courses & Content Management
-- Design and create Courses, Modules, Lessons schemas. ✅
+- Design and create schemas for Courses and Lessons only (no Modules). ✅
 - Build APIs to create✅, update, delete✅ courses and lessons.✅
 - Implement file uploads for videos and documents with Multer/cloud storage.✅
 - Build Instructor dashboard basics for course creation.✅

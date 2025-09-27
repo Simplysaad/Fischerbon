@@ -1,155 +1,129 @@
-import paystack from "@paystack/paystack-sdk";
+import { initialize, verify } from "../Utils/paystack.util.js";
 
-import Course from "../Models/course.model.js";
 import Payment from "../Models/payment.model.js";
 import Enrollment from "../Models/enrollment.model.js";
-import User from "../Models/user.model.js";
+import Course from "../Models/course.model.js";
+import { sendEmail } from "../Utils/nodemailer.util.js";
+import format from "../Utils/format.util.js";
 
-
-
-
-
-export const getEnroll = async (req, res, next) => {
+export const createEnrollment = async (req, res, next) => {
   try {
-    const { userId } = req.session;
-
-    const { reference } = req.query;
-    const { courseId } = req.params;
-
-    const action = reference ? "verify" : "initialize";
-
-    const currentUser = await User.findOne({ _id: userId })
-      .select("enrollments emailAddress _id ")
-      .populate("enrollments");
-
-    if (!currentUser) {
+    // check if logged in
+    if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - User not logged in "
+        message: "Unauthorized - user not logged in"
       });
     }
 
-    const { emailAddress, enrollments: currentUserEnrollments } = currentUser;
+    const { courseId } = req.params;
 
-    // Check course for validity
-    const currentCourse = await Course.findOne({ _id: courseId });
+    const currentUser = req.user;
+    const { email } = currentUser;
+
+    const currentCourse = await Course.findOne({ _id: courseId }).select(
+      "_id price title"
+    );
 
     if (!currentCourse) {
-      return res.status(404).json({
-        success: false,
-        message: "Invalid Course Id - Course does not exist "
-      });
-    }
-
-    // Check User for enrollment status
-    const isPreviouslyEnrolled = currentUserEnrollments.find(
-      (e) => e.toString() === courseId.toString()
-    );
-
-    if (isPreviouslyEnrolled) {
       return res.status(400).json({
         success: false,
-        message: "user is already enrolled to this course"
+        message: "invalid course id"
       });
     }
 
-    const { price, title } = currentCourse;
-    const priceInKobo = price * 100; // convert naira to kobo for paystack
+    const { price: amount } = currentCourse;
 
-    const apiUrl = `https://api.paystack.co/transaction/${action}/${
-      reference || ""
-    }`;
+    const amountInKobo = amount * 100;
 
-    if (action === "initialize") {
-      options.body = JSON.stringify({
-        amount: priceInKobo,
-        email: emailAddress,
-        metadata: {
-          custom_fields: [
-            {
-              display_name: "Title",
-              variable_name: "title",
-              value: title
-            }
-          ]
-        }
-      });
+    const payment = await initialize(email, amountInKobo, courseId);
 
-      options.headers["Content-Type"] = "application/json";
-    }
-
-    // Initialize transaction
-    const response = await fetch(apiUrl, options);
-
-    if (!response.ok) {
-      return res.status(response.status).json({
-        success: false,
-        message: `Paystack Api error ${response.statusText}`
-      });
-    }
-
-    const { data, status, message } = await response.json();
-
-    if (!status) {
-      return res.status(400).json({
-        success: false,
-        message
-      });
-    }
-
-    // Update payment record
-    const paymentUpdate = {
-      $set: {
-        transactionId: data?.id
-      },
-      $setOnInsert: {
-        ...data,
-        courseId,
-        userId,
-        amount: priceInKobo
-      }
-    };
-    // console.log(data);
-    let currentPayment = await Payment.findOneAndUpdate(
-      { reference: data?.reference },
-      paymentUpdate,
-      { upsert: true, new: true }
-    );
-
-    // On verification, create enrollment
-    if (data.status === "success" && action === "verify") {
-      const newEnrollment = await Enrollment.create({
-        userId,
-        courseId,
-        paymentId: currentPayment?._id,
-        lastAccessed: new Date()
-      });
-
-      // Add new enrollment to user's enrollments if not already present
-      const isEnrolled = currentUser.enrollments.some(
-        (e) => e.toString() === newEnrollment._id.toString()
-      );
-
-      let enrollmentId = new Types.ObjectId(newEnrollment._id.toString());
-
-      if (!isEnrolled) {
-        currentUser.enrollments.push(enrollmentId);
-        await currentUser.save();
-      }
-
-      return res.status(201).json({
-        success: true,
-        message,
-        data: newEnrollment
-      });
-    }
+    // const {reference, authorization_url, access_code} = payment
 
     return res.status(201).json({
       success: true,
-      message,
-      data: currentPayment
+      message: "payment initialized",
+      data: payment
     });
   } catch (err) {
     next(err);
   }
 };
+
+export const verifyEnrollment = async (req, res, next) => {
+  try {
+    const { reference } = req.query;
+    const { courseId } = req.params;
+    if (!reference) throw new Error("no reference token");
+
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized - user not logged in "
+      });
+    }
+
+    const currentUser = req.user;
+
+    const payment = await verify(reference);
+
+    if (!payment) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request - invalid payment reference "
+      });
+    }
+
+    if (!payment.status || payment.data?.status !== "success") {
+      return res.status(400).json({
+        success: false,
+        message: payment.message || "payment not completed"
+      });
+    }
+
+    const newPayment = await Payment.create({
+      ...payment.data,
+      transactionId: payment.data?.id,
+      userId: currentUser?._id
+    });
+
+    const currentCourse = await Course.findById(courseId).select(
+      "_id title price"
+    );
+
+    const newEnrollment = await Enrollment.create({
+      courseId,
+      userId: currentUser._id,
+      payment: newPayment?._id
+    });
+
+    const date = new Date(payment.data?.createdAt || newPayment.createdAt);
+
+    await sendEmail({
+      to: currentUser.email,
+      subject: "Course Enrollment Confirmation",
+      template: "enrollmentSuccess",
+      data: {
+        name: currentUser.name.split(" ")[0] || "User",
+        title: currentCourse.title,
+        amount: payment.data.amount / 100,
+        date: format(date)
+      }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "user enrolled successfully",
+      data: newEnrollment
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// export const getEnrollments = async (req, res, next) => {
+//   try {
+//   } catch (err) {
+//     next(err);
+//   }
+// };

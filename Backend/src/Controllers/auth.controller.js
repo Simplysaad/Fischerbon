@@ -158,20 +158,20 @@ export const forgotPassword = async (req, res, next) => {
       });
     }
 
-    const { SECRET_KEY } = process.env;
+    const { SECRET_KEY, BASE_URL } = process.env;
     if (!SECRET_KEY)
       throw new Error("SECRET_KEY is not defined in environment variables");
 
     const token = jwt.sign({ email }, SECRET_KEY);
 
-    const url = `http://localhost:5000/auth/reset-password/${token}`;
+    const resetLink = `${BASE_URL}/auth/reset-password/${token}`;
 
     await sendEmail({
       to: email,
       subject: "Password Reset Request",
       template: "forgotPassword",
       data: {
-        url,
+        resetLink,
         name: currentUser.name
       }
     });
