@@ -216,22 +216,6 @@ export const createLesson = async (req, res, next) => {
   }
 };
 
-export const getLessons = async (req, res, next) => {
-  try {
-    const { courseId } = req.params;
-    const currentCourse = await Course.findOne({ _id: courseId })
-      .populate("lessons")
-      .select("_id title description lessons");
-
-    return res.status(200).json({
-      success: true,
-      message: `${currentCourse?.lessons?.length ?? 0} lesson retrieved`,
-      data: currentCourse
-    });
-  } catch (err) {
-    next(err);
-  }
-};
 
 export const deleteLesson = async (req, res, next) => {
   try {

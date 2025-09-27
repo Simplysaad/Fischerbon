@@ -10,7 +10,7 @@ const enrollmentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "course"
     },
-    paymentId: {
+    payment: {
       type: Schema.Types.ObjectId,
       ref: "payment"
     },

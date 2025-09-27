@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
+import User from "../Models/user.model.js";
 
-export default function authMiddleware(req, res, next) {
+export default async function authMiddleware(req, res, next) {
   try {
     const { token } = req.cookies;
 
@@ -19,7 +20,12 @@ export default function authMiddleware(req, res, next) {
     const decoded = jwt.verify(token, SECRET_KEY);
 
     if (decoded) {
-      req.userId = decoded.userId;
+      const { userId } = decoded;
+      const currentUser = await User.findOne({ _id: userId });
+      
+      req.userId = userId;
+      req.user = currentUser;
+      
       next();
     }
   } catch (err) {

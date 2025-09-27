@@ -44,9 +44,11 @@ app.get("/", (req, res, next) => {
 });
 
 app.use("/auth", authRoutes);
+
 app.use("/courses", courseRoutes);
+app.use("/enrollments", enrollmentRoutes);
+
 app.use("/admin", adminRoutes);
-app.use("/enroll", enrollmentRoutes);
 app.use("/quiz", quizeRouter);
 
 app.use((req, res) => {
