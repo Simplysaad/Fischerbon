@@ -10,7 +10,6 @@ import {
   getCourse,
   getLesson,
   getCourses,
-  getLessons
 } from "../Controllers/course.controller.js";
 import authMiddleware from "../Middleware/auth.middleware.js";
 import { upload } from "../Config/cloudinary.js";
