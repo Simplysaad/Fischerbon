@@ -1,4 +1,5 @@
-@base_url = http://localhost:5000/enrollments
+@base_url = https://fischerbon.onrender.com/enrollments
+# @base_url = http://localhost:5000/enrollments
 @course_id = 68bf0923de9feb5594dcc06e
 @lesson_id = 68d7066f44ad3fe970376bcf
 

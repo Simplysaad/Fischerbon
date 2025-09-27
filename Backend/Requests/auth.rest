@@ -1,5 +1,5 @@
-@base_url = http://localhost:5000
-# @base_url = https://fischerbon.onrender.com
+# @base_url = http://localhost:5000
+@base_url = https://fischerbon.onrender.com
 @token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhYWRpZHJpczU2MEBnbWFpbC5jb20iLCJpYXQiOjE3NTg3OTQ0ODR9.Ob69PNymJap40K0030ArrXKH-Oq0ZtY6yTppfoQQQEc"
 
 GET {{base_url}}/auth/status
