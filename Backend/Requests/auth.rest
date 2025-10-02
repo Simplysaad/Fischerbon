@@ -1,0 +1,48 @@
+# @base_url = http://localhost:5000
+@base_url = https://fischerbon.onrender.com
+@token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNhYWRpZHJpczU2MEBnbWFpbC5jb20iLCJpYXQiOjE3NTg3OTQ0ODR9.Ob69PNymJap40K0030ArrXKH-Oq0ZtY6yTppfoQQQEc"
+
+GET {{base_url}}/auth/status
+
+###
+POST  {{base_url}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "saadidris23@gmail.com",
+    "password": "saad1234"
+}
+
+
+###
+POST  {{base_url}}/auth/register
+Content-Type: application/json
+
+{
+    "email": "saadidris23@gmail.com",
+    "password": "saad1234",
+    "fullName": "saad idris",
+    "role": "admin"
+}
+
+###
+
+GET  {{base_url}}/auth/logout
+
+###
+POST  {{base_url}}/auth/forgot-password
+Content-Type: application/json
+
+{
+    "email": "saadidris23@gmail.com"
+}
+
+
+###
+POST  {{base_url}}/auth/reset-password
+Content-Type: application/json
+
+{
+    "token": {{token}}
+    "password": "saad12345"
+}
