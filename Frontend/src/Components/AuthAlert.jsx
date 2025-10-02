@@ -1,10 +1,9 @@
-
-import {CheckCircle, AlertTriangle, X} from 'lucide-react'
+import { CheckCircle, AlertTriangle, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 const iconMap = {
-  success: <CheckCircle className="text-primary" size={28} />, 
-  error: <AlertTriangle className="text-red-400" size={28} />, 
+  success: <CheckCircle className="text-primary" size={28} />,
+  error: <AlertTriangle className="text-red-400" size={28} />,
 };
 
 const AuthAlert = ({
@@ -12,10 +11,10 @@ const AuthAlert = ({
   message = '',
   iconType = '',
   border = '',
-  onClose
+  onClose,
 }) => {
   const [visible, setVisible] = useState(false);
-  const [bar, setBar] = useState( 100 );
+  const [bar, setBar] = useState(100);
 
   useEffect(() => {
     setVisible(true);
@@ -26,14 +25,13 @@ const AuthAlert = ({
     }, 2500);
 
     const progress = setInterval(() => {
-        setBar(prev => prev - 1)
+      setBar((prev) => prev - 1);
     }, 25);
 
     return () => {
       clearInterval(progress);
       clearTimeout(timer);
-    }
-
+    };
   }, []);
 
   return (
@@ -44,20 +42,26 @@ const AuthAlert = ({
       <div
         className={`flex flex-col bg-white rounded-xl shadow-sm border-2 ${border ? `border-primary` : 'border-red-400'}`}
       >
-        <div className='relative flex items-center gap-3 p-3'>
-            <span>{iconMap[iconType] && iconMap[iconType]}</span>
-            <div className="flex-1">
+        <div className="relative flex items-center gap-3 p-3">
+          <span>{iconMap[iconType] && iconMap[iconType]}</span>
+          <div className="flex-1">
             <h1 className="text-lg font-bold mb-1">{header}</h1>
             <p className="text-sm text-gray">{message}</p>
-            </div>
-            <button
-            onClick={() => { setVisible(false); setTimeout(() => onClose && onClose(), 400); }}
+          </div>
+          <button
+            onClick={() => {
+              setVisible(false);
+              setTimeout(() => onClose && onClose(), 400);
+            }}
             className="absolute top-2 right-2 p-1 rounded-full hover:bg-accent cursor-pointer"
-            >
+          >
             <X size={20} />
-            </button>
+          </button>
         </div>
-        <div style={{width: `${bar}%`}} className={`mx-1.5 h-[2.5px] -mb-[0.5px] rounded-xl ${border ? `bg-primary` : 'bg-red-400'}`} />
+        <div
+          style={{ width: `${bar}%` }}
+          className={`mx-1.5 h-[2.5px] -mb-[0.5px] rounded-xl ${border ? `bg-primary` : 'bg-red-400'}`}
+        />
       </div>
       <style>
         {`

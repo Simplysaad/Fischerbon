@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import logo from '../assets/logo.png'
+import logo from '../assets/logo.png';
 
 const AuthContainer = ({ title, subtitle, children }) => {
   return (
@@ -14,10 +14,10 @@ const AuthContainer = ({ title, subtitle, children }) => {
 
       <div className="text-center mb-5">
         <h5 className="text-[#232729]  font-medium text-[20px] lg:text-[32px] leading-7 lg:leading-12 mb-1">
-            {title}
+          {title}
         </h5>
         <p className="text-[#525B61] text-lg leading-7 font-normal mx-5">
-            {subtitle}
+          {subtitle}
         </p>
       </div>
 

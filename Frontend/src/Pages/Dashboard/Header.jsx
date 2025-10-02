@@ -1,49 +1,76 @@
-
-import {
-  Menu,
-} from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import { navItems } from './Sidebar';
 
-const Header = ({onClick}) => {
-
+const Header = ({ onClick }) => {
   let pathname = window.location.pathname;
 
-  const currentNavItem = navItems.find((item) => item.link === pathname);
+  const currentNavItem =
+    navItems.some((item) => item.link === pathname.trim()) &&
+    navItems.find((item) => item.link === pathname.trim());
+
+  const date = new Date();
+  const hours = date.getHours();
+  const getHours = (greeting) => {
+    if (hours >= 5 && hours < 12) return `${greeting} morning`;
+    else if (hours >= 12 && hours < 17) return `${greeting} afternoon`;
+    else if (hours >= 17 && hours < 20) return `${greeting} evening`;
+    return `${greeting} night`;
+  };
+
+  let name = 'Abdulqoyum Amuda';
+
+  const TopHeader = ({ mode }) => {
+    return (
+      <div
+        className={`flex justify-between ${mode === 'desktop' ? 'gap-3' : 'w-full'} items-center`}
+      >
+        <h4 className="text-lg font-medium text-dark">
+          {`${getHours('Good')}, ${'Abdulqoyum'}`}
+        </h4>
+        <div className="flex items-center">
+          <div className="size-10 bg-primary text-white font-bold justify-center rounded-full flex items-center text-center hover:bg-primaryHover">
+            {name.split(' ')[0][0].toUpperCase()}
+            {name.split(' ')[1][0].toUpperCase()}
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <header className="md:space-y-2 pt-3 md:py-0">
-      
-      <div className='w-full z-10 px-5 h-[50px] rounded-lg flex items-center justify-between'>
-          <h4 className="text-lg font-medium text-dark">
-            Abdulqoyum Olohuntomi Amuda
-          </h4>
-
-          <div className="flex items-center gap-3">
-              <img
-                src={'https://randomuser.me/api/portraits/men/40.jpg'}
-                alt="User-Profile"
-                className="w-[45px] h-[45px] rounded-full"
-              />
-              <div onClick={onClick} className="md:hidden flex">
-                <Menu />
-              </div>
-          </div>
+    <header className="*:mt-1">
+      <div className="my-1 px-5 md:hidden flex">
+        <TopHeader mode="mobile" />
       </div>
 
-      <div className='bg-muted md:py-3.5 md:px-3 p-3 rounded-md mx-3 md:mx-0'>
-        <h4 className="text-xl text-[#2F3437] font-semibold">
-          {currentNavItem && currentNavItem.name}
+      <div className="bg-[#F1F2F3] p-3 rounded-md mx-3 md:mx-0 flex justify-between items-center">
+        <h4 className="text-xl text-dark font-semibold">
+          {(currentNavItem && currentNavItem.name) || 'Dashboard'}
         </h4>
+
+        <div className="px-5 md:flex hidden">
+          <TopHeader mode="desktop" />
+        </div>
+
+        <div className="flex items-center gap-3 md:hidden">
+          <div>
+            <Search />
+          </div>
+
+          <div onClick={onClick}>
+            <Menu />
+          </div>
+        </div>
       </div>
 
-      <div className='md:mx-3 mx-5 mt-1.5'>
-        {currentNavItem.tag && <div className='flex gap-3 items-center'>
-          <div className='bg-primary size-3 rounded-full' />
-          <h4 className='text-dark leading-6 text-lg font-semibold'>{currentNavItem.tag}</h4>
-        </div>}
-        {currentNavItem.subTag && <p className='text-gray text-sm'>{currentNavItem.subTag}</p>}
-      </div>
-      {currentNavItem.subTag && <hr className='bg-secondary h-1 text-secondary md:mx-1 mx-3 rounded-md mt-1'/>}
+      {currentNavItem.tag && (
+        <div className="md:mx-3 mx-5 mt-2 pb-0.5">
+          <div className="flex gap-3 items-center">
+            <div className="bg-primary size-2 rounded-full" />
+            <p className="text-gray text-sm">{currentNavItem.tag}</p>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

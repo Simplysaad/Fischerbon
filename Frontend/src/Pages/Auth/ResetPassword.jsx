@@ -1,57 +1,53 @@
-import React, { useState } from "react";
-import { Eye, EyeOff, ArrowLeft, X, CheckCircle } from "lucide-react";
-import AuthContainer from "../../Components/AuthContainer";
-import { Link, useLocation, useRouteLoaderData } from "react-router-dom";
-import AuthAlert from "../../Components/AuthAlert";
+import React, { useState } from 'react';
+import { Eye, EyeOff, ArrowLeft, X, CheckCircle } from 'lucide-react';
+import AuthContainer from '../../Components/AuthContainer';
+import { Link, useLocation, useRouteLoaderData } from 'react-router-dom';
+import AuthAlert from '../../Components/AuthAlert';
 
 const ResetPasswordPage = () => {
-  
   const location = useLocation();
-  let token = new URLSearchParams(location.search).get("token");
+  let token = new URLSearchParams(location.search).get('token');
 
   const [passwords, setPasswords] = useState({
-    newPassword: "",
+    newPassword: '',
     token: token,
-    confirmPassword: "",
+    confirmPassword: '',
     showPassword: false,
     showConfirmPassword: false,
     showMismatchError: false,
   });
 
-  const [alert, setAlert] = useState("");
-
+  const [alert, setAlert] = useState('');
   const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState('');
 
   const validateForm = () => {
     const newErrors = {};
     if (!passwords.newPassword.trim())
-      newErrors.newPassword = "Password is required";
+      newErrors.newPassword = 'Password is required';
     if (!passwords.confirmPassword.trim())
-      newErrors.confirmPassword = "Password is required";
+      newErrors.confirmPassword = 'Password is required';
     if (passwords.newPassword.trim().length < 8 && passwords.newPassword.trim())
-      newErrors.newPassword = "Password must have a minimum of 8 characters";
+      newErrors.newPassword = 'Password must have a minimum of 8 characters';
     if (
       passwords.confirmPassword.trim().length < 8 &&
       passwords.confirmPassword.trim()
     )
       newErrors.confirmPassword =
-        "Password must have a minimum of 8 characters";
+        'Password must have a minimum of 8 characters';
     return newErrors;
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     setPasswords((prev) => ({
       ...prev,
       [name]: value,
     }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const BASE_URL = "https://fischerbon.onrender.com";
-
-  const [status, setStatus] = useState("");
+  const BASE_URL = 'https://fischerbon.onrender.com';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,39 +67,40 @@ const ResetPasswordPage = () => {
 
     try {
       const response = await fetch(`${BASE_URL}/auth/reset-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: passwords.newPassword , token: passwords.token }),
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          password: passwords.newPassword,
+          token: passwords.token,
+        }),
       });
 
       const result = await response.json();
 
-      if (!result.success) {
-        setStatus("failure");
+      if (!result.success || !response.ok) {
+        setStatus('failure');
       } else {
-        setStatus("success");
+        setStatus('success');
       }
     } catch (error) {
-      setAlert("network");
-      // console.error(error);
+      setAlert('network');
     }
   };
 
-
   return (
     <>
-      {alert === "network" ? (
+      {alert === 'network' ? (
         <AuthAlert
-          header={"Network Error"}
+          header={'Network Error'}
           message={"You're not connected to the internet"}
-          iconType={"error"}
-          onClose={() => setAlert("")}
+          iconType={'error'}
+          onClose={() => setAlert('')}
         />
       ) : (
-        ""
+        ''
       )}
 
-      {status === "failure" ? (
+      {status === 'failure' ? (
         <AuthContainer>
           <div className="space-y-7 text-center items-center justify-center flex flex-col">
             <div className="rounded-full bg-[#e89999] text-[#F11010] p-5 opacity-90">
@@ -115,11 +112,11 @@ const ResetPasswordPage = () => {
                 Password Reset Failed
               </h5>
               <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
-                We couldn’t update your password
+                We were unable to reset your password
               </p>
             </div>
             <button
-              onClick={() => setStatus("")}
+              onClick={() => setStatus('')}
               className="mb-5 bg-primary text-white hover:bg-primaryHover w-full font-medium py-3 px-4 rounded-md cursor-pointer transition-colors"
             >
               Try Again
@@ -134,7 +131,7 @@ const ResetPasswordPage = () => {
             </p>
           </Link>
         </AuthContainer>
-      ) : status === "success" ? (
+      ) : status === 'success' ? (
         <AuthContainer>
           <div className="space-y-5 text-center items-center justify-center flex flex-col">
             <div className="rounded-full bg-[#c1d4de] text-primary p-5 opacity-90">
@@ -146,7 +143,7 @@ const ResetPasswordPage = () => {
                 Password Reset Successful
               </h5>
               <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
-                Your new password has been saved. You can now sign in to your
+                Your new password has been saved. You can now log in to your
                 account
               </p>
             </div>
@@ -172,7 +169,7 @@ const ResetPasswordPage = () => {
                   Enter your password
                 </label>
                 <input
-                  type={passwords.showPassword ? "text" : "password"}
+                  type={passwords.showPassword ? 'text' : 'password'}
                   name="newPassword"
                   value={passwords.newPassword}
                   onChange={handleInputChange}
@@ -211,7 +208,7 @@ const ResetPasswordPage = () => {
                   Confirm password
                 </label>
                 <input
-                  type={passwords.showConfirmPassword ? "text" : "password"}
+                  type={passwords.showConfirmPassword ? 'text' : 'password'}
                   name="confirmPassword"
                   value={passwords.confirmPassword}
                   onChange={handleInputChange}
