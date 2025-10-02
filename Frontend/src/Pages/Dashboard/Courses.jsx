@@ -7,7 +7,7 @@ import { navItems } from './Sidebar';
 const courses = navItems.find((item) => item.dropdown).dropdown;
 
 courses.forEach((course) => {
-  for (let n = 1; n <= 3; n++) {
+  for (let n = 1; n <= 4; n++) {
     course.lessons.push({
       title: `Lesson ${n}`,
       video: `/src/Pages/Dashboard/videos/%20%20(${n}).mp4`,
