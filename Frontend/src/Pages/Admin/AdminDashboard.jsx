@@ -1,21 +1,20 @@
-import React from 'react';
-
 const dashboardInfo = {
   name: 'saad idris',
-  role: 'student',
+  role: 'admin',
   emailAddress: 'saadidris23@gmail.com',
-  enrollments: [
+
+  courses: [
     {
       title: 'AutoCAD 3D Essentials',
       description: 'lorem ipsum dolor sit amet',
+      enrollments: 23,
       thumbnailUrl: 'https://placehold.co/400',
-      percentageCompleted: 23,
     },
   ],
   stats: [
     {
-      label: 'Courses completed',
-      value: 1,
+      label: 'Courses Created',
+      value: 24,
     },
     {
       label: 'Enrollments',
@@ -23,9 +22,3 @@ const dashboardInfo = {
     },
   ],
 };
-
-const StudentDashboard = () => {
-  return <div>StudentDashboard</div>;
-};
-
-export default StudentDashboard;

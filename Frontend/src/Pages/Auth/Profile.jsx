@@ -58,11 +58,11 @@ const Profile = () => {
           email={emailAddress}
         />
         <section>
-          {courses.length === 0 ? (
+          {courses?.length === 0 ? (
             <p>You have not enrolled in any courses</p>
           ) : (
             <ul>
-              {courses.map((course) => {
+              {courses?.map((course) => {
                 return (
                   <li key={course.id}>
                     <Link to={`/courses/${course.id}`}>
