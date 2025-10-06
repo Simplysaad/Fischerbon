@@ -5,22 +5,18 @@ import authMiddleware from "../Middleware/auth.middleware.js";
 
 import {
   createEnrollment,
-  verifyEnrollment
+  getEnrollment,
+  getEnrollments,
+  verifyEnrollment,
 } from "../Controllers/enrollment.controller.js";
 
 const router = Router();
 
-// router.get("/:courseId", getEnroll);
-
-/**
- * Enroll a student
- *
- * make payment
- * create enrollment
- * track progress
- */
-
 router.use(authMiddleware);
+
+router.get("/", getEnrollments);
+router.get("/:enrollmentId", getEnrollment);
+
 router.post("/new/:courseId", createEnrollment);
 
 router.get("/verify/:courseId", verifyEnrollment);

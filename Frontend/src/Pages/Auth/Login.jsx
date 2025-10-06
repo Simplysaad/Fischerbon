@@ -48,19 +48,12 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      // const response = await fetch(`${BASE_URL}/auth/login`, {
-      //   method: 'POST',
-      //   credentials: 'include',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData),
-      // });
-
       const { data } = await axiosInstance.post('/auth/login', formData);
       console.log(data);
 
       setResult(data);
 
-      if (!result?.success) {
+      if (!result || !result?.success) {
         setAlert('failure');
       } else {
         setAlert('success');

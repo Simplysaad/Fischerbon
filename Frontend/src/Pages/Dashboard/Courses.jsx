@@ -18,12 +18,14 @@ courses.forEach((course) => {
 const Courses = () => {
   const params = useParams();
   console.log(params);
-  let currentCourse = courses.find(course => course.course.replace(/\s+/g, '-')
-        .replace(/[^\w-]+/g, '') === params.course);
-      console.log(currentCourse)
+  let currentCourse = courses.find(
+    (course) =>
+      course.course.replace(/\s+/g, '-').replace(/[^\w-]+/g, '') ===
+      params.course
+  );
+  console.log(currentCourse);
   const [playVideo, setPlayVideo] = useState(false);
   const [video, setVideo] = useState();
-
 
   return (
     <>
@@ -50,7 +52,7 @@ const Courses = () => {
                     {currentCourse.lessons.map((item, index) => {
                       return (
                         <tr
-                        key={index}
+                          key={index}
                           className={`*:px-3 *:md:my-4 *:my-3 ${index % 2 === 0 ? 'bg-[hsl(203,11%,89%)]' : 'bg-white'}`}
                         >
                           <td className="text-gray whitespace-nowrap text-sm md:text-[16px]">
