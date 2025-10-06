@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 // import { AuthContext } from '../../context/AuthContext';
 import AuthAlert from '../../Components/AuthAlert';
+import axiosInstance from '../../utils/axios.util';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
 
   const [alert, setAlert] = useState('');
+  const [result, setResult] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
@@ -25,7 +27,8 @@ const LoginPage = () => {
     password: '',
   });
 
-  const BASE_URL = 'https://fischerbon.onrender.com';
+  const BASE_URL =
+    import.meta.env.VITE_BASE_URL || 'https://fischerbon.onrender.com';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -45,27 +48,27 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      // const response = await fetch(`${BASE_URL}/auth/login`, {
+      //   method: 'POST',
+      //   credentials: 'include',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(formData),
+      // });
 
-      const result = await response.json();
+      const { data } = await axiosInstance.post('/auth/login', formData);
+      console.log(data);
 
-      if (!response.ok || !result.success) {
+      setResult(data);
+
+      if (!result?.success) {
         setAlert('failure');
       } else {
         setAlert('success');
         navigate('/dashboard');
-
-        // Optional: store token and user
-        console.log(document.cookie);
-        localStorage.setItem('token', result.token);
-        localStorage.setItem('user', JSON.stringify(result.user));
       }
     } catch (error) {
       setAlert('network');
+      console.error(error);
     } finally {
       setLoading(false);
     }

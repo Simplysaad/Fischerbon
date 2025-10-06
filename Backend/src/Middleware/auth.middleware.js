@@ -19,7 +19,7 @@ export default async function authMiddleware(req, res, next) {
 
     const decoded = jwt.verify(token, SECRET_KEY);
 
-    if (decoded) {
+    if (decoded?.userId) {
       const { userId } = decoded;
       const currentUser = await User.findOne({ _id: userId });
       

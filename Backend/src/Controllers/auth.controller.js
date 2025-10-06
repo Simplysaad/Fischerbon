@@ -13,13 +13,13 @@ export const checkAuthStatus = async (req, res, next) => {
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "user is not logged in"
+        message: "user is not logged in",
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "user is logged in "
+      message: "user is logged in ",
     });
   } catch (err) {
     next(err);
@@ -31,7 +31,7 @@ export const postRegister = async (req, res, next) => {
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad request - nothing is being sent"
+        message: "Bad request - nothing is being sent",
       });
     }
 
@@ -44,7 +44,7 @@ export const postRegister = async (req, res, next) => {
     if (isUserExist) {
       return res.status(400).json({
         success: false,
-        message: "user exist already, log in instead"
+        message: "user exist already, log in instead",
       });
     }
 
@@ -52,7 +52,7 @@ export const postRegister = async (req, res, next) => {
       name,
       email,
       role,
-      password: hashedPassword, 
+      password: hashedPassword,
     });
 
     await newUser.save();
@@ -65,13 +65,13 @@ export const postRegister = async (req, res, next) => {
 
     res.cookie("token", token, {
       maxAge: 60 * 60 * 1000,
-      httpOnly: true
+      httpOnly: true,
     });
 
     return res.status(201).json({
       success: true,
       message: "user registered successfully",
-      data: newUser
+      data: newUser,
     });
   } catch (err) {
     next(err);
@@ -83,7 +83,7 @@ export const postLogin = async (req, res, next) => {
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad request - nothing is being sent"
+        message: "Bad request - nothing is being sent",
       });
     }
 
@@ -96,7 +96,7 @@ export const postLogin = async (req, res, next) => {
     if (!currentUser) {
       return res.status(401).json({
         success: false,
-        message: "user does not exist, sign up instead"
+        message: "user does not exist, sign up instead",
       });
     }
 
@@ -108,7 +108,7 @@ export const postLogin = async (req, res, next) => {
     if (!isCorrectPassword) {
       return res.status(401).json({
         success: false,
-        message: "incorrect credentials, try again later"
+        message: "incorrect credentials, try again later",
       });
     }
 
@@ -119,14 +119,14 @@ export const postLogin = async (req, res, next) => {
     const token = jwt.sign({ userId: currentUser?._id }, SECRET_KEY);
 
     res.cookie("token", token, {
-      maxAge: 60 * 60 * 1000,
-      httpOnly: true
+      // maxAge: 1000 * 60 * 60,
+      httpOnly: true,
     });
 
     return res.status(200).json({
       success: true,
       message: "user logged in successfully",
-      data: currentUser
+      data: currentUser,
     });
   } catch (err) {
     next(err);
@@ -139,7 +139,7 @@ export const logout = async (req, res, next) => {
 
     return res.status(200).json({
       success: true,
-      message: "user logged out successfully"
+      message: "user logged out successfully",
     });
   } catch (err) {
     next(err);
@@ -154,7 +154,7 @@ export const forgotPassword = async (req, res, next) => {
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "user does not exist, sign up first"
+        message: "user does not exist, sign up first",
       });
     }
 
@@ -172,13 +172,13 @@ export const forgotPassword = async (req, res, next) => {
       template: "forgotPassword",
       data: {
         resetLink,
-        name: currentUser.name
-      }
+        name: currentUser.name,
+      },
     });
 
     return res.status(200).json({
       success: true,
-      message: "email sent"
+      message: "email sent",
     });
   } catch (err) {
     next(err);
@@ -199,7 +199,7 @@ export const resetPassword = async (req, res, next) => {
     const updatedUser = await User.findOneAndUpdate(
       { email },
       {
-        $set: { password: hashedPassword }
+        $set: { password: hashedPassword },
       },
       { new: true }
     );
@@ -207,7 +207,7 @@ export const resetPassword = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: "password reset successfully",
-      data: updatedUser
+      data: updatedUser,
     });
   } catch (err) {
     next(err);

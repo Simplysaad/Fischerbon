@@ -3,6 +3,8 @@ import AdminDashboardLayout from './AdminDashboardLayout';
 import AuthAlert from '../../Components/AuthAlert';
 import AdminButton from './AdminButton';
 import { useNavigate } from 'react-router-dom';
+import objectToFormData from '../../utils/objectToFormdata';
+import axiosInstance from '../../utils/axios.util';
 
 const CreateCourse = () => {
   const navigate = useNavigate;
@@ -92,13 +94,26 @@ const CreateCourse = () => {
       return;
     }
     setLoading(true);
+
+    const { lessonTitles, lessonVideos, ...newData } = data;
+    const newForm = objectToFormData(newData);
     try {
-      const response = await fetch(`${BASE_URL}/courses/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      // const response = await fetch(`${BASE_URL}/courses/create`, {
+      //   method: 'POST',
+      //   credentials: 'include',
+      //   headers: {
+      //     'Content-Type': 'multipart/formdata',
+      //   },
+      //   body: newForm,
+      // });
+
+      const response = await axiosInstance.post('/courses/create', newForm, {
+        headers: { 'Content-Type': 'multipart/formdata' },
       });
+
       const result = await response.json();
+      console.log(result);
+
       if (!result.success) {
         setAlert('failure');
       } else {
@@ -247,7 +262,7 @@ const CreateCourse = () => {
                 placeholder="Enter the number of lessons"
                 className={inputStyle}
                 value={lessonCount}
-                min={1}
+                // min={1}
               />
 
               {Array.from(
