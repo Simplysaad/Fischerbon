@@ -16,6 +16,8 @@ const CreateCourse = () => {
   const [alert, setAlert] = useState('');
   const [lessonCount, setLessonCount] = useState(0);
 
+  const [result, setResult] = useState({});
+
   const [data, setData] = useState({
     title: '',
     description: '',
@@ -98,30 +100,23 @@ const CreateCourse = () => {
     const { lessonTitles, lessonVideos, ...newData } = data;
     const newForm = objectToFormData(newData);
     try {
-      // const response = await fetch(`${BASE_URL}/courses/create`, {
-      //   method: 'POST',
-      //   credentials: 'include',
-      //   headers: {
-      //     'Content-Type': 'multipart/formdata',
-      //   },
-      //   body: newForm,
-      // });
-
       const response = await axiosInstance.post('/courses/create', newForm, {
         headers: { 'Content-Type': 'multipart/formdata' },
       });
 
-      const result = await response.json();
-      console.log(result);
+      console.log(response);
+      setResult(response.data);
+      console.log('result', result);
 
-      if (!result.success) {
+      if (!result || !result.success) {
         setAlert('failure');
       } else {
         setAlert('success');
-        navigate('/courses/create');
+        // navigate('/courses/');
       }
     } catch (error) {
       setAlert('network');
+      console.error(error);
     } finally {
       setLoading(false);
     }
