@@ -2,33 +2,26 @@ import React, { useState } from 'react';
 import AuthContainer from '../../Components/AuthContainer';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-// import { AuthContext } from '../../context/AuthContext';
 import AuthAlert from '../../Components/AuthAlert';
-import axiosInstance from '../../utils/axios.util';
+import useAuth from '../../context/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { isLoading, login } = useAuth();
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-
   const [alert, setAlert] = useState('');
   const [result, setResult] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
     if (!formData.email.trim()) newErrors.email = 'Email is required';
     if (!formData.password.trim()) newErrors.password = 'Password is required';
-    return newErrors;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
-
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-
-  const BASE_URL =
-    import.meta.env.VITE_BASE_URL || 'https://fischerbon.onrender.com';
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -38,146 +31,158 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
+    const response = await login({ ...formData });
+    setLoading(false);
 
-    try {
-      const { data } = await axiosInstance.post('/auth/login', formData);
-      console.log(data);
-
-      setResult(data);
-
-      if (!result || !result?.success) {
-        setAlert('failure');
-      } else {
-        setAlert('success');
+    if (!response?.success) {
+      setAlert('failure');
+      setResult(response);
+    } else {
+      setAlert('success');
+      setResult(response);
+      setTimeout(() => {
         navigate('/dashboard');
-      }
-    } catch (error) {
-      setAlert('network');
-      console.error(error);
-    } finally {
-      setLoading(false);
+      }, 1500);
     }
   };
 
+  if (isLoading)
+    return (
+      <p className="text-center py-20 text-lg text-gray-600 font-semibold">
+        Loading...
+      </p>
+    );
+
   return (
-    <div>
-      {alert === 'success' ? (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      {alert === 'success' && (
         <AuthAlert
-          header={'Logged In'}
+          header="Logged In"
           message={result.message}
-          iconType={'success'}
-          border={'#3c97d0'}
+          iconType="success"
+          border="#3c97d0"
           onClose={() => setAlert('')}
         />
-      ) : alert === 'failure' ? (
-        <AuthAlert
-          header={'Oops'}
-          message={'Something went wrong, try that again later'}
-          iconType={'error'}
-          onClose={() => setAlert('')}
-        />
-      ) : alert === 'network' ? (
-        <AuthAlert
-          header={'Network Error'}
-          message={"You're not connected to the internet"}
-          iconType={'error'}
-          onClose={() => setAlert('')}
-        />
-      ) : (
-        ''
       )}
-      <>
-        <AuthContainer>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <h5 className="text-dark text-2xl leading-9">Login</h5>
-              <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
-                Enter your details to access your dashboard
-              </p>
-            </div>
+      {alert === 'failure' && (
+        <AuthAlert
+          header="Oops"
+          message="Something went wrong, try again later"
+          iconType="error"
+          onClose={() => setAlert('')}
+        />
+      )}
+      {alert === 'network' && (
+        <AuthAlert
+          header="Network Error"
+          message="You're not connected to the internet"
+          iconType="error"
+          onClose={() => setAlert('')}
+        />
+      )}
 
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray mb-1"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter your email address"
-                className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-              )}
-            </div>
-
-            <div className="relative">
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray mb-1"
-                >
-                  Enter your password
-                </label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="Password"
-                  className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-                />
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-10 cursor-pointer text-accent"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </span>
-                {errors.password && (
-                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                )}
-              </div>
-
-              <p className="text-right text-[13px] text-primary leading-5">
-                <Link to="/forgot-password">Forgot password?</Link>
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className={`cursor-pointer w-full py-3 px-4 rounded-md font-medium text-white transition-colors ${
-                loading
-                  ? 'bg-accent cursor-not-allowed'
-                  : 'bg-primary hover:bg-primaryHover'
-              }`}
-            >
-              {loading ? 'Logging you in...' : 'Log in'}
-            </button>
-
-            <p className="text-sm text-[#69757C] leading-5">
-              Don't have an account?{' '}
-              <Link to="/signup">
-                <span className="text-primary">Sign up</span>
-              </Link>
+      <AuthContainer>
+        <form onSubmit={handleSubmit} className="space-y-8 max-w-md w-full">
+          <div>
+            <h2 className="text-4xl font-extrabold text-blue-700 mb-2 select-none">
+              Login
+            </h2>
+            <p className="text-gray-600 text-base leading-relaxed">
+              Enter your details to access your FischerBon dashboard
             </p>
-          </form>
-        </AuthContainer>
-      </>
+          </div>
+
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="you@example.com"
+              autoComplete="email"
+              className={`w-full p-3 border rounded-md text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
+                errors.email ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          <div className="relative">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Password
+            </label>
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              onChange={handleInputChange}
+              placeholder="Enter your password"
+              autoComplete="current-password"
+              className={`w-full p-3 border rounded-md text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
+                errors.password ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className="absolute right-3 top-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
+
+            <div className="text-right mt-1">
+              <Link
+                to="/forgot-password"
+                className="text-blue-600 hover:text-blue-800 text-[13px] font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-md font-semibold text-white transition-colors ${
+              loading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {loading ? 'Logging you in...' : 'Log in'}
+          </button>
+
+          <p className="text-center text-gray-600 text-sm">
+            Don&apos;t have an account?{' '}
+            <Link
+              to="/signup"
+              className="text-blue-600 hover:underline font-semibold"
+            >
+              Sign up
+            </Link>
+          </p>
+        </form>
+      </AuthContainer>
     </div>
   );
 };

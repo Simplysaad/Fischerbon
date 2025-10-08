@@ -6,9 +6,9 @@ import { sendEmail } from "../Utils/nodemailer.util.js";
 
 export const checkAuthStatus = async (req, res, next) => {
   try {
-    const { userId } = req;
+    const currentUser = req.user;
 
-    const currentUser = await User.findOne({ _id: userId });
+    // const currentUser = await User.findOne({ _id: userId });
 
     if (!currentUser) {
       return res.status(400).json({
@@ -20,6 +20,7 @@ export const checkAuthStatus = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "user is logged in ",
+      data: currentUser,
     });
   } catch (err) {
     next(err);
