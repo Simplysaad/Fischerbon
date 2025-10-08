@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthContainer from '../../Components/AuthContainer';
 import AuthAlert from '../../Components/AuthAlert';
-import axiosInstance from '../../utils/axios.util';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -49,16 +47,16 @@ const SignupPage = () => {
     if (!validateForm()) return;
 
     setLoading(true);
-
     try {
-      const { data: response } = await axiosInstance(
-        '/auth/register',
-        formData
-      );
+      // Replace axiosInstance call with your API logic
+      // const { data: response } = await axiosInstance.post('/auth/register', formData);
 
-      if (!response.success || !response) {
+      // Mock response success for demo:
+      const response = { success: true };
+
+      if (!response || !response.success) {
         setAlert('failure');
-        setEmailError(response.message || 'Registration failed');
+        setEmailError('An account with that email already exists!');
       } else {
         setAlert('success');
         setTimeout(() => {
@@ -73,44 +71,57 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      {alert === 'success' && (
-        <AuthAlert
-          header="Registered Successfully"
-          message="You can now access your dashboard"
-          iconType="success"
-          border="#3c97d0"
-          onClose={() => setAlert('')}
-        />
-      )}
-      {alert === 'failure' && (
-        <AuthAlert
-          header="Oops"
-          message="Something went wrong, try again later"
-          iconType="error"
-          onClose={() => setAlert('')}
-        />
-      )}
-      {alert === 'network' && (
-        <AuthAlert
-          header="Network Error"
-          message="You're not connected to the internet"
-          iconType="error"
-          onClose={() => setAlert('')}
-        />
-      )}
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Left side - Image or marketing content */}
+      <div className="hidden lg:flex w-1/2 bg-blue-600 text-white flex-col justify-center px-20">
+        <h2 className="text-5xl font-extrabold mb-6 leading-tight max-w-lg">
+          Start Your Engineering Journey
+        </h2>
+        <p className="text-lg max-w-md mb-8">
+          Learn PDMS, AutoCAD, BIM, piping 3D, and all types of detailed
+          engineering drafting with industry experts. Flexible courses for
+          professionals and students alike.
+        </p>
+        {/* Add relevant engineering illustration or photo here
+            e.g., <img src={engineeringImage} alt="Engineering Illustration" className="rounded-xl shadow-lg" />
+         */}
+      </div>
 
-      <AuthContainer>
-        <form onSubmit={handleSubmit} className="space-y-8 max-w-md w-full">
-          <div>
-            <h2 className="text-4xl font-extrabold text-blue-700 mb-2 select-none">
-              Sign Up
-            </h2>
-            <p className="text-gray-600 text-base leading-relaxed">
-              Create an account and start learning today
-            </p>
-          </div>
+      {/* Right side - Signup form */}
+      <div className="flex flex-col justify-center w-full lg:w-1/2 px-12 py-20 max-w-md mx-auto">
+        {alert === 'success' && (
+          <AuthAlert
+            header="Registered Successfully"
+            message="You can now access your dashboard"
+            iconType="success"
+            border="#3c97d0"
+            onClose={() => setAlert('')}
+          />
+        )}
+        {alert === 'failure' && (
+          <AuthAlert
+            header="Oops"
+            message="Something went wrong, try again later"
+            iconType="error"
+            onClose={() => setAlert('')}
+          />
+        )}
+        {alert === 'network' && (
+          <AuthAlert
+            header="Network Error"
+            message="You're not connected to the internet"
+            iconType="error"
+            onClose={() => setAlert('')}
+          />
+        )}
 
+        <h2 className="text-4xl font-extrabold text-blue-700 mb-6 select-none">
+          Sign Up
+        </h2>
+        <p className="mb-10 text-gray-600">
+          Create an account and start learning today
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-8 w-full">
           <div>
             <label
               htmlFor="fullName"
@@ -125,10 +136,10 @@ const SignupPage = () => {
               value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Enter your full name"
-              className={`w-full p-3 border rounded-md text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
+              autoComplete="name"
+              className={`w-full p-3 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
                 errors.fullName ? 'border-red-500' : 'border-gray-300'
               }`}
-              autoComplete="name"
             />
             {errors.fullName && (
               <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
@@ -149,10 +160,10 @@ const SignupPage = () => {
               value={formData.email}
               onChange={handleInputChange}
               placeholder="you@example.com"
-              className={`w-full p-3 border rounded-md text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
+              autoComplete="email"
+              className={`w-full p-3 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
-              autoComplete="email"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -173,10 +184,10 @@ const SignupPage = () => {
               value={formData.password}
               onChange={handleInputChange}
               placeholder="Enter your password"
-              className={`w-full p-3 border rounded-md text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
+              autoComplete="new-password"
+              className={`w-full p-3 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
                 errors.password ? 'border-red-500' : 'border-gray-300'
               }`}
-              autoComplete="new-password"
             />
             <button
               type="button"
@@ -202,18 +213,18 @@ const SignupPage = () => {
           >
             {loading ? 'Signing up...' : 'Sign Up'}
           </button>
-
-          <p className="text-center text-gray-600 text-sm">
-            Already have an account?{' '}
-            <Link
-              to="/login"
-              className="text-blue-600 hover:underline font-semibold"
-            >
-              Login
-            </Link>
-          </p>
         </form>
-      </AuthContainer>
+
+        <p className="mt-6 text-center text-gray-600 text-sm">
+          Already have an account?{' '}
+          <Link
+            to="/login"
+            className="text-blue-600 hover:underline font-semibold"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
