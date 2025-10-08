@@ -8,6 +8,7 @@ import connectDB from "./Config/db.js";
 import errorMiddleware from "./Middleware/error.middleware.js";
 
 import authRoutes from "./Routes/auth.route.js";
+import adminRouter from "./Routes/admin.route.js";
 import courseRoutes from "./Routes/course.route.js";
 import enrollmentRoutes from "./Routes/enrollment.route.js";
 import quizRouter from "./Routes/quiz.route.js";
@@ -52,6 +53,8 @@ app.use("/auth", authRoutes);
 
 app.use("/courses", courseRoutes);
 app.use("/enrollments", enrollmentRoutes);
+
+app.use("/admin", adminRouter);
 
 app.use("/quiz", quizRouter);
 

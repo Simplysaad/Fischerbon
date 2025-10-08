@@ -40,9 +40,10 @@ import Courses from './Pages/Dashboard/Courses';
 
 import NotFound from './Pages/Public/404';
 import MyCourses from './Pages/Student/MyEnrollments';
-import AdminDashboard from './Pages/AdminDashboard/AdminDashboard';
+import AdminDashboard from './Pages/Admin/AdminDashboard';
 
-import ManageCourses from './Pages/AdminDashboard/CreateCourse';
+import ManageCourses from './Pages/Admin/ManageCourses';
+import Home from './Pages/Public/Home';
 
 // Auth context for demo (replace with actual auth provider)
 const AuthContext = React.createContext(null);
@@ -61,8 +62,8 @@ const App = () => {
       <Router>
         <Routes>
           {/* Public routes */}
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<LoginPage />} /> */}
 
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
@@ -74,9 +75,10 @@ const App = () => {
             <Route index element={<Profile />} />
           </Route>
           <Route path="/courses" element={<Courses />} />
-          {/* <Route path="/courses/:courseId" element={<CourseDetails />} /> */}
-          {/* <Route path="/contact" element={<Contact />} />
-          <Route path="/about" element={<About />} /> */}
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordPage />}
+          />
 
           {/* Student protected routes */}
           <Route element={<ProtectedRoute allowedRoles={['student']} />}>
