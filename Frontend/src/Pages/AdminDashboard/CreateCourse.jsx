@@ -3,6 +3,8 @@ import AdminDashboardLayout from './AdminDashboardLayout';
 import AuthAlert from '../../Components/AuthAlert';
 import AdminButton from './AdminButton';
 import { useNavigate } from 'react-router-dom';
+import objectToFormData from '../../utils/objectToFormdata';
+import axiosInstance from '../../utils/axios.util';
 
 const CreateCourse = () => {
   const navigate = useNavigate;
@@ -13,6 +15,8 @@ const CreateCourse = () => {
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState('');
   const [lessonCount, setLessonCount] = useState(0);
+
+  const [result, setResult] = useState({});
 
   const [data, setData] = useState({
     title: '',
@@ -92,21 +96,27 @@ const CreateCourse = () => {
       return;
     }
     setLoading(true);
+
+    const { lessonTitles, lessonVideos, ...newData } = data;
+    const newForm = objectToFormData(newData);
     try {
-      const response = await fetch(`${BASE_URL}/courses/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+      const response = await axiosInstance.post('/courses/create', newForm, {
+        headers: { 'Content-Type': 'multipart/formdata' },
       });
-      const result = await response.json();
-      if (!result.success) {
+
+      console.log(response);
+      setResult(response.data);
+      console.log('result', result);
+
+      if (!result || !result.success) {
         setAlert('failure');
       } else {
         setAlert('success');
-        navigate('/courses/create');
+        // navigate('/courses/');
       }
     } catch (error) {
       setAlert('network');
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -247,7 +257,7 @@ const CreateCourse = () => {
                 placeholder="Enter the number of lessons"
                 className={inputStyle}
                 value={lessonCount}
-                min={1}
+                // min={1}
               />
 
               {Array.from(

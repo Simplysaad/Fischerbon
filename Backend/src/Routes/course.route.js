@@ -19,7 +19,7 @@ router.use(authMiddleware);
 router.get("/", getCourses);
 
 // Get a course
-router.get("/:courseId", getCourse);
+router.get("/:courseId", getCourse); 
 
 // Create a new course
 router.post("/create", upload.single("thumbnail"), createCourse);
