@@ -14,6 +14,7 @@ import enrollmentRoutes from "./Routes/enrollment.route.js";
 import quizRouter from "./Routes/quiz.route.js";
 
 import keepAlive from "./Cron/keep-alive.js";
+import waitlistRouter from "./Routes/waitlist.route.js";
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/waitlist", waitlistRouter);
 
 app.use("/courses", courseRoutes);
 app.use("/enrollments", enrollmentRoutes);

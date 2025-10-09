@@ -90,9 +90,7 @@ export const postLogin = async (req, res, next) => {
 
     const { email, password } = req.body;
 
-    const currentUser = await User.findOne({ email }).select(
-      "_id password email"
-    );
+    const currentUser = await User.findOne({ email });
 
     if (!currentUser) {
       return res.status(401).json({
@@ -123,7 +121,7 @@ export const postLogin = async (req, res, next) => {
       // maxAge: 1000 * 60 * 60,
       httpOnly: true,
     });
-
+    const { password: Hidepassword, ...user } = currentUser;
     return res.status(200).json({
       success: true,
       message: "user logged in successfully",

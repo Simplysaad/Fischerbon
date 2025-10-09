@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, UserCircle, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthAlert from '../../Components/AuthAlert';
+import useAuth from '../../context/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const LoginPage = () => {
   const [result, setResult] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const validateForm = () => {
     const newErrors = {};
@@ -30,24 +32,30 @@ const LoginPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setLoading(true);
-    // Mocking login call: Replace with your actual login API call
-    setTimeout(() => {
-      setLoading(false);
-      if (
-        formData.email === 'user@example.com' &&
-        formData.password === 'password'
-      ) {
+    try {
+      setLoading(true);
+
+      const response = await login({ ...formData });
+
+      console.log(formData);
+
+      if (response.success) {
+        const currentUser = response.data;
+        const returnTo =
+          currentUser.role === 'admin' ? '/admin/dashboard' : '/dashboard';
+        console.log(currentUser);
         setAlert('success');
         setResult({ message: 'Welcome back!' });
-        setTimeout(() => navigate('/dashboard'), 1500);
+        setTimeout(() => navigate(returnTo), 1500);
       } else {
         setAlert('failure');
         setResult({ message: 'Invalid credentials' });
       }
-    }, 1200);
+    } catch (err) {
+    } finally {
+      setLoading(false);
+    }
   };
-
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left informational side */}

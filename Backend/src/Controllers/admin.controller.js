@@ -14,7 +14,6 @@ export const getDashboardInfo = async (req, res, next) => {
       })
       .sort({ createdAt: -1 });
 
-    console.log(enrollments);
 
     const enrollmentsArray = enrollments.map((enrollment) => {
       return {
@@ -24,7 +23,7 @@ export const getDashboardInfo = async (req, res, next) => {
             100 || "not started",
         status: enrollment.status,
         name: enrollment.userId.name,
-        _id: enrollment._id,
+        id: enrollment._id,
       };
     });
 

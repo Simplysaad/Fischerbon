@@ -9,14 +9,27 @@ import {
 } from 'lucide-react';
 import heroImage from '../../assets/autocadImage.jpg';
 import { Link } from 'react-router-dom';
+import axiosInstance from '../../utils/axios.util';
 
 const LandingPage = () => {
   const [email, setEmail] = useState('');
+  const [recieveUpdates, setRecieveUpdates] = useState(true);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) return;
+
+    const { data: response } = await axiosInstance.post('/waitlist', {
+      email,
+      recieveUpdates,
+    });
+
+    if (!response.success) {
+      alert('Failed to join waitlist: ' + response.message);
+      return;
+    }
+
     // Submission logic
     setSubmitted(true);
     setEmail('');
@@ -203,27 +216,41 @@ const LandingPage = () => {
         )}
         <form
           id="waitlist-form"
-          className="flex flex-col sm:flex-row items-center justify-center gap-5"
+          className={
+            'flex flex-col items-center' + (submitted ? ' hidden' : '')
+          }
           onSubmit={handleSubmit}
           noValidate
         >
-          <input
-            id="waitlist-form-email"
-            type="email"
-            required
-            placeholder="Enter your email address"
-            aria-label="Email address to join wait-list"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full sm:w-auto px-5 py-3 border border-gray-400 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white font-semibold rounded-lg px-10 py-3 hover:bg-blue-700 transition"
-            aria-label="Join wait-list"
-          >
-            Join Wait-List
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
+            <input
+              id="waitlist-form-email"
+              type="email"
+              required
+              placeholder="Enter your email address"
+              aria-label="Email address to join wait-list"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full sm:w-auto px-5 py-3 border border-gray-400 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+
+            <button
+              type="submit"
+              className="bg-blue-600 text-white font-semibold rounded-lg px-10 py-3 hover:bg-blue-700 transition"
+              aria-label="Join wait-list"
+            >
+              Join Wait-List
+            </button>
+          </div>
+          <span className="flex gap-1 mt-2 font-medium text-gray-700">
+            <input
+              type="checkbox"
+              checked={recieveUpdates}
+              onChange={(e) => setRecieveUpdates(e.target.checked)}
+              id="recieveUpdates"
+            />
+            <label htmlFor="recieveUpdates">Recieve Weekly Updates </label>
+          </span>
         </form>
       </section>
 

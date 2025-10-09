@@ -97,7 +97,9 @@ function CoursesTable({ courses }) {
           ({ id, title, enrollments, description, createdAt, price }) => (
             <tr key={id} className="hover:bg-blue-50">
               <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                {title}
+                <a href={`/admin/courses/${title.split(' ').join('-')}-${id}`}>
+                  {title}
+                </a>
               </td>
               <td className="px-6 py-4 whitespace-nowrap truncate max-w-xs">
                 {description}
@@ -213,7 +215,7 @@ export default function DashboardContent() {
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-3xl font-bold text-blue-600">Courses</h3>
           <a
-            href="#courses"
+            href="/admin/courses"
             className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
           >
             Manage
@@ -229,7 +231,7 @@ export default function DashboardContent() {
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-3xl font-bold text-blue-600">Notifications</h3>
           <a
-            href="#notifications"
+            href="/notifications"
             className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
           >
             Manage
