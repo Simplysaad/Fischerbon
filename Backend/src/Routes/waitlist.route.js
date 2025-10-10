@@ -1,6 +1,7 @@
 import { Router } from "express";
 import Waitlist from "../Models/waitlist.model.js";
 import authMiddleware from "../Middleware/auth.middleware.js";
+import sendEmail from "../Utils/nodemailer.util.js";
 
 const waitlistRouter = Router();
 
@@ -29,6 +30,13 @@ waitlistRouter.post("/", async (req, res, next) => {
         message: "Failed to add user to waitlist",
       });
     }
+
+    await sendEmail({
+      to: email,
+      subject: "You've been added To Fischerbon Waitlist ",
+      template: "waitlistConfirm",
+      data: {},
+    });
 
     return res.status(201).json({
       success: true,

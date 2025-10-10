@@ -27,12 +27,6 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  // Redirect unauthenticated users to login with state
-  //   if (!isLoading && !user && location.pathname !== '/login') {
-  //     // Save the page user wants to visit in state as 'from'
-  //     return <Navigate to="/login" state={{ from: location }} replace />;
-  //   }
-
   const login = async ({ email, password }) => {
     const { data: response } = await axiosInstance.post('/auth/login', {
       email,

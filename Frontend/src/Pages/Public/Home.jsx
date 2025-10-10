@@ -8,13 +8,67 @@ import {
   ClipboardList,
 } from 'lucide-react';
 import heroImage from '../../assets/autocadImage.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
+import CarouselWrapper from '../../Components/Carousel';
+import Header from '../../Components/Header';
+import Hero from '../../Components/Hero';
+
+const testimonials = [
+  {
+    id: 1,
+    name: 'Muhammad Yakeen',
+    photo: '/images/muhammad_yakeen.jpg', // Placeholder path
+    course: 'Piping Design and Drafting using AutoCAD',
+    testimonial:
+      'I was amazed by Engineer Iskeel’s teaching style. He connects lessons to real engineering scenarios, shares career advice, and ensures students gain knowledge and direction. His classes are engaging, practical, and inspiring. Under his guidance, I learned 2D and 3D drawing fundamentals, which reshaped my career outlook as a mechanical engineering student.',
+    jobTitle: 'Mechanical Engineering Student, OAU ILE-IFE',
+  },
+  {
+    id: 2,
+    name: 'Eniola Fátima Aliru',
+    photo: '/images/eniola_fatima_aliru.jpg', // Placeholder path
+    course: 'AutoCAD & Engineering Drafting',
+    testimonial:
+      'This training was more than just learning; it was a life-changing experience. The instructor, Engr. Iskeel, is more than a teacher — he is a listener and a guardian, attentive to details, making the learning deeply inspiring and practical.',
+    jobTitle: 'Aspiring Architect, University of Nigeria Nsukka',
+  },
+  {
+    id: 3,
+    name: 'Aminah Alabi',
+    photo: '/images/aminah_alabi.jpg', // Placeholder path
+    course: 'Autodesk AutoCAD',
+    testimonial:
+      'Engr. Iskeel demonstrated exceptional patience and dedication. His teaching was interactive, with hands-on exercises and real-world examples, making complex concepts easy. His passion and expertise created a supportive environment which motivated me to learn and improve. I’m now proficient in AutoCAD 2D and 3D design.',
+    jobTitle: 'MME Graduate, FUTA',
+  },
+  {
+    id: 4,
+    name: 'Fareedah Fadahunsi',
+    photo: '/images/fareedah_fadahunsi.jpg', // Placeholder path
+    course: 'AutoCAD Training',
+    testimonial:
+      'Engr Iskeel ensured I understood even difficult diagrams. The training taught me 2D and 3D AutoCAD design. I highly recommend Engr Iskeel to anyone looking for an AutoCAD instructor.',
+    jobTitle: 'Young School Leaver, University Aspirant',
+  },
+];
+
+const Testimonial = ({ id, name, testimonial, jobTitle }) => {
+  return (
+    <blockquote className="bg-white p-8 rounded-lg shadow-md italic text-gray-800">
+      <p>"{testimonial}"</p>
+      <footer className="text-right font-semibold text-blue-700 mt-4">
+        — {name}, {jobTitle}
+      </footer>
+    </blockquote>
+  );
+};
 
 const LandingPage = () => {
   const [email, setEmail] = useState('');
   const [recieveUpdates, setRecieveUpdates] = useState(true);
   const [submitted, setSubmitted] = useState(false);
+  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,71 +89,81 @@ const LandingPage = () => {
     setEmail('');
   };
 
+  const heros = [
+    {
+      heading: 'Master AutoCAD Drafting and Design',
+      body: 'Unlock your potential with expert-led courses on AutoCAD drafting, 3D modeling, and engineering design. Start your journey today and bring your ideas to life.',
+      ctaText: 'Start Learning Now',
+      ctaUrl: '/courses/autocad',
+      image: '/images/hero-autocad.png',
+      trustBadge: 'Trusted by 10,000+ engineers worldwide',
+    },
+    {
+      heading: 'Become a Pro in BIM and Project Management',
+      body: "Learn Building Information Modeling with hands-on training and real-world projects. Elevate your career with the industry's most in-demand skills.",
+      ctaText: 'Explore BIM Courses',
+      ctaUrl: '/courses/bim',
+      image: '/images/hero-bim.png',
+      testimonial: {
+        quote: 'This platform helped me land my dream job in BIM!',
+        author: 'Sarah M., Structural Engineer',
+      },
+    },
+    {
+      heading: '3D Drawing and PDMS Training Made Easy',
+      body: 'Master 3D drafting and plant design with our comprehensive PDMS courses specially crafted for engineers and designers.',
+      ctaText: 'Enroll Today',
+      ctaUrl: '/courses/pdms',
+      image: '/images/hero-pdms.png',
+      highlight: 'Free trial lesson available',
+    },
+    {
+      heading: 'Learn Engineering Software Anytime, Anywhere',
+      body: 'Flexible, self-paced courses on AutoCAD, BIM, PDMS, and more. Gain practical skills that employers want.',
+      ctaText: 'Browse All Courses',
+      ctaUrl: '/courses',
+      image: '/images/hero-flexible-learning.png',
+      supportInfo: '24/7 student support included',
+    },
+    {
+      heading: 'From Beginner to Expert: Your Engineering Software Journey',
+      body: 'Step-by-step training paths from fundamentals to advanced techniques in drafting and 3D modeling.',
+      ctaText: 'Choose Your Path',
+      ctaUrl: '/learning-paths',
+      image: '/images/hero-pathway.png',
+      guarantee: '30-day money-back guarantee',
+    },
+  ];
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between p-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold text-blue-700 select-none">
-            FischerBon
-          </h1>
-          <nav className="hidden md:flex space-x-6 font-medium text-gray-700">
-            <Link to="/" className="hover:text-blue-600 transition">
-              Home
-            </Link>
-            <Link to="/courses" className="hover:text-blue-600 transition">
-              Courses
-            </Link>
-            <Link to="/login" className="hover:text-blue-600 transition">
-              Login
-            </Link>
-            <Link to="/signup" className="hover:text-blue-600 transition">
-              Sign up
-            </Link>
-          </nav>
-          <button className="md:hidden text-blue-600" aria-label="Open menu">
-            <Menu size={24} />
-          </button>
-        </div>
-      </header>
-
+      <Header />
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white py-24 px-6 md:px-20 flex flex-col md:flex-row items-center gap-14 max-w-7xl mx-auto">
-        <div className="md:w-1/2 text-center md:text-left">
-          <h2 className="text-5xl font-extrabold leading-tight mb-6">
-            Master Engineering Drafting & Design Skills
-          </h2>
-          <p className="text-xl mb-8 max-w-lg">
-            Expert-led courses in PDMS, AutoCAD, BIM, piping 3D, and all major
-            engineering drafting software. Learn flexible, industry-ready skills
-            designed to launch your career.
-          </p>
-          <button
-            className="bg-white text-blue-700 font-semibold px-10 py-4 rounded-lg shadow-lg hover:bg-gray-100 transition"
-            onClick={() =>
-              document.getElementById('waitlist-form-email')?.focus()
-            }
-            aria-label="Join wait-list for early access"
-          >
-            Join the Wait-List
-          </button>
-        </div>
-        <div className="md:w-1/2">
-          <img
-            src={heroImage}
-            alt="Engineer designing with CAD software"
-            className="rounded-xl shadow-2xl mx-auto max-w-full"
-          />
-          {/* Future suggestion: add a small carousel or video preview here */}
-        </div>
+      <section id="home" className="">
+        <CarouselWrapper>
+          {heros.map((hero) => (
+            <Hero hero={hero} />
+          ))}
+        </CarouselWrapper>
       </section>
 
       {/* What We Teach - Features */}
-      <section className="bg-white py-20 px-6 max-w-7xl mx-auto">
+      <section
+        id="what"
+        className="bg-white py-20 my-20 px-6 max-w-7xl mx-auto"
+      >
         <h3 className="text-4xl font-bold text-center text-blue-700 mb-14">
-          What You’ll Learn at FischerBon
+          What You'll Learn at FischerBon
         </h3>
         <div className="grid md:grid-cols-3 gap-12 text-center">
+          <div className="flex flex-col items-center space-y-4 px-8">
+            <FileText className="text-blue-600 w-16 h-16" />
+            <h4 className="text-2xl font-semibold">CAD Drafting & Design</h4>
+            <p className="text-gray-700">
+              Comprehensive AutoCAD 2D and 3D, PDMS and engineering drawings
+              training.
+            </p>
+          </div>
           <div className="flex flex-col items-center space-y-4 px-8">
             <Layers className="text-blue-600 w-16 h-16" />
             <h4 className="text-2xl font-semibold">3D Modeling & BIM</h4>
@@ -108,14 +172,7 @@ const LandingPage = () => {
               more.
             </p>
           </div>
-          <div className="flex flex-col items-center space-y-4 px-8">
-            <FileText className="text-blue-600 w-16 h-16" />
-            <h4 className="text-2xl font-semibold">CAD Drafting & Design</h4>
-            <p className="text-gray-700">
-              Comprehensive AutoCAD, PDMS, piping, and engineering drawings
-              training.
-            </p>
-          </div>
+
           <div className="flex flex-col items-center space-y-4 px-8">
             <Truck className="text-blue-600 w-16 h-16" />
             <h4 className="text-2xl font-semibold">Piping & Plant Design</h4>
@@ -129,7 +186,10 @@ const LandingPage = () => {
       </section>
 
       {/* Why FischerBon Section */}
-      <section className="bg-cyan-50 py-20 px-6 max-w-7xl mx-auto">
+      <section
+        id="why"
+        className="bg-cyan-50 my-32 py-20 px-6 max-w-7xl mx-auto"
+      >
         <h3 className="text-4xl font-bold text-center text-blue-700 mb-14">
           Why Choose FischerBon LMS?
         </h3>
@@ -163,45 +223,33 @@ const LandingPage = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="bg-gradient-to-r from-cyan-50 to-blue-50 py-16 px-6 max-w-4xl mx-auto rounded-xl">
+      <section
+        id="testimonials"
+        className="bg-gradient-to-r from-cyan-50 to-blue-50 py-16 px-6 max-w-4xl mx-auto rounded-xl"
+      >
         <h3 className="text-center text-3xl font-bold text-blue-700 mb-8">
           Hear From Our Learners
         </h3>
         <div className="space-y-8">
-          <blockquote className="bg-white p-8 rounded-lg shadow-md italic text-gray-800">
-            <p>
-              "FischerBon's PDMS and piping courses gave me the real-world
-              skills I needed to excel. The flexible schedule and expert
-              teachers made all the difference."
-            </p>
-            <footer className="text-right font-semibold text-blue-700 mt-4">
-              — Chinedu A., Piping Designer
-            </footer>
-          </blockquote>
-          <blockquote className="bg-white p-8 rounded-lg shadow-md italic text-gray-800">
-            <p>
-              "Completing the BIM training transformed my workflow. The LMS is
-              so intuitive and the instructors are always supportive."
-            </p>
-            <footer className="text-right font-semibold text-blue-700 mt-4">
-              — Fatima S., BIM Coordinator
-            </footer>
-          </blockquote>
-          <blockquote className="bg-white p-8 rounded-lg shadow-md italic text-gray-800">
-            <p>
-              "Thanks to FischerBon, I advanced from basic AutoCAD knowledge to
-              certified professional within months."
-            </p>
-            <footer className="text-right font-semibold text-blue-700 mt-4">
-              — Michael O., Mechanical Engineer
-            </footer>
-          </blockquote>
+          <CarouselWrapper>
+            {testimonials.map((testimonial) => (
+              <Testimonial
+                key={testimonial.id}
+                name={testimonial.name}
+                testimonial={testimonial.testimonial}
+                jobTitle={testimonial.jobTitle}
+              />
+            ))}
+          </CarouselWrapper>
         </div>
         {/* Suggestion: Add a student photo carousel below quotes to enhance authenticity */}
       </section>
 
       {/* Wait-list Sign Up (Main CTA) */}
-      <section className="bg-white max-w-2xl mx-auto rounded-lg shadow-lg border border-gray-300 my-20 px-8 py-16 text-center">
+      <section
+        id="waitlist"
+        className="bg-white max-w-2xl mx-auto rounded-lg shadow-lg border border-gray-300 my-20 px-8 py-16 text-center"
+      >
         <h3 className="text-3xl font-bold text-blue-700 mb-6">
           Get Early Access - Join Our Wait-List
         </h3>

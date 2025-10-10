@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import User from "../Models/user.model.js";
-import { sendEmail } from "../Utils/nodemailer.util.js";
+import sendEmail from "../Utils/nodemailer.util.js";
 
 export const checkAuthStatus = async (req, res, next) => {
   try {

@@ -3,7 +3,7 @@ import { initialize, verify } from "../Utils/paystack.util.js";
 import Payment from "../Models/payment.model.js";
 import Enrollment from "../Models/enrollment.model.js";
 import Course from "../Models/course.model.js";
-import { sendEmail } from "../Utils/nodemailer.util.js";
+import sendEmail from "../Utils/nodemailer.util.js";
 import format from "../Utils/format.util.js";
 
 export const createEnrollment = async (req, res, next) => {
