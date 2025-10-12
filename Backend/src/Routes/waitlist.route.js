@@ -14,11 +14,11 @@ waitlistRouter.post("/", async (req, res, next) => {
       });
     }
 
-    const { email, recieveUpdates } = req.body;
+    const { email, recieveUpdates, name } = req.body;
     const newEntry = await Waitlist.findOneAndUpdate(
       { email },
       {
-        $setOnInsert: { email, recieveUpdates },
+        $setOnInsert: { email, recieveUpdates, name },
         $inc: { timesJoined: 1 },
       },
       { upsert: true, new: true }
@@ -31,11 +31,17 @@ waitlistRouter.post("/", async (req, res, next) => {
       });
     }
 
+    const data = {
+      subject: "Welcome to the FischerBon Waitlist!",
+      message:
+        "Thank you for signing up! You've successfully joined the FischerBon CAD teaching waitlist. We'll notify you as soon as enrollment opens.",
+      name: name.split(" ")[0],
+    };
+
     await sendEmail({
       to: email,
       subject: "You've been added To Fischerbon Waitlist ",
-      template: "waitlistConfirm",
-      data: {},
+      data,
     });
 
     return res.status(201).json({

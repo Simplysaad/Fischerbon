@@ -5,9 +5,10 @@ import { useState } from 'react';
 import useAuth from '../context/AuthContext.jsx';
 
 export default function Header({ type }) {
+  const [isNavbarOpen, setIsNavbarOpen] = useState(false);
   const location = useLocation();
-  // const { user } = useAuth();
-  const user = { x: 1 };
+  const { user } = useAuth();
+  // const user = { x: 1 };
 
   const navLinks1 = [
     {
@@ -54,7 +55,7 @@ export default function Header({ type }) {
       isActive: false,
     },
   ];
-  const navLinks = [
+  const navLinks3 = [
     {
       path: '/',
       text: 'Home',
@@ -67,8 +68,7 @@ export default function Header({ type }) {
     },
   ];
 
-  // const navLinks = navLinks3;
-  // type === 'landing' ? navLinks1 : user ? navLinks3 : navLinks2;
+  const navLinks = navLinks1; //user ? navLinks1 : type == 'landing' ? navLinks1 : navLinks2;
 
   navLinks.forEach((link) => {
     link.isActive =
@@ -86,8 +86,10 @@ export default function Header({ type }) {
             />
           </h1>
         </Link>
-        <nav className="hidden md:flex space-x-6 font-medium text-gray-700">
-          {navLinks2.map(({ path, text, isActive }, idx) => (
+        <nav
+          className={` md:flex space-x-6 font-medium text-gray-700 ${isNavbarOpen ? 'block' : 'hidden'}`}
+        >
+          {navLinks.map(({ path, text, isActive }, idx) => (
             <a
               key={idx}
               href={path}
@@ -97,7 +99,11 @@ export default function Header({ type }) {
             </a>
           ))}
         </nav>
-        <button className="md:hidden text-blue-600" aria-label="Open menu">
+        <button
+          onClick={() => () => setIsNavbarOpen()}
+          className="md:hidden text-blue-600"
+          aria-label="Open menu"
+        >
           <Menu size={24} />
         </button>
       </div>

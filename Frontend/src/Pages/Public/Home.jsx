@@ -13,6 +13,7 @@ import axiosInstance from '../../utils/axios.util';
 import CarouselWrapper from '../../Components/Carousel';
 import Header from '../../Components/Header';
 import Hero from '../../Components/Hero';
+import WaitlistForm from '../../Components/waitlistForm';
 
 const testimonials = [
   {
@@ -65,30 +66,6 @@ const Testimonial = ({ id, name, testimonial, jobTitle }) => {
 };
 
 const LandingPage = () => {
-  const [email, setEmail] = useState('');
-  const [recieveUpdates, setRecieveUpdates] = useState(true);
-  const [submitted, setSubmitted] = useState(false);
-  const location = useLocation();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) return;
-
-    const { data: response } = await axiosInstance.post('/waitlist', {
-      email,
-      recieveUpdates,
-    });
-
-    if (!response.success) {
-      alert('Failed to join waitlist: ' + response.message);
-      return;
-    }
-
-    // Submission logic
-    setSubmitted(true);
-    setEmail('');
-  };
-
   const heros = [
     {
       heading: 'Master AutoCAD Drafting and Design',
@@ -137,7 +114,7 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50">
       {/* Header */}
-      <Header />
+      <Header type={'landing'} />
       {/* Hero Section */}
       <section id="home" className="">
         <CarouselWrapper>
@@ -246,62 +223,7 @@ const LandingPage = () => {
       </section>
 
       {/* Wait-list Sign Up (Main CTA) */}
-      <section
-        id="waitlist"
-        className="bg-white max-w-2xl mx-auto rounded-lg shadow-lg border border-gray-300 my-20 px-8 py-16 text-center"
-      >
-        <h3 className="text-3xl font-bold text-blue-700 mb-6">
-          Get Early Access - Join Our Wait-List
-        </h3>
-        <p className="mb-8 text-gray-700 max-w-prose mx-auto">
-          Sign up now to secure your spot in our upcoming courses and receive
-          exclusive updates, discounts, and free resources.
-        </p>
-        {submitted && (
-          <p className="mb-6 text-green-600 font-semibold">
-            Thank you for joining the wait-list! We will notify you by email.
-          </p>
-        )}
-        <form
-          id="waitlist-form"
-          className={
-            'flex flex-col items-center' + (submitted ? ' hidden' : '')
-          }
-          onSubmit={handleSubmit}
-          noValidate
-        >
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
-            <input
-              id="waitlist-form-email"
-              type="email"
-              required
-              placeholder="Enter your email address"
-              aria-label="Email address to join wait-list"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full sm:w-auto px-5 py-3 border border-gray-400 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-
-            <button
-              type="submit"
-              className="bg-blue-600 text-white font-semibold rounded-lg px-10 py-3 hover:bg-blue-700 transition"
-              aria-label="Join wait-list"
-            >
-              Join Wait-List
-            </button>
-          </div>
-          <span className="flex gap-1 mt-2 font-medium text-gray-700">
-            <input
-              type="checkbox"
-              checked={recieveUpdates}
-              onChange={(e) => setRecieveUpdates(e.target.checked)}
-              id="recieveUpdates"
-            />
-            <label htmlFor="recieveUpdates">Recieve Weekly Updates </label>
-          </span>
-        </form>
-      </section>
-
+      <WaitlistForm />
       {/* Future Launch CTA (commented for now) */}
       {/* 
       <section className="bg-blue-600 text-white py-20 text-center">

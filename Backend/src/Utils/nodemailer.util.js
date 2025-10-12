@@ -17,49 +17,34 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// const transporter = nodemailer.createTransport({
-//   host: "smtp.gmail.com",
-//   port: 587,
-//   secure: false,
-//   requireTLS: true,
-//   auth: {
-//     user: process.env.GMAIL_USER,
-//     pass: process.env.GMAIL_PASS
-//   }
-// });
-
 export default async function sendEmail(emailOptions) {
   try {
     const { to, subject, template, data } = emailOptions;
-    if (!template) throw new Error("Email template name is required");
 
     const templatePath = path.join(
       __dirname,
       "..",
       "Templates",
-      `${template}.ejs`
+      `${"layout"}.ejs`
     );
-    const contentHtml = await ejs.renderFile(templatePath, data);
+    const emailHtml = await ejs.renderFile(templatePath, {
+      ...data,
+      subject,
+      logoUrl: `${process.env.BASE_URL}/Images/fischerbon-logo.png`,
+      supportEmail: "support@fischerbon.com",
+    });
 
-    const emailHtml = await ejs.renderFile(
-      path.join(__dirname, "..", "Templates", "layout.ejs"),
-      {
-        subject,
-        logoUrl: `${process.env.BASE_URL}/Images/fischerbon-logo.png`,
-        supportEmail: "support@fischerbon.com",
-        body: contentHtml,
-      }
-    );
-
+    // Send email
     await transporter.sendMail({
-      from: "Engr. Iskeel <noreply@fischerbon.com>",
+      from: '"Engr. Iskeel" <noreply@fischerbon.com>',
       to,
       subject,
       html: emailHtml,
     });
-    console.log("Email sent successfully");
+
+    console.log(`Email sent successfully to ${to}`);
   } catch (error) {
-    console.error("Error sending email:", error.message);
+    console.error("Failed to send email:", error.message);
     throw new Error(`Failed to send email: ${error.message}`);
   }
 }
