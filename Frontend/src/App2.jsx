@@ -8,8 +8,8 @@ import ForgotPasswordPage from './Pages/Auth/ForgotPassword';
 import Profile from './Pages/Auth/Profile';
 
 import StudentDashboard from './Pages/Dashboard/Dashboard';
-import Courses from './Pages/Dashboard/Courses';
-
+import CourseListing from './Pages/Public/CourseListing';
+import CourseDetails from './Pages/Public/CourseDetails';
 import NotFound from './Pages/Public/404';
 import MyCourses from './Pages/Student/MyEnrollments';
 import AdminDashboard from './Pages/Admin/AdminDashboard';
@@ -50,7 +50,8 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-        <Route path="/courses" element={<Courses />} />
+        <Route path="/courses" element={<CourseListing />} />
+        <Route path="/courses/:slug" element={<CourseDetails />} />
 
         {/* Group routes that require authentication */}
         <Route element={<ProtectedRoute allowedRoles={['student', 'admin']} />}>

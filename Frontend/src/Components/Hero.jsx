@@ -18,7 +18,7 @@ export default function Hero({
     <section
       className="bg-gradient-to-r from-blue-600 to-cyan-500 md:py-24 flex items-center justify-center text-white"
       aria-label="Hero section for LMS platform"
-      style={{ width: '100vw', minHeight: '600px' }}
+      style={{ minWidth: '100vw', minHeight: '600px' }}
     >
       <div className="max-w-7xl w-11/12 h-full mx-auto flex flex-col md:flex-row items-center gap-10">
         {/* Text Content */}

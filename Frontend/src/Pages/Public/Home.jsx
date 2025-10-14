@@ -14,6 +14,7 @@ import CarouselWrapper from '../../Components/Carousel';
 import Header from '../../Components/Header';
 import Hero from '../../Components/Hero';
 import WaitlistForm from '../../Components/waitlistForm';
+import PublicLayout from './Layout';
 
 const testimonials = [
   {
@@ -112,10 +113,8 @@ const LandingPage = () => {
     },
   ];
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50">
-      {/* Header */}
-      <Header type={'landing'} />
-      {/* Hero Section */}
+    <PublicLayout className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50">
+      {/* // Hero Section */}
       <section id="home" className="">
         <CarouselWrapper>
           {heros.map((hero) => (
@@ -123,7 +122,6 @@ const LandingPage = () => {
           ))}
         </CarouselWrapper>
       </section>
-
       {/* What We Teach - Features */}
       <section
         id="what"
@@ -161,7 +159,6 @@ const LandingPage = () => {
           {/* Suggestion: add images or diagrams related to these topics nearby */}
         </div>
       </section>
-
       {/* Why FischerBon Section */}
       <section
         id="why"
@@ -198,7 +195,6 @@ const LandingPage = () => {
           {/* Suggestion: Add testimonial image grid or student success photos here for personal touch */}
         </div>
       </section>
-
       {/* Testimonials Section */}
       <section
         id="testimonials"
@@ -221,7 +217,6 @@ const LandingPage = () => {
         </div>
         {/* Suggestion: Add a student photo carousel below quotes to enhance authenticity */}
       </section>
-
       {/* Wait-list Sign Up (Main CTA) */}
       <WaitlistForm />
       {/* Future Launch CTA (commented for now) */}
@@ -238,12 +233,8 @@ const LandingPage = () => {
           Learn More
         </button>
       </section> */}
-
-      {/* Footer */}
-      <footer className="bg-gray-100 py-8 text-center text-gray-600 select-none text-sm">
-        &copy; {new Date().getFullYear()} FISCHERBON inc. All rights reserved.
-      </footer>
-    </div>
+      {/* </div> */}
+    </PublicLayout>
   );
 };
 

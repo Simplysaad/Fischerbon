@@ -1,193 +1,98 @@
-import { useState } from 'react';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
-import AuthContainer from '../../Components/AuthContainer';
+import React, { useState } from 'react';
+import axiosInstance from '../../utils/axios.util';
+import { Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import AuthAlert from '../../Components/AuthAlert';
+const BASE_URL = import.meta.VITE_BASE_URL;
 
-const ForgotPasswordPage = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-  });
-
-  const [alert, setAlert] = useState('');
-  const [errors, setErrors] = useState({});
+const forgotPasswordPage = () => {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
-    const newErrors = {};
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    return newErrors;
+    if (!email.trim()) setError('Email is required');
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: '' }));
-  };
-
-  const BASE_URL = 'https://fischerbon.onrender.com';
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
+  const handleSubmit = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const { data: response } = await axiosInstance.post(
+        '/auth/forgot-password',
+        { email }
+      );
 
-      const result = await response.json();
-
-      if (!result.success || !response.ok) {
-        setAlert('failure');
-      } else {
-        let url = `https://fischerbon.vercel.app/reset-password?token=${result.data?.token}`;
-
-        const response = await fetch(
-          'https://api.emailjs.com/api/v1.0/email/send',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/jsCon',
-            },
-            body: JSON.stringify({
-              service_id: 'service_zh0vj84', // EmailJS service ID
-              template_id: 'template_ol09wxr', // EmailJS template ID
-              user_id: '9nHCjbJ8w8yQTswge', // EmailJS user ID
-
-              template_params: {
-                user_email: formData.email,
-                name: 'Fischerbon Engineering LTD.',
-                time: `${new Date().getHours().toString().padStart(2, '0')}:${new Date().getMinutes().toString().padStart(2, '0')}`,
-                subject: 'Password reset link',
-                message: `😃Hi, You requested a password reset link, use the link below to reset your password, note that this link will expire in 5 minutes: ${url}`,
-              },
-            }),
-          }
-        );
-
-        if (response.ok) {
-          setAlert('success');
-        } else {
-          setAlert('failure');
-        }
-      }
-    } catch (error) {
-      setAlert('network');
+      if (!response || !response.success)
+        setError(response?.message || 'Something went wrong, Try again ');
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div>
-      {alert === 'failure' ? (
-        <AuthAlert
-          header={'Oops'}
-          message={'Something went wrong, try that again later'}
-          iconType={'error'}
-          onClose={() => setAlert('')}
-        />
-      ) : alert === 'network' ? (
-        <AuthAlert
-          header={'Network Error'}
-          message={"You're not connected to the internet"}
-          iconType={'error'}
-          onClose={() => setAlert('')}
-        />
-      ) : (
-        ''
-      )}
-
-      {alert === 'success' ? (
-        <AuthContainer>
-          <div className="space-y-5 text-center items-center justify-center flex flex-col">
-            <div className="rounded-full bg-[#c1d4de] text-primary p-5 opacity-90">
-              <CheckCircle />
-            </div>
-
-            <div className="max-w-md">
-              <h5 className="text-dark font-medium text-[16px] lg:text-[22px] leading-6 lg:leading-9">
-                Check Your Mail
-              </h5>
-              <p className="text-[16px] lg:text-lg leading-6 lg:leading-7 text-gray font-normal">
-                A password reset link has been sent to your mail, follow the
-                instructions to reset your password.
-              </p>
-            </div>
-
-            <div className="w-full">
-              <Link to="/login">
-                <button
-                  type="submit"
-                  className="mb-3 bg-primary text-white hover:bg-primaryHover w-full font-medium py-3 px-4 rounded-md cursor-pointer transition-colors"
-                >
-                  Back to Login
-                </button>
-              </Link>
-
-              <button
-                onClick={handleSubmit}
-                className="border-1 border-primary text-primary w-full font-medium py-3 px-4 rounded-md cursor-pointer"
-              >
-                Resend Link
-              </button>
-            </div>
+    <div className="min-h-screen flex bg-gray-50">
+      <div className="hidden lg:flex lg:w-1/2 bg-blue-700 text-white flex-col justify-center px-20">
+        <h2 className="text-5xl font-extrabold mb-6 max-w-lg">
+          It's not Over Yet!
+        </h2>
+        <p className="text-xl mb-8 max-w-md">
+          Access your engineering design courses, including PDMS, CAD, BIM,
+          Piping 3D and more. Learn from industry experts, anytime, anywhere.
+        </p>
+      </div>
+      <div className="flex flex-col justify-center w-full lg:w-1/2 px-12 py-20 max-w-md mx-auto">
+        <h2 className="text-4xl font-extrabold text-blue-700 mb-6 select-none">
+          Forgot Password
+        </h2>
+        <p className="mb-10 text-gray-600">
+          Enter your email to recieve a code to reset password
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-8 w-full">
+          <div className="relative">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
+            >
+              <Mail className="w-5 h-5 text-blue-600" /> Email Address
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              autoComplete="current-email"
+              className={`w-full p-3 border rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition ${
+                error ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
           </div>
-        </AuthContainer>
-      ) : (
-        <AuthContainer
-          title="Forgot Your Password"
-          subtitle="Enter your email and we'll send you a reset link"
-        >
-          <form onSubmit={handleSubmit} className="space-y-10">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray mb-1 text-left"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Enter your email address"
-                className="w-full p-3 border-2 rounded-md border-accent outline-none placeholder:text-accent text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="mb-2 bg-primary text-white hover:bg-primaryHover w-full font-medium py-3 px-4 rounded-md cursor-pointer transition-colors"
-            >
-              Send reset link
-            </button>
-          </form>
 
-          <p>
-            <Link
-              to="/login"
-              className="mt-1 flex justify-center text-[14px] text-dark cursor-pointer leading-5 items-center gap-2"
-            >
-              <span className="text-center">
-                <ArrowLeft size="20" />
-              </span>
-              <span className="text-center">Back to Login</span>
-            </Link>
-          </p>
-        </AuthContainer>
-      )}
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-md font-semibold text-white transition-colors ${
+              loading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {loading ? 'Resend code in 5:09 ...' : 'Send Code'}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-gray-600 text-sm">
+          Back to
+          <Link
+            to="/login"
+            className="text-blue-600 px-1 hover:underline font-semibold"
+          >
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };
 
-export default ForgotPasswordPage;
+export default forgotPasswordPage;
