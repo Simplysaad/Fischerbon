@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminDashboardLayout from './AdminDashboardLayout';
-import { navItems } from '../AdminDashboard/AdminSidebar';
+import { navItems } from './AdminSidebar';
 import Actions from '../../Components/Actions';
 
 const AdminDashboard = () => {

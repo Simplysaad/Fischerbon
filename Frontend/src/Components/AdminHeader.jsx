@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
 import { Search, UserCircle, ChevronDown } from 'lucide-react';
 import useAuth from '../context/AuthContext';
+import Logo from '../assets/logo-removebg-preview.png';
+import { Link } from 'react-router-dom';
 
 export default function AdminHeader() {
   const { logout } = useAuth();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+    <header className="backdrop-blur p-2 shadow-sm break sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between space-x-4">
         {/* Branding */}
-        <div className="flex items-center space-x-3">
-          <h1 className="text-2xl font-extrabold text-blue-700 select-none">
-            Fischerbon Admin
+        <Link to="/">
+          <h1 className="text-2xl font-bold text-blue-700 select-none">
+            <img
+              src={Logo}
+              style={{ height: '2.2em', width: 'auto' }}
+              alt="FischerBon"
+            />
           </h1>
-        </div>
+        </Link>
 
         {/* Search Input */}
-        <div className="flex-1 max-w-xl relative">
+        <div className="hidden md:flex-1 max-w-xl relative">
           <label htmlFor="dashboard-search" className="sr-only">
             Search courses, users, content...
           </label>

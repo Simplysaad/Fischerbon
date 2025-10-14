@@ -18,6 +18,7 @@ import ManageCourses from './Pages/Admin/ManageCourses';
 import Home from './Pages/Public/Home';
 
 import useAuth, { AuthProvider } from './context/AuthContext';
+import CreateCourse from './Pages/Admin/CreateCourse';
 
 // ProtectedRoute Component with redirect to login preserving original path
 const ProtectedRoute = ({ allowedRoles = null }) => {
@@ -63,10 +64,11 @@ function App() {
           <Route path="/my-courses" element={<MyCourses />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/courses" element={<ManageCourses />} />
-        </Route>
+        {/* <Route element={<ProtectedRoute allowedRoles={['admin']} />}> */}
+        <Route path="/admin/" element={<AdminDashboard />} />
+        <Route path="/admin/courses" element={<ManageCourses />} />
+        <Route path="/admin/courses/new" element={<CreateCourse />} />
+        {/* </Route> */}
 
         {/* 404 fallback */}
         <Route path="*" element={<NotFound />} />

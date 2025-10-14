@@ -112,8 +112,12 @@ const LandingPage = () => {
       guarantee: '30-day money-back guarantee',
     },
   ];
+
   return (
-    <PublicLayout className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50">
+    <PublicLayout
+      header="landing"
+      className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50"
+    >
       {/* // Hero Section */}
       <section id="home" className="">
         <CarouselWrapper>

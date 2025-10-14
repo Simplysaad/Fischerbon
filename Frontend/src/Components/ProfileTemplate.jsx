@@ -1,6 +1,6 @@
 import { Eye, EyeOff } from 'lucide-react';
 import AuthAlert from './AuthAlert';
-import AdminButton from '../Pages/AdminDashboard/AdminButton';
+import AdminButton from './AdminButton';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 

@@ -8,7 +8,7 @@ export default function CourseCard({ course }) {
     return (sum / ratings.length).toFixed(1);
   };
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden h-ful hover:shadow-lg transition cursor-pointer">
       <img
         src={course.image}
         alt={course.title}
@@ -21,9 +21,8 @@ export default function CourseCard({ course }) {
           </h3>
           <p className="text-gray-600 text-sm mb-2">{course.description}</p>
         </div>
-        <div className="flex items-center justify-between text-gray-700 text-sm font-medium">
-          <span>Duration: {course.duration}</span>
-          <span>Level: {course.level}</span>
+        <div className="flex  items-center justify-start gap-2 text-gray-700 text-sm font-medium">
+          {/* <span>Duration: {course.duration}</span> */}
           {/* {course.certified && (
             <span className="text-yellow-600 font-semibold">Certificate</span>
           )} */}
@@ -33,6 +32,7 @@ export default function CourseCard({ course }) {
               <Star className="text-yellow-600" size={10} fill="#df0" />
             </span>
           </span>
+          <span> ${(course.price ?? 10) * 1 - 0.01}</span>
         </div>
         <Link to={`/courses/${course._id}`}>
           <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition">

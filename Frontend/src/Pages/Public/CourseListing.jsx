@@ -34,7 +34,7 @@ const sampleCourses = [
     image: 'https://via.placeholder.com/400x240?text=Revit+Essentials',
   },
   {
-    _id: '1',
+    _id: 4,
     title: 'AutoCAD Beginner Fundamentals',
     description:
       'Learn the basics of AutoCAD from scratch with hands-on lessons.',
@@ -46,7 +46,7 @@ const sampleCourses = [
     ratings: [{ rating: 4 }, { rating: 5 }, { rating: 4 }],
   },
   {
-    _id: '2',
+    _id: 5,
     title: 'Advanced CAD Modeling',
     description: 'Master complex 3D modeling techniques and workflows.',
     price: 199,
@@ -57,9 +57,9 @@ const sampleCourses = [
     ratings: [{ rating: 5 }, { rating: 5 }, { rating: 4 }, { rating: 5 }],
   },
   {
-    _id: '3',
     title: 'Revit for Intermediate Architects',
     description: 'BIM fundamentals and project workflows using Revit.',
+    _id: 6,
     price: 99,
     payment: 'paid',
     category: 'Revit',
@@ -122,13 +122,15 @@ const CoursesPage = () => {
         </div>
 
         {/* Courses Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredCourses.length === 0 ? (
             <p className="text-center col-span-full text-gray-600">
               No courses found.
             </p>
           ) : (
-            filteredCourses.map((course) => <CourseCard course={course} />)
+            filteredCourses.map((course) => (
+              <CourseCard key={course._id} course={course} />
+            ))
           )}
         </div>
       </section>

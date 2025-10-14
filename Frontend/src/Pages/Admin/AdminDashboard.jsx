@@ -190,9 +190,7 @@ export default function DashboardContent() {
     <DashboardLayout>
       {/* Dashboard Overview */}
       <section id="overview" className="mb-12">
-        <h3 className="text-3xl font-bold text-blue-600 mb-6">
-          Dashboard Overview
-        </h3>
+        <h1 className="text-3xl font-bold text-blue-600 mb-6">Overview</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-6">
           {stats.map(({ id, icon, label, value }) => (
             <StatCard key={id} icon={icon} label={label} value={value} />
@@ -202,8 +200,8 @@ export default function DashboardContent() {
 
       {/* Enrollment Management */}
       <section id="enrollment" className="mb-12">
-        <h3 className="text-3xl font-bold text-blue-600 mb-6">
-          Enrollment Management
+        <h3 className="text-2xl font-semibold text-blue-600 mb-6">
+          Enrollments
         </h3>
         <div className="overflow-auto rounded-lg shadow bg-white p-4">
           <EnrollmentTable enrollments={enrollments} />
@@ -211,9 +209,9 @@ export default function DashboardContent() {
       </section>
 
       {/* Courses */}
-      <section id="certifications" className="mb-12">
+      <section id="courses" className="mb-12">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-3xl font-bold text-blue-600">Courses</h3>
+          <h3 className="text-xl font-semibold text-blue-600">Courses</h3>
           <a
             href="/admin/courses"
             className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
@@ -229,7 +227,7 @@ export default function DashboardContent() {
       {/* Notifications */}
       <section id="notifications" className="mb-12">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-3xl font-bold text-blue-600">Notifications</h3>
+          <h3 className="text-xl font-semibold text-blue-600">Notifications</h3>
           <a
             href="/notifications"
             className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
@@ -258,7 +256,9 @@ export default function DashboardContent() {
 
       {/* Admin Profile */}
       <section id="profile" className="mb-12">
-        <h3 className="text-3xl font-bold text-blue-600 mb-6">Admin Profile</h3>
+        <h3 className="text-xl font-semibold text-blue-600 mb-6">
+          Admin Profile
+        </h3>
         <div className="bg-white rounded-lg shadow p-6 text-gray-700">
           <p>
             <strong>Name:</strong> {user?.name ?? 'Admin'}

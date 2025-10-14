@@ -14,7 +14,6 @@ export const getDashboardInfo = async (req, res, next) => {
       })
       .sort({ createdAt: -1 });
 
-
     const enrollmentsArray = enrollments.map((enrollment) => {
       return {
         progress:
@@ -101,26 +100,44 @@ export const getCourses = async (req, res, next) => {
   try {
     const currentUser = req.user;
 
-    const courses = await Course.find({ instructorId: currentUser._id });
+    const courses = await Course.find({
+      instructorId: currentUser._id,
+    }).populate("lessons");
     console.log(courses);
     const enrollments = await Enrollment.find({
       courseId: { $in: courses.map((course) => course._id) },
     });
 
-    const coursesArray = courses.map((course) => ({
-      _id: course._id,
-      title: course.title,
-      description: course.description,
-      enrollments: enrollments.filter(
-        (enrollment) => enrollment.courseId.toString() === course._id.toString()
-      ).length,
-      thumbnailUrl: course.thumbnailUrl,
-    }));
-
+    // {
+    //       id: '1',
+    //       title: 'AutoCAD Beginner Fundamentals',
+    //       description: 'Learn basics of AutoCAD',
+    //       price: 0,
+    //       payment: 'free',
+    //       category: 'AutoCAD',
+    //       level: 'beginner',
+    //       thumbnailUrl: '',
+    //       lessons: [
+    //         {
+    //           id: 'lesson1',
+    //           title: 'Introduction',
+    //           text: 'Welcome to AutoCAD Beginner',
+    //           video: '',
+    //           files: [],
+    //         },
+    //       ],
+    //     },
+    courses.forEach(
+      (course) =>
+        (course.enrollments = enrollments.filter(
+          (enrollment) =>
+            enrollment.courseId.toString() === course._id.toString()
+        ).length)
+    );
     return res.status(200).json({
       success: true,
-      message: `${coursesArray.length} courses fetched successfully`,
-      data: coursesArray,
+      message: `${courses.length} courses fetched successfully`,
+      data: courses,
     });
   } catch (err) {
     next(err);
