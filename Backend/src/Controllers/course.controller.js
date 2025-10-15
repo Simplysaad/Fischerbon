@@ -64,8 +64,8 @@ export const createCourse = async (req, res, next) => {
 
     // const { title, description, price, category, tags, level } = req.body;
 
-    if (!req.file)
-      throw new Error("thumbnail is not uploaded ", { cause: "no req.file" });
+    // if (!req.file)
+    //   throw new Error("thumbnail is not uploaded ", { cause: "no req.file" });
 
     const thumbnailUrl = req.file?.path;
     const newCourse = new Course({
