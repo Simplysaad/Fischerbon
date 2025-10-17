@@ -63,7 +63,7 @@ export default function Hero({
 
           <a
             // href= {ctaUrl}
-            href="#waitlist"
+            href={ctaUrl || '#waitlist'}
             className="inline-block mt-4 bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-cyan-400 transition-colors focus:outline-none focus:ring-4 focus:ring-cyan-300 max-w-max"
             aria-label={ctaText}
           >

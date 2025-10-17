@@ -3,18 +3,18 @@ import { Schema, model } from "mongoose";
 const lessonSchema = new Schema({
   courseId: {
     type: Schema.Types.ObjectId,
-    ref: "course"
+    ref: "course",
   },
   title: String,
   content: {
     text: String,
     video: String,
-    files: [String]
+    files: [String],
   },
   quizId: {
     type: Schema.Types.ObjectId,
-    ref: "quiz"
-  }
+    ref: "quiz",
+  },
 });
 
 const Lesson = model("lesson", lessonSchema);

@@ -7,7 +7,7 @@ import ResetPasswordPage from './Pages/Auth/ResetPassword';
 import ForgotPasswordPage from './Pages/Auth/ForgotPassword';
 import Profile from './Pages/Auth/Profile';
 
-import StudentDashboard from './Pages/Dashboard/Dashboard';
+import StudentDashboard from './Pages/Student/Dashboard';
 import CourseListing from './Pages/Public/CourseListing';
 import CourseDetails from './Pages/Public/CourseDetails';
 import NotFound from './Pages/Public/404';
@@ -19,6 +19,7 @@ import Home from './Pages/Public/Home';
 
 import useAuth, { AuthProvider } from './context/AuthContext';
 import CreateCourse from './Pages/Admin/CreateCourse';
+import LessonDetails from './Pages/Student/Lesson';
 
 // ProtectedRoute Component with redirect to login preserving original path
 const ProtectedRoute = ({ allowedRoles = null }) => {
@@ -59,10 +60,14 @@ function App() {
           <Route path="/profile" element={<Profile />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={['student']} />}>
-          <Route path="/dashboard" element={<StudentDashboard />} />
-          <Route path="/my-courses" element={<MyCourses />} />
-        </Route>
+        {/* <Route element={<ProtectedRoute allowedRoles={['student']} />}> */}
+        <Route path="/dashboard" element={<StudentDashboard />} />
+        <Route path="/my-courses" element={<MyCourses />} />
+        <Route
+          path="/courses/:courseSlug/lessons/:lessonSlug"
+          element={<LessonDetails />}
+        />
+        {/* </Route> */}
 
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
           <Route path="/admin/" element={<AdminDashboard />} />

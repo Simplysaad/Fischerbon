@@ -6,13 +6,13 @@ const courseSchema = new Schema(
     description: String,
     instructorId: {
       type: Schema.Types.ObjectId,
-      ref: "user"
+      ref: "user",
     },
     price: Number,
     payment: {
       type: String,
       enum: ["paid", "free"],
-      default: "paid"
+      default: "paid",
     },
 
     category: String,
@@ -20,28 +20,44 @@ const courseSchema = new Schema(
     level: {
       type: String,
       enum: ["beginner", "intermediate", "advanced"],
-      default: "beginner"
+      default: "beginner",
     },
     thumbnailUrl: String,
     lessons: [
       {
         type: Schema.Types.ObjectId,
-        ref: "lesson"
-      }
+        ref: "lesson",
+      },
     ],
     ratings: [
       {
         userId: {
           type: Schema.Types.ObjectId,
-          ref: "user"
+          ref: "user",
         },
         rating: Number,
-        message: String
-      }
-    ]
+        message: String,
+      },
+    ],
   },
   { timestamps: true }
 );
 
+const lessonSchema = new Schema({
+  courseId: {
+    type: Schema.Types.ObjectId,
+    ref: "course",
+  },
+  title: String,
+  content: {
+    text: String,
+    video: String,
+    files: [String],
+  },
+  quizId: {
+    type: Schema.Types.ObjectId,
+    ref: "quiz",
+  },
+});
 const Course = model("course", courseSchema);
 export default Course;

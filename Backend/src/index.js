@@ -50,11 +50,11 @@ app.get("/", (req, res, next) => {
   });
 });
 
+app.use("/enrollments", enrollmentRoutes);
 app.use("/auth", authRoutes);
 app.use("/waitlist", waitlistRouter);
 
 app.use("/courses", courseRoutes);
-app.use("/enrollments", enrollmentRoutes);
 
 app.use("/admin", adminRouter);
 

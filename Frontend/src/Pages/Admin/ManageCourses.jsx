@@ -114,12 +114,18 @@ const api = {
         formData.append(key, lessonForm[key]);
       }
 
-      for (let file of lessonFiles) {
-        console.log('lessonfile', file);
+      if (Array.isArray(lessonFiles)) {
+        for (let file of lessonFiles) {
+          console.log('lessonfile', file);
+          formData.append('lessonFiles', file, file.name);
+        }
+      } else {
         formData.append('lessonFiles', file, file.name);
       }
+
       console.log('lessonVideo', lessonVideo);
-      formData.append('lessonVideo', lessonVideo, lessonVideo.name);
+      lessonVideo &&
+        formData.append('lessonVideo', lessonVideo, lessonVideo.name);
 
       // if (
       //   Array.isArray(lesson[key]) &&

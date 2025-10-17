@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import CourseCard from '../../Components/CourseCard';
 import Hero from '../../Components/Hero';
 import Header from '../../Components/Header';
 import PublicLayout from './Layout';
+import axiosInstance from '../../utils/axios.util';
 
 const levels = ['all', 'beginner', 'intermediate', 'advanced'];
 const sampleCourses = [
@@ -73,9 +74,24 @@ const CoursesPage = () => {
   const [search, setSearch] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [expandSearch, setExpandSearch] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const { data: response } = await axiosInstance.get('/courses?limit=2');
+        if (!response.success)
+          throw new Error(response.message || 'unable to fetch courses');
+        else setCourses(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchCourses();
+  }, []);
 
   const filteredCourses = useMemo(() => {
-    return sampleCourses.filter((course) => {
+    return courses.filter((course) => {
       const matchesLevel =
         selectedLevel === 'all' || course.level === selectedLevel;
       const matchesSearch =
@@ -91,7 +107,7 @@ const CoursesPage = () => {
         heading: 'Unlock Your CAD Potential, Explore Our Expert Courses',
         body: 'Learn AutoCAD, Revit, and CAD design skills with industry-recognized certification and hands-on projects.',
         ctaText: 'Enroll now',
-        ctaUrl: '/courses/123',
+        ctaUrl: '/courses/',
       }}
     >
       {/* Filter/Search Section */}

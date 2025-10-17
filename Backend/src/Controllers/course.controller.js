@@ -382,7 +382,7 @@ export const getLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;
-    const { userId } = req;
+    const currentUser = req.user;
 
     // const currentEnrollment = await Enrollment.findOne({
     //   $and: [{ courseId }, { userId }]

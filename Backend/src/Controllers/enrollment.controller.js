@@ -5,6 +5,7 @@ import Enrollment from "../Models/enrollment.model.js";
 import Course from "../Models/course.model.js";
 import sendEmail from "../Utils/nodemailer.util.js";
 import format from "../Utils/format.util.js";
+import User from "../Models/user.model.js";
 
 export const createEnrollment = async (req, res, next) => {
   try {
@@ -19,7 +20,15 @@ export const createEnrollment = async (req, res, next) => {
     const { courseId } = req.params;
 
     const currentUser = req.user;
-    const { email } = currentUser;
+    const { email, enrollments } = currentUser;
+
+    const isEnrolled = enrollments.find((e) => e.courseId === courseId);
+    if (isEnrolled) {
+      return res.status(400).json({
+        success: false,
+        message: "User is already enrolled",
+      });
+    }
 
     const currentCourse = await Course.findOne({ _id: courseId }).select(
       "_id price title"
@@ -38,12 +47,18 @@ export const createEnrollment = async (req, res, next) => {
 
     const payment = await initialize(email, amountInKobo, courseId);
 
-    // const {reference, authorization_url, access_code} = payment
+    if (!payment || !payment.status) {
+      return res.status(500).json({
+        success: false,
+        message:
+          payment?.message || "Error encountered while initializing payment",
+      });
+    }
 
     return res.status(201).json({
       success: true,
       message: "payment initialized",
-      data: payment,
+      data: payment.data,
     });
   } catch (err) {
     next(err);
@@ -95,6 +110,10 @@ export const verifyEnrollment = async (req, res, next) => {
       courseId,
       userId: currentUser._id,
       payment: newPayment?._id,
+    });
+
+    await User.findByIdAndUpdate(currentUser._id, {
+      $addToSet: { enrollments: newEnrollment._id },
     });
 
     const date = new Date(payment.data?.createdAt || newPayment.createdAt);
