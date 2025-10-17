@@ -27,7 +27,7 @@ export const getCourses = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: `${courses.length} courses successfully retrieved`,
-      data: courses
+      data: courses,
     });
   } catch (err) {
     next(err);
@@ -36,20 +36,20 @@ export const getCourses = async (req, res, next) => {
 
 export const createCourse = async (req, res, next) => {
   try {
-    if (!req.body) { 
+    if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad request - Nothing is being sent"
+        message: "Bad request - Nothing is being sent",
       });
     }
 
-    const { _id: userId } = req.user
+    const { _id: userId } = req.user;
 
     const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id "
+        message: "Invalid user Id ",
       });
     }
 
@@ -58,20 +58,25 @@ export const createCourse = async (req, res, next) => {
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only instructor or admin can access this route"
+        message:
+          "Unauthorized - only instructor or admin can access this route",
       });
     }
 
     // const { title, description, price, category, tags, level } = req.body;
+    console.log(req.file, req.files, req.body);
 
-    // if (!req.file)
-    //   throw new Error("thumbnail is not uploaded ", { cause: "no req.file" });
-
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Thumbnail is required for course creation",
+      });
+    }
     const thumbnailUrl = req.file?.path;
     const newCourse = new Course({
       ...req.body,
       thumbnailUrl,
-      instructorId: currentUser?._id
+      instructorId: currentUser?._id,
     });
 
     await newCourse.save();
@@ -79,7 +84,7 @@ export const createCourse = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: "new course created",
-      data: newCourse
+      data: newCourse,
     });
   } catch (err) {
     next(err);
@@ -91,7 +96,7 @@ export const updateCourse = async (req, res, next) => {
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad Request - Nothing is being sent"
+        message: "Bad Request - Nothing is being sent",
       });
     }
     console.log(req.body);
@@ -119,20 +124,20 @@ export const updateCourse = async (req, res, next) => {
     }
 
     const updatedCourse = await Course.findByIdAndUpdate(courseId, update, {
-      new: true
+      new: true,
     });
 
     if (!updatedCourse) {
       return res.status(404).json({
         success: false,
-        message: "course could not be found "
+        message: "course could not be found ",
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "course updated successfully",
-      data: updatedCourse
+      data: updatedCourse,
     });
   } catch (err) {
     next(err);
@@ -144,7 +149,7 @@ export const createLesson = async (req, res, next) => {
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad request - Nothing is being sent"
+        message: "Bad request - Nothing is being sent",
       });
     }
 
@@ -156,7 +161,8 @@ export const createLesson = async (req, res, next) => {
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only instructor or admin can access this route"
+        message:
+          "Unauthorized - only instructor or admin can access this route",
       });
     }
 
@@ -166,7 +172,7 @@ export const createLesson = async (req, res, next) => {
     if (!text && !req.files) {
       return res.status(400).json({
         success: false,
-        message: "neither text nor file is uploaded"
+        message: "neither text nor file is uploaded",
       });
     }
 
@@ -177,21 +183,28 @@ export const createLesson = async (req, res, next) => {
     }
 
     if (req.files) {
+      console.log(req.files);
       const { lessonVideo, lessonFiles } = req.files;
 
-      const lessonFilesPaths = lessonFiles.map((file) => file.path);
+      console.log(lessonFiles);
+      const lessonFilesPaths = lessonFiles
+        ? Array.isArray(lessonFiles)
+          ? lessonFiles?.map((file) => file.path)
+          : lessonFiles[0]?.path
+        : null;
       console.log("lessonFilesPaths", lessonFilesPaths);
 
-      const lessonVideoPath = lessonVideo[0].path;
+      const lessonVideoPath = lessonVideo ? lessonVideo[0]?.path : null;
       console.log("lessonVideoPath", lessonVideoPath);
 
-      (content.video = lessonVideoPath), (content.files = lessonFilesPaths);
+      content.video = lessonVideoPath;
+      content.files = lessonFilesPaths;
     }
 
     const newLesson = new Lesson({
       courseId,
       title,
-      content
+      content,
     });
 
     await newLesson.save();
@@ -199,7 +212,7 @@ export const createLesson = async (req, res, next) => {
     const updatedCourse = await Course.findOneAndUpdate(
       { _id: courseId },
       {
-        $push: { lessons: newLesson._id }
+        $push: { lessons: newLesson._id },
       },
       { new: true }
     );
@@ -207,13 +220,12 @@ export const createLesson = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: "new lesson added successfully",
-      data: newLesson
+      data: newLesson,
     });
   } catch (err) {
     next(err);
   }
 };
-
 
 export const deleteLesson = async (req, res, next) => {
   try {
@@ -224,7 +236,7 @@ export const deleteLesson = async (req, res, next) => {
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id"
+        message: "Invalid user Id",
       });
     }
 
@@ -232,7 +244,7 @@ export const deleteLesson = async (req, res, next) => {
     if (!currentCourse) {
       return res.status(400).json({
         success: false,
-        message: "Invalid course Id"
+        message: "Invalid course Id",
       });
     }
 
@@ -243,7 +255,7 @@ export const deleteLesson = async (req, res, next) => {
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only owner or admin can delete lesson"
+        message: "Unauthorized - only owner or admin can delete lesson",
       });
     }
 
@@ -252,7 +264,7 @@ export const deleteLesson = async (req, res, next) => {
     if (!deletedLesson) {
       return res.status(404).json({
         success: false,
-        message: "Lesson not found"
+        message: "Lesson not found",
       });
     }
 
@@ -265,7 +277,7 @@ export const deleteLesson = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Lesson deleted successfully",
-      data: currentCourse
+      data: currentCourse,
     });
   } catch (err) {
     next(err);
@@ -281,7 +293,7 @@ export const deleteCourse = async (req, res, next) => {
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id"
+        message: "Invalid user Id",
       });
     }
 
@@ -289,7 +301,7 @@ export const deleteCourse = async (req, res, next) => {
     if (!currentCourse) {
       return res.status(404).json({
         success: false,
-        message: "Course not found"
+        message: "Course not found",
       });
     }
 
@@ -300,7 +312,7 @@ export const deleteCourse = async (req, res, next) => {
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only owner or admin can delete course"
+        message: "Unauthorized - only owner or admin can delete course",
       });
     }
 
@@ -308,14 +320,14 @@ export const deleteCourse = async (req, res, next) => {
     if (!deletedCourse) {
       return res.status(404).json({
         success: false,
-        message: "Course already deleted or not found"
+        message: "Course already deleted or not found",
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Course deleted successfully",
-      data: deletedCourse
+      data: deletedCourse,
     });
   } catch (err) {
     next(err);
@@ -331,7 +343,7 @@ export const getCourse = async (req, res, next) => {
     if (!currentUser) {
       return res.status(401).json({
         success: false,
-        message: "User not authenticated"
+        message: "User not authenticated",
       });
     }
 
@@ -352,14 +364,14 @@ export const getCourse = async (req, res, next) => {
     if (!currentCourse) {
       return res.status(404).json({
         success: false,
-        message: "Course not found"
+        message: "Course not found",
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Course data retrieved successfully",
-      data: currentCourse
+      data: currentCourse,
     });
   } catch (err) {
     next(err);
@@ -387,14 +399,14 @@ export const getLesson = async (req, res, next) => {
     if (!currentLesson) {
       return res.status(404).json({
         success: false,
-        message: "Invalid Lesson Id"
+        message: "Invalid Lesson Id",
       });
     }
 
     if (completed) {
       const completedLesson = {
         lessonId: new mongoose.Types.ObjectId(lessonId),
-        completedAt: new Date(Date.now())
+        completedAt: new Date(Date.now()),
       };
 
       // await currentEnrollment.save();
@@ -402,14 +414,14 @@ export const getLesson = async (req, res, next) => {
       return res.status(201).json({
         success: true,
         message: "Lesson completed - progress saved",
-        data: completedLesson
+        data: completedLesson,
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Lesson retrieved successfully",
-      data: currentLesson
+      data: currentLesson,
     });
   } catch (err) {
     next(err);

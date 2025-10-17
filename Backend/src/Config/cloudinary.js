@@ -6,7 +6,7 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const storage = new CloudinaryStorage({
@@ -16,9 +16,10 @@ const storage = new CloudinaryStorage({
     const isVideo = file.mimetype.startsWith("video/");
     return {
       folder: "fischerbon",
-      resource_type: isImage ? "image" : isVideo ? "video" : "raw"
+      resource_type: isImage ? "image" : isVideo ? "video" : "raw",
     };
-  }
+  },
 });
 
-export const upload = multer({ storage });
+export const upload = multer({ dest: "./uploads" });
+// export const upload = multer({ storage });

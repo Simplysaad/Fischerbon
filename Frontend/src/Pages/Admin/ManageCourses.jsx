@@ -25,8 +25,8 @@ const api = {
             _id: 'lesson1',
             title: 'Introduction',
             text: 'Welcome to AutoCAD Beginner',
-            video: '',
-            files: [],
+            lessonVideo: '',
+            lessonFiles: [],
           },
         ],
       },
@@ -43,19 +43,55 @@ const api = {
       },
     ];
   },
+  // createCourse: async (course) => {
+  //   console.log(course);
+  //   const formData = new FormData();
+  //   for (const key in course) {
+  //     console.log(key, course[key]);
+  //     if (course[key] instanceof File)
+  //       formData.append(key, course[key], course[key].name);
+  //     else formData.append(key, course[key]);
+  //   }
+  //   console.log(formData.get('thumbnail'));
+  //   const { data: response } = await axiosInstance.post(
+  //     '/courses/create',
+  //     formData
+  //   );
+  //   return response;
+  // },
   createCourse: async (course) => {
-    const formData = new FormData();
-    for (const key in course) {
-      formData.append(key, course[key]);
-    }
-    const { data: response } = await axiosInstance.post(
-      '/courses/create',
-      formData,
-      {
-        'Content-Type': 'multipart/formdata',
+    try {
+      console.log(course);
+      const formData = new FormData();
+      for (const key in course) {
+        const value = course[key];
+        if (value instanceof File) {
+          // Append single file with filename
+          formData.append(key, value, value.name);
+        } else if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          value[0] instanceof File
+        ) {
+          // Append array of lessonFiles
+          value.forEach((file) => {
+            formData.append(key, file, file.name);
+          });
+        } else {
+          // Append other types like string, number
+          formData.append(key, value);
+        }
       }
-    );
-    return response;
+      console.log(formData.get('thumbnail')); // for debugging the thumbnail file presence
+      const { data: response } = await axiosInstance.post(
+        '/courses/create',
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error('Error creating course:', error);
+      throw error;
+    }
   },
   updateCourse: async (courseId, updates) => {
     const formData = new FormData();
@@ -69,27 +105,57 @@ const api = {
     return response;
   },
   addLesson: async (courseId, lesson) => {
-    const formData = new FormData();
-    for (const key in lesson) {
-      formData.append(key, lesson[key]);
+    try {
+      const formData = new FormData();
+      const { lessonForm, lessonFiles, lessonVideo } = lesson;
+
+      for (let key in lessonForm) {
+        console.log('lessonForm', key);
+        formData.append(key, lessonForm[key]);
+      }
+
+      for (let file of lessonFiles) {
+        console.log('lessonfile', file);
+        formData.append('lessonFiles', file, file.name);
+      }
+      console.log('lessonVideo', lessonVideo);
+      formData.append('lessonVideo', lessonVideo, lessonVideo.name);
+
+      // if (
+      //   Array.isArray(lesson[key]) &&
+      //   lesson[key].length > 0 &&
+      //   lesson[key][0] instanceof File
+      // ) {
+      //   lesson[key].forEach((file) => {
+      //     formData.append(key, file, file.name);
+      //   });
+      // }
+
+      const { data: response } = await axiosInstance.post(
+        `/courses/${courseId}/lessons`,
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error('Error adding lesson:', error);
+      throw error;
     }
-    const { data: response } = await axiosInstance.post(
-      `/courses/${courseId}/lessons`,
-      formData
-    );
-    return response;
   },
   updateLesson: async (courseId, lessonId, updates) => {
-    const formData = new FormData();
-    for (const key in updates) {
-      formData.append(key, updates[key]);
+    try {
+      const formData = new FormData();
+      for (const key in updates) {
+        formData.append(key, updates[key]);
+      }
+      const { data: response } = await axiosInstance.post(
+        `/courses/${courseId}/lessons/${lessonId}`,
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error('Error updating lesson:', error);
+      throw error;
     }
-    const { data: response } = await axiosInstance.post(
-      `/courses/${courseId}/lessons/${lessonId}`,
-      formData,
-      { 'Content-Type': 'multipart/formdata' }
-    );
-    return response;
   },
   deleteLesson: async (courseId, lessonId) => {
     try {
@@ -113,15 +179,16 @@ const CourseManagement = () => {
     payment: 'paid',
     category: '',
     level: 'beginner',
-    thumbnail: null,
-    thumbnailPreview: '',
   });
+  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState('');
+  const [lessonVideo, setLessonVideo] = useState(null);
+  const [lessonFiles, setLessonFiles] = useState(null);
+
   const [lessonForm, setLessonForm] = useState({
     _id: null,
     title: '',
     text: '',
-    video: '',
-    files: [],
   });
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
@@ -150,9 +217,9 @@ const CourseManagement = () => {
         payment: 'paid',
         category: '',
         level: 'beginner',
-        thumbnail: null,
-        thumbnailPreview: '',
       });
+      setThumbnail(null);
+      setThumbnailPreview(null);
       resetLessonForm();
       return;
     }
@@ -165,9 +232,9 @@ const CourseManagement = () => {
         payment: course.payment,
         category: course.category,
         level: course.level,
-        thumbnail: null,
-        thumbnailPreview: course.thumbnailUrl || '',
       });
+      setThumbnail(null);
+      setThumbnailPreview(course.thumbnailUrl || '');
       resetLessonForm();
     }
   }, [selectedCourseId, courses]);
@@ -177,21 +244,37 @@ const CourseManagement = () => {
       _id: null,
       title: '',
       text: '',
-      video: '',
-      files: [],
     });
+    setLessonVideo(null);
+    setLessonFiles(null);
   };
+
+  // Cleanup function for object URLs
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+    };
+  }, [thumbnailPreview]);
+
+  useEffect(() => {
+    console.log(lessonFiles);
+  }, [lessonFiles]);
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Revoke previous URL if it exists
+    if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(thumbnailPreview);
+    }
+
     const previewURL = URL.createObjectURL(file);
 
-    setCourseForm((prev) => ({
-      ...prev,
-      thumbnail: file,
-      thumbnailPreview: previewURL,
-    }));
+    setThumbnail(file);
+    setThumbnailPreview(previewURL);
   };
 
   // Handle course form submission (create or update)
@@ -215,7 +298,7 @@ const CourseManagement = () => {
         );
         setMsg('Course updated successfully.');
       } else {
-        const response = await api.createCourse(courseForm);
+        const response = await api.createCourse({ ...courseForm, thumbnail });
         if (!response.success) throw new Error(response.message);
 
         setCourses((prev) => [...prev, response.data]);
@@ -248,8 +331,9 @@ const CourseManagement = () => {
         const response = await api.updateLesson(
           selectedCourseId,
           lessonForm._id,
-          lessonForm
+          { lessonForm, lessonFiles, lessonVideo }
         );
+        console.log(lessonFiles);
         if (!response.success) throw new Error(response.message);
 
         setCourses((prev) =>
@@ -265,7 +349,11 @@ const CourseManagement = () => {
         );
         setMsg('Lesson updated successfully.');
       } else {
-        const response = await api.addLesson(selectedCourseId, lessonForm);
+        const response = await api.addLesson(selectedCourseId, {
+          lessonForm,
+          lessonVideo,
+          lessonFiles,
+        });
         if (!response.success) throw new Error(response.message);
 
         setCourses((prev) =>
@@ -283,19 +371,31 @@ const CourseManagement = () => {
   };
 
   // Handle lesson file input
-  const handleFileChange = (e) => {
-    const filesArray = Array.from(e.target.files);
-    setLessonForm((prev) => ({ ...prev, files: filesArray }));
-  };
+  // const handleFileChange = (e) => {
+  //   const lessonFilesArray = Array.from(e.target.files);
+  //   setLessonFiles(lessonFilesArray);
+  // };
 
   const deleteLesson = async (courseId, lessonId) => {
     try {
       const response = await api.deleteLesson(courseId, lessonId);
       if (!response.success) throw new Error(response.message);
 
+      // Update courses state to remove the deleted lesson
+      setCourses((prev) =>
+        prev.map((course) => {
+          if (course._id !== courseId) return course;
+          return {
+            ...course,
+            lessons: course.lessons.filter((l) => l._id !== lessonId),
+          };
+        })
+      );
+
       resetLessonForm();
+      setMsg('Lesson deleted successfully.');
     } catch (error) {
-      console.error(error);
+      setError('Failed to delete lesson: ' + error.message);
     }
   };
 
@@ -332,9 +432,9 @@ const CourseManagement = () => {
                 payment: 'paid',
                 category: '',
                 level: 'beginner',
-                thumbnail: null,
-                thumbnailPreview: '',
               });
+              setThumbnail(null);
+              setThumbnailPreview('');
               resetLessonForm();
               setMsg('');
               setError('');
@@ -446,9 +546,9 @@ const CourseManagement = () => {
                   className="w-full border rounded px-3 py-2"
                   onChange={handleImageChange}
                 />
-                {courseForm.thumbnailPreview && (
+                {thumbnailPreview && (
                   <img
-                    src={courseForm.thumbnailPreview}
+                    src={thumbnailPreview}
                     alt="Thumbnail Preview"
                     className="mt-2 rounded max-h-32 object-contain"
                   />
@@ -493,8 +593,8 @@ const CourseManagement = () => {
                           _id: lesson._id,
                           title: lesson.title,
                           text: lesson.text,
-                          video: lesson.video,
-                          files: lesson.files,
+                          // lessonVideo: lesson.video,
+                          // lessonFiles: lesson.files,
                         })
                       }
                     >
@@ -521,7 +621,7 @@ const CourseManagement = () => {
                     onChange={(e) =>
                       setLessonForm({ ...lessonForm, title: e.target.value })
                     }
-                    required
+                    // required
                   />
                 </div>
                 <div>
@@ -536,15 +636,13 @@ const CourseManagement = () => {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium mb-1">Video URL</label>
+                  <label className="block font-medium mb-1">Video</label>
                   <input
-                    type="text"
+                    type="file"
+                    accept="video/*"
                     className="w-full border rounded px-3 py-2"
-                    value={lessonForm.video}
-                    onChange={(e) =>
-                      setLessonForm({ ...lessonForm, video: e.target.value })
-                    }
-                    placeholder="YouTube or direct video link"
+                    onChange={(e) => setLessonVideo(e.target.files[0])}
+                    placeholder=""
                   />
                 </div>
                 <div>
@@ -552,12 +650,12 @@ const CourseManagement = () => {
                   <input
                     type="file"
                     multiple
-                    onChange={handleFileChange}
+                    onChange={(e) => setLessonFiles(Array.from(e.target.files))}
                     className="w-full"
                   />
-                  {lessonForm.files?.length > 0 && (
+                  {lessonFiles?.length > 0 && (
                     <ul className="mt-2 text-sm text-gray-700 list-disc list-inside">
-                      {lessonForm.files.map((f, i) => (
+                      {lessonFiles.map((f, i) => (
                         <li key={i}>{f.name || f}</li>
                       ))}
                     </ul>

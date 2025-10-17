@@ -1,325 +1,265 @@
-import { useState, useEffect } from 'react';
-import AdminDashboardLayout from './Layout';
-import AuthAlert from '../../Components/AuthAlert';
-import AdminButton from '../../Components/AdminButton';
-import { useNavigate } from 'react-router-dom';
-import objectToFormData from '../../utils/objectToFormdata';
+// import React, { useState } from 'react';
+// import axiosInstance from '../../utils/axios.util';
+
+// const levels = ['beginner', 'intermediate', 'advanced'];
+// const payments = ['free', 'paid'];
+
+// const CreateCourse = () => {
+//   const [courseForm, setCourseForm] = useState({
+//     title: '',
+//     description: '',
+//     price: 0,
+//     payment: 'paid',
+//     category: '',
+//     level: 'beginner',
+//   });
+//   const [thumbnail, setThumbnail] = useState(null);
+//   const [thumbnailPreview, setThumbnailPreview] = useState('');
+
+//   const handleImageChange = (e) => {
+//     const file = e.target.files?.[0];
+//     if (!file) return;
+
+//     // Revoke previous URL if it exists
+//     if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+//       URL.revokeObjectURL(thumbnailPreview);
+//     }
+
+//     const previewURL = URL.createObjectURL(file);
+
+//     setThumbnail(file);
+//     setThumbnailPreview(previewURL);
+//   };
+
+//   const handleCourseSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const formdata = new FormData();
+
+//       thumbnail && formdata.append('thumbnail', thumbnail, thumbnail.name)
+//       // console.log(thumbnail);
+//       for (const key in courseForm) {
+//         formdata.append(key, courseForm[key]);
+//       }
+
+//       const entries = formdata.entries();
+//       entries.forEach((element) => {
+//         console.log(element);
+//       });
+
+//       const { data: response } = await axiosInstance.post(
+//         '/courses/create',
+//         formdata
+//       );
+//       console.log(response);
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   return (
+//     <form
+//       id="courseForm"
+//       onSubmit={(e) => handleCourseSubmit(e)}
+//       className="mb-8 space-y-4"
+//     >
+//       <h2 className="text-xl font-semibold mb-4">Create New Course</h2>
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//         <div>
+//           <label className="block font-medium mb-1">Title</label>
+//           <input
+//             type="text"
+//             className="w-full border rounded px-3 py-2"
+//             value={courseForm.title}
+//             onChange={(e) =>
+//               setCourseForm({ ...courseForm, title: e.target.value })
+//             }
+//             required
+//           />
+//         </div>
+//         <div>
+//           <label className="block font-medium mb-1">Category</label>
+//           <input
+//             type="text"
+//             className="w-full border rounded px-3 py-2"
+//             value={courseForm.category}
+//             onChange={(e) =>
+//               setCourseForm({ ...courseForm, category: e.target.value })
+//             }
+//             placeholder="e.g. AutoCAD"
+//           />
+//         </div>
+//         <div>
+//           <label className="block font-medium mb-1">Level</label>
+//           <select
+//             className="w-full border rounded px-3 py-2"
+//             value={courseForm.level}
+//             onChange={(e) =>
+//               setCourseForm({ ...courseForm, level: e.target.value })
+//             }
+//             required
+//           >
+//             {levels.map((lvl) => (
+//               <option key={lvl} value={lvl}>
+//                 {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+//         <div>
+//           <label className="block font-medium mb-1">Payment</label>
+//           <select
+//             className="w-full border rounded px-3 py-2"
+//             value={courseForm.payment}
+//             onChange={(e) =>
+//               setCourseForm({ ...courseForm, payment: e.target.value })
+//             }
+//             required
+//           >
+//             {payments.map((pay) => (
+//               <option key={pay} value={pay}>
+//                 {pay.charAt(0).toUpperCase() + pay.slice(1)}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+//         <div>
+//           <label className="block font-medium mb-1">Price (USD)</label>
+//           <input
+//             type="number"
+//             min="0"
+//             className="w-full border rounded px-3 py-2"
+//             value={courseForm.price}
+//             onChange={(e) =>
+//               setCourseForm({
+//                 ...courseForm,
+//                 price: parseFloat(e.target.value),
+//               })
+//             }
+//             disabled={courseForm.payment === 'free'}
+//             required={courseForm.payment !== 'free'}
+//           />
+//         </div>
+//         <div>
+//           <label className="block font-medium mb-1">Thumbnail</label>
+//           <input
+//             type="file"
+//             accept="image/*"
+//             className="w-full border rounded px-3 py-2"
+//             onChange={handleImageChange}
+//           />
+//           {thumbnailPreview && (
+//             <img
+//               src={thumbnailPreview}
+//               alt="Thumbnail Preview"
+//               className="mt-2 rounded max-h-32 object-contain"
+//             />
+//           )}
+//         </div>
+//       </div>
+//       <div>
+//         <label className="block font-medium mb-1">Description</label>
+//         <textarea
+//           className="w-full border rounded px-3 py-2"
+//           rows={4}
+//           value={courseForm.description}
+//           onChange={(e) =>
+//             setCourseForm({
+//               ...courseForm,
+//               description: e.target.value,
+//             })
+//           }
+//         />
+//       </div>
+//       <button
+//         type="submit"
+//         className="bg-blue-600 text-white rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold"
+//       >
+//         Create Course
+//       </button>
+//     </form>
+//   );
+// };
+
+// export default CreateCourse;
+
+import React, { useState } from 'react';
 import axiosInstance from '../../utils/axios.util';
 
-const CreateCourse = () => {
-  const navigate = useNavigate;
+function CourseCreateForm() {
   const [thumbnail, setThumbnail] = useState(null);
-  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
 
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState('');
-  const [lessonCount, setLessonCount] = useState(0);
-
-  const [result, setResult] = useState({});
-
-  const [data, setData] = useState({
-    title: '',
-    description: '',
-    price: '',
-    thumbnail: File,
-    lessonTitles: [],
-    lessonVideos: [],
-  });
-
-  const adjustFormArrayLength = (arrayName, targetLength) => {
-    setData((prevForm) => {
-      const currentArray = prevForm[arrayName] || [];
-      const newArray = currentArray.slice(0, targetLength);
-      while (newArray.length < targetLength) {
-        newArray.push('');
-      }
-      return {
-        ...prevForm,
-        [arrayName]: newArray,
-      };
-    });
-  };
-
-  useEffect(() => {
-    adjustFormArrayLength('lessons', parseInt(lessonCount) || 0);
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, files, value } = e.target;
-    if (name === 'thumbnail') {
-      setData({ ...data, file: files });
-    } else {
-      setData({ ...data, [name]: value });
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!data.title.trim()) newErrors.title = 'Course title is required';
-    if (!data.description.trim())
-      newErrors.description = 'Course Description is required';
-    if (!data.price.trim()) newErrors.price = 'Course Price is required';
-    return newErrors;
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    const inputName = e.target.name;
-    if (!file) return;
-    const previewURL = URL.createObjectURL(file);
-    setThumbnail(file);
-    setThumbnailPreview(previewURL);
-    setData((prevForm) => ({
-      ...prevForm,
-      [inputName]: file,
-      [`${inputName}Preview`]: previewURL,
-    }));
-  };
-
-  const handleArrayChange = (arrayName, index, value) => {
-    setData((prevForm) => {
-      const updatedArray = [...(prevForm[arrayName] || [])];
-      updatedArray[index] = value;
-      return {
-        ...prevForm,
-        [arrayName]: updatedArray,
-      };
-    });
-  };
-
-  async function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
+    const formData = new FormData();
+    if (thumbnail) {
+      formData.append('thumbnail', thumbnail, thumbnail.name);
     }
-    setLoading(true);
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('price', price);
 
-    const { lessonTitles, lessonVideos, ...newData } = data;
-    const newForm = objectToFormData(newData);
     try {
-      const response = await axiosInstance.post('/courses/create', newForm, {
-        headers: { 'Content-Type': 'multipart/formdata' },
-      });
+      const response = await axiosInstance.post('/courses/create', formData);
 
-      console.log(response);
-      setResult(response.data);
-      console.log('result', result);
-
-      if (!result || !result.success) {
-        setAlert('failure');
+      if (response.success) {
+        console.log(response);
+        alert('Course created successfully!');
       } else {
-        setAlert('success');
-        // navigate('/courses/');
+        alert('Failed to create course.');
       }
     } catch (error) {
-      setAlert('network');
-      console.error(error);
-    } finally {
-      setLoading(false);
+      alert('Error: ' + error.message);
     }
-  }
-
-  const labelStyle = 'text-gray font-serif leading-9 md:text-lg text-md';
-  const inputStyle =
-    'w-full p-3 border-2 border-[#C8CDD0] rounded-lg outline-none placeholder:text-[#ACB4B9] text-[16px] leading-6 focus:border-primary transition-colors duration-200 ease-in-out';
+  };
 
   return (
-    <>
-      {alert === 'success' ? (
-        <AuthAlert
-          header={'Success'}
-          message={`${data.title} has been successfully created`}
-          iconType={'success'}
-          border={'#3c97d0'}
-          onClose={() => setAlert('')}
+    <form onSubmit={handleSubmit} encType="multipart/form-data">
+      <div>
+        <label>Thumbnail (image):</label>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setThumbnail(e.target.files[0])}
+          required
         />
-      ) : alert === 'failure' ? (
-        <AuthAlert
-          header={'Oops'}
-          message={'Something went wrong, try that again later'}
-          iconType={'error'}
-          onClose={() => setAlert('')}
+      </div>
+
+      <div>
+        <label>Title:</label>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
         />
-      ) : alert === 'network' ? (
-        <AuthAlert
-          header={'Network Error'}
-          message={"You're not connected to the internet"}
-          iconType={'error'}
-          onClose={() => setAlert('')}
+      </div>
+
+      <div>
+        <label>Description:</label>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
         />
-      ) : (
-        ''
-      )}
-      <AdminDashboardLayout>
-        <div className="md:bg-[#F1F2F3] bg-none rounded-lg md:p-3">
-          <form
-            onSubmit={(e) => handleSubmit(e)}
-            className="space-y-5 mt-5 p-5 bg-white rounded-lg"
-          >
-            <h4 className="font-medium text-lg bg-primary p-2 w-fit text-white">
-              Step 1 - Course Details
-            </h4>
-            <div>
-              <label htmlFor="title" className={labelStyle}>
-                Course Title
-              </label>
-              <input
-                type="text"
-                name="title"
-                value={data.title}
-                id="title"
-                onChange={handleInputChange}
-                placeholder="Enter a title for the course"
-                className={inputStyle}
-              />
-              {errors.title && (
-                <p className="text-red-500 text-sm mt-1">{errors.title}</p>
-              )}
-            </div>
+      </div>
 
-            <div>
-              <label htmlFor="description" className={labelStyle}>
-                Course Description
-              </label>
-              <input
-                type="text"
-                name="description"
-                value={data.description}
-                id="description"
-                onChange={handleInputChange}
-                placeholder="Enter a description title for the course"
-                className={inputStyle}
-              />
-              {errors.description && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.description}
-                </p>
-              )}
-            </div>
+      <div>
+        <label>Price:</label>
+        <input
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          required
+        />
+      </div>
 
-            <div>
-              <label htmlFor="price" className={labelStyle}>
-                Course Price
-              </label>{' '}
-              <br />
-              <span className="w-full flex items-center border-2 gap-3 p-3 border-[#C8CDD0] rounded-lg">
-                &#8358;
-                <input
-                  type="number"
-                  value={data.price}
-                  id="price"
-                  name="price"
-                  onChange={handleInputChange}
-                  placeholder="Enter the price of the course"
-                  className="w-full outline-none border-none placeholder:text-[#ACB4B9] text-[16px]"
-                />
-              </span>
-              {errors.price && (
-                <p className="text-red-500 text-sm mt-1">{errors.price}</p>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="thumbnail" className={labelStyle}>
-                Upload Course Thumbnail
-              </label>
-              <input
-                id="thumbnail"
-                onChange={handleImageChange}
-                name="thumbnail"
-                type="file"
-                accept="image/*"
-                className={inputStyle}
-              />
-              {data.thumbnailPreview && (
-                <img
-                  src={data.thumbnailPreview}
-                  alt={`${data.title} Thumbnail`}
-                  className="w-full mt-5 rounded-lg"
-                />
-              )}
-            </div>
-
-            <h4 className="font-medium text-lg bg-primary p-2 w-fit text-white">
-              Step 2 - Lessons
-            </h4>
-            <div>
-              <label htmlFor="price" className={labelStyle}>
-                No of Lessons
-              </label>
-              <input
-                type="number"
-                id="lessons"
-                onChange={(e) => setLessonCount(e.target.value)}
-                placeholder="Enter the number of lessons"
-                className={inputStyle}
-                value={lessonCount}
-                // min={1}
-              />
-
-              {Array.from(
-                { length: parseInt(lessonCount) || 0 },
-                (_, index) => (
-                  <div className="space-y-2 my-5">
-                    <div>
-                      <label htmlFor="title" className="text-gray text-md">
-                        {`Lesson Title ${index + 1}`}
-                      </label>
-                      <input
-                        key={`lessonTitle-${index}`}
-                        type="text"
-                        className={inputStyle}
-                        placeholder={`Lesson Title ${index + 1}`}
-                        value={data.lessonTitles[index] || ''}
-                        required
-                        onChange={(e) =>
-                          handleArrayChange(
-                            'lessonTitles',
-                            index,
-                            e.target.value
-                          )
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="title" className="text-gray text-md">
-                        Video
-                      </label>
-                      <input
-                        key={`lessonVideo-${index}`}
-                        accept=".mp4"
-                        type="file"
-                        className={inputStyle}
-                        placeholder={`Lesson Video ${index + 1}`}
-                        value={data.lessonVideos[index] || ''}
-                        required
-                        min={1}
-                        onChange={(e) =>
-                          handleArrayChange(
-                            'lessonVideos',
-                            index,
-                            e.target.value
-                          )
-                        }
-                      />
-                    </div>
-                  </div>
-                )
-              )}
-            </div>
-
-            <AdminButton
-              text={loading ? 'Creating Course...' : 'Create Course'}
-              disabled={loading}
-            />
-          </form>
-        </div>
-      </AdminDashboardLayout>
-    </>
+      <button type="submit">Create Course</button>
+    </form>
   );
-};
+}
 
-export default CreateCourse;
+export default CourseCreateForm;

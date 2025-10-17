@@ -64,11 +64,11 @@ function App() {
           <Route path="/my-courses" element={<MyCourses />} />
         </Route>
 
-        {/* <Route element={<ProtectedRoute allowedRoles={['admin']} />}> */}
-        <Route path="/admin/" element={<AdminDashboard />} />
-        <Route path="/admin/courses" element={<ManageCourses />} />
-        <Route path="/admin/courses/new" element={<CreateCourse />} />
-        {/* </Route> */}
+        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+          <Route path="/admin/" element={<AdminDashboard />} />
+          <Route path="/admin/courses" element={<ManageCourses />} />
+          {/* <Route path="/admin/courses/new" element={<CreateCourse />} /> */}
+        </Route>
 
         {/* 404 fallback */}
         <Route path="*" element={<NotFound />} />

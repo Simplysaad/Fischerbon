@@ -19,7 +19,7 @@ router.use(authMiddleware);
 router.get("/", getCourses);
 
 // Get a course
-router.get("/:courseId", getCourse); 
+router.get("/:courseId", getCourse);
 
 // Create a new course
 router.post("/create", upload.single("thumbnail"), createCourse);
@@ -33,7 +33,7 @@ router.post(
   "/:courseId/lessons",
   upload.fields([
     { name: "lessonVideo", maxCount: 1 },
-    { name: "lessonFiles", maxCount: 4 }
+    { name: "lessonFiles", maxCount: 4 },
   ]),
   createLesson
 );
