@@ -3,6 +3,13 @@ import PublicLayout from './Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
+import lessonVideo from '../../assets/test.mp4';
+import {
+  ArrowBigLeft,
+  ArrowLeft,
+  ArrowRight,
+  LucideArrowBigLeft,
+} from 'lucide-react';
 
 const LessonDetails = () => {
   const { courseSlug, lessonSlug } = useParams();
@@ -57,7 +64,8 @@ const LessonDetails = () => {
     return <div className="text-center py-12">Lesson or course not found.</div>;
 
   const lessonIndex = course.lessons.findIndex(
-    (l) => l.toString() === lessonId
+    (l) => l._id === lessonId
+    // (l) => l.toString() === lessonId
   );
 
   // Navigation helpers
@@ -69,6 +77,7 @@ const LessonDetails = () => {
 
   const hasPrev = lessonIndex > 0;
   const hasNext = lessonIndex < course.lessons.length - 1;
+  const hasOnlyOne = !hasPrev || !hasNext;
 
   const isCompleted = enrollment?.completedLessons?.some(
     (cl) => cl.lessonId === lessonId
@@ -76,72 +85,123 @@ const LessonDetails = () => {
 
   return (
     <PublicLayout>
-      <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow mt-8">
-        <h1 className="text-2xl font-semibold mb-4">{lesson.title}</h1>
-
-        {lesson.content?.video && (
-          <div className="mb-6">
-            <video
-              src={lesson.content.video}
-              controls
-              className="w-full rounded shadow"
-              preload="metadata"
-            >
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        )}
-
-        {lesson.content?.text && (
-          <div
-            className="prose max-w-none mb-6"
-            dangerouslySetInnerHTML={{ __html: lesson.content.text }}
-          />
-        )}
-
-        {lesson.content?.files?.length > 0 && (
-          <div className="mb-6">
-            <h3 className="font-semibold mb-2">Resources & Files</h3>
-            <ul className="list-disc list-inside text-blue-600">
-              {lesson.content.files.map((file, idx) => (
-                <li key={idx}>
-                  <a
-                    href={file}
-                    download={file?.split('/')?.at(-1).split('-').join('.')}
-                    rel="noopener noreferrer"
-                    className="underline hover:text-blue-800"
+      <section className="flex lg:gap-6 gap-4 px-4 py-6 flex-col md:flex-row">
+        <main className="md:max-w-[70%]">
+          {lesson.content?.video && (
+            <div className="mb-6 w-[100%]">
+              {lesson.content?.video && (
+                <div className="mb-6">
+                  <video
+                    // src={lesson.content.video}
+                    src={lessonVideo}
+                    controls
+                    className="w-full  rounded shadow"
+                    preload="metadata"
                   >
-                    {file.split('/').pop()}
-                  </a>
-                </li>
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )}
+            </div>
+          )}
+
+          <section className="">
+            <h2 className="font-bold text-xl">{lesson.title}</h2>
+            <div
+              className="my-4 prose max-w-none mb-6"
+              dangerouslySetInnerHTML={{ __html: lesson.content?.text }}
+            ></div>
+            {lesson.content?.files?.length > 0 && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-2">Resources & Files</h3>
+                <ul className="list-disc list-inside text-blue-600">
+                  {lesson.content.files.map((file, idx) => (
+                    <li key={idx}>
+                      <a
+                        href={file}
+                        download={file?.split('/')?.at(-1).split('-').join('.')}
+                        rel="noopener noreferrer"
+                        className="underline hover:text-blue-800"
+                      >
+                        {file?.split('/')?.at(-1).split('-').join('.')}
+                        {/* {file.split('/').pop()} */}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div
+              className={`cta ${hasOnlyOne ? '' : 'flex'}  justify-between gap-2`}
+            >
+              <button
+                hidden={!hasPrev}
+                disabled={!hasPrev}
+                onClick={() => {
+                  hasPrev &&
+                    navigate(
+                      `/courses/${courseId}/lessons/${course.lessons[lessonIndex - 1]._id}`
+                    );
+                }}
+                className="py-2 float-start flex px-4 text-green-600 rounded underline"
+              >
+                <ArrowLeft />
+                <span>Previous Lesson</span>
+              </button>
+              <button
+                hidden={!hasNext}
+                disabled={!hasNext}
+                onClick={() => {
+                  hasNext &&
+                    navigate(
+                      `/courses/${courseId}/lessons/${course.lessons[lessonIndex + 1]._id}`
+                    );
+                }}
+                className="py-2 float-end flex justify-start px-4 text-green-600 rounded underline"
+              >
+                <span>Next Lesson</span>
+                <ArrowRight />
+              </button>
+            </div>
+          </section>
+        </main>
+        <aside className="min-w-[30%]">
+          <h2 className="text-xl font-bold py-4">All Lessons</h2>
+          <section className="w-full  flex flex-col gap-2">
+            {course.lessons.length > 0 &&
+              course.lessons.map((lesson, idx) => (
+                <div
+                  key={lesson._id || idx}
+                  className={`flex justify-start  items-center gap-2 border rounded p-2 py-1 min-w-full cursor-pointer ${
+                    false ? 'bg-green-100 border-green-400' : 'bg-white'
+                    //  completed ? 'bg-green-100 border-green-400' : 'bg-white'
+                  }`}
+                  onClick={() => {
+                    console.log(lesson.title);
+                    console.log(
+                      `/courses/${courseId}/lessons/${course.lessons[idx]._id}`
+                    );
+                    navigate(
+                      `/courses/${courseId}/lessons/${course.lessons[idx]._id}`
+                    );
+                  }}
+                  title={lesson.title}
+                >
+                  <span className="rounded-full text-center text-3xl font-bold px-4 py-2">
+                    {idx + 1}
+                  </span>
+                  <span className="font-light">
+                    {/* <p className={`${completed ? 'line-through text-green-600' : ''}`}> */}
+                    <p className={`'line-through text-green-600'}`}>
+                      {lesson.title}
+                    </p>
+                  </span>
+                </div>
               ))}
-            </ul>
-          </div>
-        )}
-
-        <div
-          className={`mb-6 font-semibold ${isCompleted ? 'text-green-600' : 'text-yellow-600'}`}
-        >
-          {isCompleted ? '✓ Completed' : 'Not Completed'}
-        </div>
-
-        <div className="flex justify-between">
-          <button
-            disabled={!hasPrev}
-            onClick={() => goToLesson(lessonIndex - 1)}
-            className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <button
-            disabled={!hasNext}
-            onClick={() => goToLesson(lessonIndex + 1)}
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      </div>
+          </section>
+        </aside>
+      </section>
     </PublicLayout>
   );
 };

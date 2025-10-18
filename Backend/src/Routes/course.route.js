@@ -14,18 +14,26 @@ import {
 import authMiddleware from "../Middleware/auth.middleware.js";
 import { upload } from "../Config/cloudinary.js";
 
-router.use(authMiddleware);
-
 router.get("/", getCourses);
 
 // Get a course
 router.get("/:courseId", getCourse);
 
 // Create a new course
-router.post("/create", upload.single("thumbnail"), createCourse);
+router.post(
+  "/create",
+  authMiddleware,
+  upload.single("thumbnail"),
+  createCourse
+);
 
 // Update course
-router.post("/:courseId", upload.single("thumbnail"), updateCourse);
+router.post(
+  "/:courseId",
+  authMiddleware,
+  upload.single("thumbnail"),
+  updateCourse
+);
 // router.post("/:courseId",  updateCourse);
 
 // Add new lesson to a course
@@ -39,11 +47,11 @@ router.post(
 );
 
 // Delete a particular lesson
-router.delete("/:courseId/lessons/:lessonId", deleteLesson);
+router.delete("/:courseId/lessons/:lessonId", authMiddleware, deleteLesson);
 
-router.get("/:courseId/lessons/:lessonId", getLesson);
+router.get("/:courseId/lessons/:lessonId", authMiddleware, getLesson);
 
 // Delete a particular course
-router.delete("/:courseId/", deleteCourse);
+router.delete("/:courseId/", authMiddleware, deleteCourse);
 
 export default router;

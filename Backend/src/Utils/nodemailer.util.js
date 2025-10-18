@@ -19,20 +19,29 @@ const transporter = nodemailer.createTransport({
 
 export default async function sendEmail(emailOptions) {
   try {
-    const { to, subject, template, data } = emailOptions;
-
-    const templatePath = path.join(
-      __dirname,
-      "..",
-      "Templates",
-      `${"layout"}.ejs`
-    );
-    const emailHtml = await ejs.renderFile(templatePath, {
-      ...data,
+    const { to, subject, template, data, message } = emailOptions;
+    const templateOptions = {
       subject,
       logoUrl: `${process.env.BASE_URL}/Images/fischerbon-logo.png`,
       supportEmail: "support@fischerbon.com",
-    });
+    };
+    if (template && data) {
+      let templatePath = path.join(
+        __dirname,
+        "..",
+        "Templates",
+        `${template}.ejs`
+      );
+
+      let htmlMessage = await ejs.renderFile(templatePath, data);
+      templateOptions.message = htmlMessage;
+    } else {
+      templateOptions.message = message;
+    }
+
+    const templatePath = path.join(__dirname, "..", "Templates", "layout.ejs");
+
+    const emailHtml = await ejs.renderFile(templatePath, templateOptions);
 
     // Send email
     await transporter.sendMail({

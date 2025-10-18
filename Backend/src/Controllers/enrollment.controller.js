@@ -118,17 +118,17 @@ export const verifyEnrollment = async (req, res, next) => {
 
     const date = new Date(payment.data?.createdAt || newPayment.createdAt);
 
-    // await sendEmail({
-    //   to: currentUser.email,
-    //   subject: "Course Enrollment Confirmation",
-    //   template: "enrollmentSuccess",
-    //   data: {
-    //     name: currentUser.name.split(" ")[0] || "User",
-    //     title: currentCourse.title,
-    //     amount: payment.data.amount / 100,
-    //     date: format(date),
-    //   },
-    // });
+    await sendEmail({
+      to: currentUser.email,
+      subject: "Course Enrollment Confirmation",
+      template: "enrollmentSuccess",
+      data: {
+        name: currentUser.name.split(" ")[0] || "User",
+        title: currentCourse.title,
+        amount: payment.data.amount / 100,
+        date: format(date),
+      },
+    });
 
     return res.status(201).json({
       success: true,

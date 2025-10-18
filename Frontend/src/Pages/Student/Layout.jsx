@@ -9,7 +9,7 @@ const PublicLayout = ({ children, header, hero }) => {
       {/* Hero Section */}
       {hero && <Hero hero={hero} />}
       {children}
-      <footer className="bg-gray-100 py-8 text-center text-gray-600 select-none text-sm">
+      <footer className="bg-gray-100 relative bottom-0 min-w-screen py-8 text-center text-gray-600 select-none text-sm">
         &copy; {new Date().getFullYear()} FISCHERBON inc. All rights reserved.
       </footer>
     </div>

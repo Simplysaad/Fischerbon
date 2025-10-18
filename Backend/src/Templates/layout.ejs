@@ -67,12 +67,11 @@
                 <%= subject %>
             </h1>
             <p>
-                <%= name ? `Dear ${name},` : "Hi" %>
-                <%= "Dear user," %>
+                <%=  `Hi ${name ? name: ""},` %>
             </p>
-            <p>
+            <div>
                 <%= message %>
-            </p>
+            </div>
             <p>Best regards,<br />The FischerBon Team</p>
         </div>
         <div class="footer">

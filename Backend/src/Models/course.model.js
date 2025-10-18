@@ -43,21 +43,10 @@ const courseSchema = new Schema(
   { timestamps: true }
 );
 
-const lessonSchema = new Schema({
-  courseId: {
-    type: Schema.Types.ObjectId,
-    ref: "course",
-  },
-  title: String,
-  content: {
-    text: String,
-    video: String,
-    files: [String],
-  },
-  quizId: {
-    type: Schema.Types.ObjectId,
-    ref: "quiz",
-  },
-});
+// courseSchema.virtual("slug", function () {
+//   // TODO: Include the slug
+//   return `${this.title.slice(1, 150)}-${this._id}`;
+// });
+
 const Course = model("course", courseSchema);
 export default Course;

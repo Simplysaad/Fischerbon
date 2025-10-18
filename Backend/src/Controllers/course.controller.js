@@ -336,29 +336,8 @@ export const deleteCourse = async (req, res, next) => {
 
 export const getCourse = async (req, res, next) => {
   try {
-    const { userId } = req;
+    // const { _id: userId = null } = req.user;
     const { courseId } = req.params;
-
-    const currentUser = await User.findById(userId);
-    if (!currentUser) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
-
-    // Uncomment and implement enrollment and instructor checks before sending course data
-    /*
-    const isInstructor = await Course.exists({ _id: courseId, instructorId: userId });
-    const isEnrolled = await Enrollment.exists({ userId, courseId });
-
-    if (!isInstructor && !isEnrolled && currentUser.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied - not enrolled or instructor",
-      });
-    }
-    */
 
     const currentCourse = await Course.findById(courseId).populate("lessons");
     if (!currentCourse) {

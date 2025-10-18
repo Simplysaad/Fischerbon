@@ -41,12 +41,10 @@ const LoginPage = () => {
 
       if (response.success) {
         const currentUser = response.data;
-        const returnTo =
-          currentUser.role === 'admin' ? '/admin/dashboard' : '/dashboard';
-        console.log(currentUser);
+
+        console.log(currentUser); //TODO: Remove this;
         setAlert('success');
         setResult({ message: 'Welcome back!' });
-        setTimeout(() => navigate(returnTo), 1500);
       } else {
         setAlert('failure');
         setResult({ message: 'Invalid credentials' });

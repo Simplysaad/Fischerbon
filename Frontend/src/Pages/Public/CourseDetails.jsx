@@ -2,7 +2,12 @@ import React, { useEffect, useState } from 'react';
 import PublicLayout from './Layout';
 import Header from '../../Components/Header';
 import { Phone, Star, Users } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
 
@@ -16,6 +21,7 @@ const CourseDetails = () => {
   const [course, setCourse] = useState(null);
   const [enrollment, setEnrollment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     async function fetchCourseDetails() {
@@ -48,6 +54,11 @@ const CourseDetails = () => {
 
   const handleEnroll = async () => {
     try {
+      if (!user) {
+        navigate('/login', { state: { from: location } });
+        // <Navigate to={'/login'} state={} />;
+        return null;
+      }
       const { data: response } = await axiosInstance.post(
         `/enrollments/new/${courseId}`
       );
@@ -188,11 +199,9 @@ const CourseDetails = () => {
                         completed ? 'bg-green-100 border-green-400' : 'bg-white'
                       }`}
                       onClick={() => {
-                        if (enrollment) {
-                          navigate(
-                            `/courses/${courseId}/lessons/${lesson._id}`
-                          );
-                        }
+                        // if (enrollment) {
+                        navigate(`/courses/${courseId}/lessons/${lesson._id}`);
+                        // }
                       }}
                       title={completed ? 'Completed' : 'Not completed'}
                     >
