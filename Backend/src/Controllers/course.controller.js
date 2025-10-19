@@ -43,9 +43,8 @@ export const createCourse = async (req, res, next) => {
       });
     }
 
-    const { _id: userId } = req.user;
+    const currentUser = req.user;
 
-    const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
       return res.status(400).json({
         success: false,
@@ -153,8 +152,7 @@ export const createLesson = async (req, res, next) => {
       });
     }
 
-    const { userId } = req;
-    const currentUser = await User.findOne({ _id: userId });
+    const currentUser = req.user;
 
     const isAuthorized =
       currentUser.role === "instructor" || currentUser.role === "admin";
@@ -230,9 +228,8 @@ export const createLesson = async (req, res, next) => {
 export const deleteLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
-    const { userId } = req;
 
-    const currentUser = await User.findById(userId);
+    const currentUser = req.user;
     if (!currentUser) {
       return res.status(400).json({
         success: false,
@@ -249,7 +246,7 @@ export const deleteLesson = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === userId ||
+      currentCourse.instructorId.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {
@@ -287,9 +284,8 @@ export const deleteLesson = async (req, res, next) => {
 export const deleteCourse = async (req, res, next) => {
   try {
     const { courseId } = req.params;
-    const { userId } = req;
 
-    const currentUser = await User.findById(userId);
+    const currentUser = req.user;
     if (!currentUser) {
       return res.status(400).json({
         success: false,
@@ -306,7 +302,7 @@ export const deleteCourse = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === userId ||
+      currentCourse.instructorId.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {
@@ -336,7 +332,6 @@ export const deleteCourse = async (req, res, next) => {
 
 export const getCourse = async (req, res, next) => {
   try {
-    // const { _id: userId = null } = req.user;
     const { courseId } = req.params;
 
     const currentCourse = await Course.findById(courseId).populate("lessons");
@@ -361,10 +356,10 @@ export const getLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;
-    const currentUser = req.user;
+    // const currentUser = req.user;
 
     // const currentEnrollment = await Enrollment.findOne({
-    //   $and: [{ courseId }, { userId }]
+    //   $and: [{ courseId }, { userId:currentUser._id }]
     // });
 
     // if (!currentEnrollment) {

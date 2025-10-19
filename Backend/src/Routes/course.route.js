@@ -39,6 +39,7 @@ router.post(
 // Add new lesson to a course
 router.post(
   "/:courseId/lessons",
+  authMiddleware,
   upload.fields([
     { name: "lessonVideo", maxCount: 1 },
     { name: "lessonFiles", maxCount: 4 },

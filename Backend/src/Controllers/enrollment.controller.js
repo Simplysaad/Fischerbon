@@ -44,7 +44,19 @@ export const createEnrollment = async (req, res, next) => {
     const { price: amount } = currentCourse;
 
     const amountInKobo = amount * 100;
-
+    // await sendEmail({
+    //     to: currentUser.email,
+    //     subject: "Course Enrollment Confirmation",
+    //     template: "enrollmentSuccess",
+    //     // message: "Thamks for enrolling in this course",
+    //     data: {
+    //       courseId,
+    //       name: currentUser.name.split(" ")[0] || "",
+    //       title: currentCourse.title,
+    //       amount: amountInKobo / 100,
+    //       date: format(Date.now()),
+    //     },
+    //  });
     const payment = await initialize(email, amountInKobo, courseId);
 
     if (!payment || !payment.status) {
@@ -126,6 +138,7 @@ export const verifyEnrollment = async (req, res, next) => {
         name: currentUser.name.split(" ")[0] || "User",
         title: currentCourse.title,
         amount: payment.data.amount / 100,
+        courseId,
         date: format(date),
       },
     });

@@ -32,7 +32,6 @@ export default async function sendEmail(emailOptions) {
         "Templates",
         `${template}.ejs`
       );
-
       let htmlMessage = await ejs.renderFile(templatePath, data);
       templateOptions.message = htmlMessage;
     } else {

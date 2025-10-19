@@ -100,11 +100,11 @@ const CourseDetails = () => {
 
   return (
     <PublicLayout
-      hero={{
-        heading: course.title,
-        ctaText: enrollment ? 'Continue Learning' : 'Enroll now',
-        body: course.description,
-      }}
+    // hero={{
+    //   heading: course.title,
+    //   ctaText: enrollment ? 'Continue Learning' : 'Enroll now',
+    //   body: course.description,
+    // }}
     >
       <div className="lg:flex justify-between py-8 md:px-8 px-4">
         <section className="h-full lg:w-[60%]">
@@ -199,11 +199,13 @@ const CourseDetails = () => {
                         completed ? 'bg-green-100 border-green-400' : 'bg-white'
                       }`}
                       onClick={() => {
-                        // if (enrollment) {
-                        navigate(`/courses/${courseId}/lessons/${lesson._id}`);
-                        // }
+                        if (enrollment) {
+                          navigate(
+                            `/courses/${courseId}/lessons/${lesson._id}`
+                          );
+                        }
                       }}
-                      title={completed ? 'Completed' : 'Not completed'}
+                      title={lesson.title}
                     >
                       <span className="rounded-full text-center text-3xl font-bold px-4 py-2">
                         {idx + 1}

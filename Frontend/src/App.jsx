@@ -18,7 +18,6 @@ import ManageCourses from './Pages/Admin/ManageCourses';
 import Home from './Pages/Public/Home';
 
 import useAuth, { AuthProvider } from './context/AuthContext';
-import CreateCourse from './Pages/Admin/CreateCourse';
 import LessonDetails from './Pages/Student/Lesson';
 
 // ProtectedRoute Component with redirect to login preserving original path
