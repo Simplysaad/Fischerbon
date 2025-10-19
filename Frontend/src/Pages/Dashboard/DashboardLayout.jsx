@@ -28,7 +28,11 @@ const DashboardLayout = ({ children }) => {
         }
         className={`${sidebarOpen ? 'opacity-50 md:opacity-100' : ''} flex flex-col h-full w-full md:mr-4`}
       >
-        <Header onClick={() => setsidebarOpen(true)} />
+        <Header
+          onClick={() => setsidebarOpen(true)}
+          name={'Abdulqoyum Amuda'}
+          role={'student'}
+        />
 
         <main className="flex-1 h-full overflow-x-hidden pb-5 no-scrollbar pt-3 md:px-0 px-5">
           {children}

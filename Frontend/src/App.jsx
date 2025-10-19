@@ -19,8 +19,9 @@ const App = () => {
     <>
       <BrowserRouter>
         <Routes>
-          {/* Auth */}
           <Route path="/" element={<LoginPage />} />
+
+          {/* Auth */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -36,7 +37,7 @@ const App = () => {
             }
           />
           <Route
-            path="/enrollment"
+            path="/courses"
             element={
               // <ProtectedRoute>
               <Courses />
@@ -45,7 +46,7 @@ const App = () => {
           />
 
           <Route
-            path="/enrollment/:course"
+            path="/courses/:courseId"
             element={
               // <ProtectedRoute>
               <Courses />

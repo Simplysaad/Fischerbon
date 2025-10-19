@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AdminHeader from './AdminHeader';
+import Header from '../Dashboard/Header';
 import AdminSidebar from './AdminSidebar';
 
 const AdminDashboardLayout = ({ children }) => {
@@ -22,7 +22,11 @@ const AdminDashboardLayout = ({ children }) => {
         }
         className={`${sidebarOpen ? 'opacity-50 md:opacity-100' : ''} flex flex-col h-full w-full md:mr-4`}
       >
-        <AdminHeader onClick={() => setsidebarOpen(true)} />
+        <Header
+          onClick={() => setsidebarOpen(true)}
+          name={'Iskil Ismail'}
+          role={'admin'}
+        />
 
         <main className="flex-1 h-full overflow-x-hidden pb-5 no-scrollbar mt-3 md:px-3 px-5">
           <section className="overflow-y-auto no-scrollbar w-full">

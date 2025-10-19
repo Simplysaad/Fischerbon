@@ -1,12 +1,15 @@
 import { Menu, Search } from 'lucide-react';
 import { navItems } from './Sidebar';
 
-const Header = ({ onClick }) => {
+const Header = ({ onClick, name, role }) => {
   let pathname = window.location.pathname;
 
-  const currentNavItem =
-    navItems.some((item) => item.link === pathname.trim()) &&
-    navItems.find((item) => item.link === pathname.trim());
+  let currentNavItem;
+  if (navItems.filter((item) => pathname === item.link).length < 1) {
+    currentNavItem = navItems[0];
+  } else {
+    currentNavItem = navItems.find((item) => pathname.includes(item.link));
+  }
 
   const date = new Date();
   const hours = date.getHours();
@@ -17,15 +20,14 @@ const Header = ({ onClick }) => {
     return `${greeting} night`;
   };
 
-  let name = 'Abdulqoyum Amuda';
-
   const TopHeader = ({ mode }) => {
     return (
       <div
         className={`flex justify-between ${mode === 'desktop' ? 'gap-3' : 'w-full'} items-center`}
       >
         <h4 className="text-lg font-medium text-dark">
-          {`${getHours('Good')}, ${'Abdulqoyum'}`}
+          {`${getHours('Good')}, ${name.split(' ')[0]}`}{' '}
+          {role === 'admin' && <span className="font-bold"> - Admin</span>}
         </h4>
         <div className="flex items-center">
           <div className="size-10 bg-primary text-white font-bold justify-center rounded-full flex items-center text-center hover:bg-primaryHover">
@@ -45,7 +47,7 @@ const Header = ({ onClick }) => {
 
       <div className="bg-[#F1F2F3] p-3 rounded-md mx-3 md:mx-0 flex justify-between items-center">
         <h4 className="text-xl text-dark font-semibold">
-          {(currentNavItem && currentNavItem.name) || 'Dashboard'}
+          {currentNavItem && currentNavItem.name}
         </h4>
 
         <div className="px-5 md:flex hidden">
@@ -64,12 +66,18 @@ const Header = ({ onClick }) => {
       </div>
 
       {currentNavItem.tag && (
-        <div className="md:mx-3 mx-5 mt-2 pb-0.5">
-          <div className="flex gap-3 items-center">
-            <div className="bg-primary size-2 rounded-full" />
-            <p className="text-gray text-sm">{currentNavItem.tag}</p>
+        <>
+          {' '}
+          <div className="md:mx-3 mx-5 mt-1.5">
+            <div className="flex gap-3 items-center">
+              <div className="bg-primary size-2 rounded-full opacity-50" />
+              <p className="text-dark font-serif text-sm md:text-md">
+                {currentNavItem.tag}
+              </p>
+            </div>
           </div>
-        </div>
+          <hr className="bg-secondary h-0.5 text-secondary md:mx-1 mx-3 rounded-md mt-1" />
+        </>
       )}
     </header>
   );

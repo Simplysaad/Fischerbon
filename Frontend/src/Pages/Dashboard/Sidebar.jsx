@@ -23,7 +23,7 @@ export const navItems = [
   {
     name: 'Courses',
     icon: BookOpen,
-    link: '/enrollment',
+    link: '/courses',
     label: 'Continue Learning',
     description: `You've completed ${2} lessons in the last ${5} weeks`,
     button: 'Continue Learning',
@@ -40,7 +40,7 @@ export const navItems = [
       },
       {
         course: '3D Drawing',
-        status: 'open',
+        status: 'closed',
         lessons: [],
       },
       {
@@ -157,13 +157,14 @@ const Sidebar = ({ onClick }) => {
                         return (
                           <Link
                             key={index}
-                            to={`/enrollment/${course.course
+                            to={`/courses/${course.course
+                              .toLowerCase()
                               .replace(/\s+/g, '-')
                               .replace(/[^\w-]+/g, '')}`}
                           >
                             <div
                               className={`py-2 px-3 ml-5 flex gap-1 text-[12px] font-sans items-center cursor-pointer  ${course.course === currentCourse ? 'border-l-secondary border-l-3 bg-[hsl(203,11%,85%)] border-white text-dark' : 'hover:text-dark hover:text-[13px] hover:bg-[hsl(203,11%,90%)] duration-150 ease-in-out'}`}
-                              onMouseDown={window.innerWidth < 768 && onClick}
+                              // onMouseDown={window.innerWidth < 768 && onClick}
                               onClick={() => setCurrentCourse(course.course)}
                             >
                               <span className="text-red-500">
