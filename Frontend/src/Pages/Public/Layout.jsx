@@ -1,19 +1,45 @@
-import Header from '../../Components/Header';
 import Hero from '../../Components/Hero';
+import useAuth from '../../context/AuthContext';
 
-const PublicLayout = ({ children, header, hero }) => {
+import Header from '../../Components/Header';
+import Sidebar from '../../Components/Sidebar';
+
+import React, { useState, useEffect } from 'react';
+import { BellIcon, Layers, User2 } from 'lucide-react';
+
+const navItems = [
+  { href: '/courses', label: 'Courses', icon: Layers },
+  { href: '/login', label: 'Login', icon: User2 },
+  { href: '#notifications', label: 'Notifications', icon: BellIcon },
+];
+
+export default function Layout({ children, hero }) {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+
   return (
-    <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50">
-      {/* Header */}
-      <Header type={header} />
-      {/* Hero Section */}
-      {hero && <Hero hero={hero} />}
-      {children}
-      <footer className="bg-gray-100 py-8 text-center text-gray-600 select-none text-sm">
-        &copy; {new Date().getFullYear()} FISCHERBON inc. All rights reserved.
-      </footer>
+    <div className="">
+      <Header
+        isSidebarOpen={isSidebarOpen}
+        setIsSidebarOpen={setIsSidebarOpen}
+        activeHref={activeSection}
+        navItems={navItems}
+      />
+
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar
+          navItems={navItems}
+          isSidebarOpen={isSidebarOpen}
+          setIsSidebarOpen={setIsSidebarOpen}
+          activeHref={activeSection}
+        />
+
+        <main className="flex-1 overflow-y-auto mt-16 overscroll-contain px-0">
+          {hero && <Hero hero={hero} />}
+
+          {children}
+        </main>
+      </div>
     </div>
   );
-};
-
-export default PublicLayout;
+}

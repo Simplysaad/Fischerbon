@@ -43,10 +43,10 @@ const courseSchema = new Schema(
   { timestamps: true }
 );
 
-// courseSchema.virtual("slug", function () {
-//   // TODO: Include the slug
-//   return `${this.title.slice(1, 150)}-${this._id}`;
-// });
+courseSchema.virtual("slug").get(function () {
+  // TODO: Include the slug
+  return `${this.title.slice(1, 150)}-${this._id}`;
+});
 
 const Course = model("course", courseSchema);
 export default Course;

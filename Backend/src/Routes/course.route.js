@@ -10,6 +10,7 @@ import {
   getCourse,
   getLesson,
   getCourses,
+  updateLesson,
 } from "../Controllers/course.controller.js";
 import authMiddleware from "../Middleware/auth.middleware.js";
 import { upload } from "../Config/cloudinary.js";
@@ -49,6 +50,17 @@ router.post(
 
 // Delete a particular lesson
 router.delete("/:courseId/lessons/:lessonId", authMiddleware, deleteLesson);
+
+//Edit
+router.post(
+  "/:courseId/lessons/:lessonId",
+  authMiddleware,
+  upload.fields([
+    { name: "lessonVideo", maxCount: 1 },
+    { name: "lessonFiles", maxCount: 4 },
+  ]),
+  updateLesson
+);
 
 router.get("/:courseId/lessons/:lessonId", authMiddleware, getLesson);
 

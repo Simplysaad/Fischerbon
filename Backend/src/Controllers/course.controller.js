@@ -52,13 +52,11 @@ export const createCourse = async (req, res, next) => {
       });
     }
 
-    const isAuthorized =
-      currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized = currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message:
-          "Unauthorized - only instructor or admin can access this route",
+        message: "Unauthorized - only admin can access this route",
       });
     }
 
@@ -154,13 +152,83 @@ export const createLesson = async (req, res, next) => {
 
     const currentUser = req.user;
 
-    const isAuthorized =
-      currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized = currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message:
-          "Unauthorized - only instructor or admin can access this route",
+        message: "Unauthorized - only admin can access this route",
+      });
+    }
+
+    const { courseId, lessonId } = req.params;
+    const { title, text } = req.body;
+
+    if (!text && !req.files) {
+      return res.status(400).json({
+        success: false,
+        message: "neither text nor file is uploaded",
+      });
+    }
+
+    const updates = {};
+    const content = {};
+
+    if (text) {
+      content.text = text;
+    }
+
+    if (req.files) {
+      console.log(req.files);
+      const { lessonVideo, lessonFiles } = req.files;
+
+      console.log(lessonFiles);
+      const lessonFilesPaths = lessonFiles
+        ? Array.isArray(lessonFiles)
+          ? lessonFiles?.map((file) => file.path)
+          : lessonFiles[0]?.path
+        : null;
+      console.log("lessonFilesPaths", lessonFilesPaths);
+
+      const lessonVideoPath = lessonVideo ? lessonVideo[0]?.path : null;
+      console.log("lessonVideoPath", lessonVideoPath);
+
+      content.video = lessonVideoPath;
+      content.files = lessonFilesPaths;
+    }
+
+    if (title) updates.$set.title = title;
+    if (content) updates.$set.content = content;
+
+    const updatedLesson = await Lesson.findByIdAndUpdate(lessonId, updates, {
+      new: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "lesson updated successfully",
+      data: updatedLesson,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateLesson = async (req, res, next) => {
+  try {
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request - Nothing is being sent",
+      });
+    }
+
+    const currentUser = req.user;
+
+    const isAuthorized = currentUser.role === "admin";
+    if (!isAuthorized) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized - only admin can access this route",
       });
     }
 
@@ -356,18 +424,6 @@ export const getLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;
-    // const currentUser = req.user;
-
-    // const currentEnrollment = await Enrollment.findOne({
-    //   $and: [{ courseId }, { userId:currentUser._id }]
-    // });
-
-    // if (!currentEnrollment) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "Forbidden - User not enrolled to this course"
-    //   });
-    // }
 
     const currentLesson = await Lesson.findOne({ _id: lessonId });
     if (!currentLesson) {
@@ -379,11 +435,9 @@ export const getLesson = async (req, res, next) => {
 
     if (completed) {
       const completedLesson = {
-        lessonId: new mongoose.Types.ObjectId(lessonId),
+        lessonId, //: new mongoose.Types.ObjectId(lessonId),
         completedAt: new Date(Date.now()),
       };
-
-      // await currentEnrollment.save();
 
       return res.status(201).json({
         success: true,

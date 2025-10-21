@@ -19,7 +19,9 @@ export default function CourseCard({ course }) {
           <h3 className="text-xl font-semibold mb-1 text-gray-900">
             {course.title}
           </h3>
-          <p className="text-gray-600 text-sm mb-2">{course.description}</p>
+          <p className="text-gray-600 text-sm mb-2">
+            {course.description.split(' ').slice(0, 20).join(' ') + '...'}
+          </p>
         </div>
         <div className="flex  items-center justify-start gap-2 text-gray-700 text-sm font-medium">
           {/* <span>Duration: {course.duration}</span> */}

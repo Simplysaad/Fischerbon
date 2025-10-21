@@ -10,6 +10,7 @@ import {
 } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
+import formatCurrency from '../../utils/formatCurrency';
 
 const CourseDetails = () => {
   const { slug } = useParams();
@@ -96,16 +97,10 @@ const CourseDetails = () => {
 
   // Format price display
   const formattedPrice =
-    course.payment === 'free' ? 'Free' : `$${(course.price / 100).toFixed(2)}`;
+    course.payment === 'free' ? 'Free' : `${formatCurrency(course.price)}`;
 
   return (
-    <PublicLayout
-    // hero={{
-    //   heading: course.title,
-    //   ctaText: enrollment ? 'Continue Learning' : 'Enroll now',
-    //   body: course.description,
-    // }}
-    >
+    <PublicLayout>
       <div className="lg:flex justify-between py-8 md:px-8 px-4">
         <section className="h-full lg:w-[60%]">
           {course.thumbnailUrl && (
