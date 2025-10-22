@@ -7,42 +7,19 @@ import { useLocation } from 'react-router-dom';
 
 const navItems = [
   { href: '/admin/', label: 'Overview', icon: Layers },
-  { href: '#enrollments', label: 'Enrollments', icon: Users },
   { href: '/admin/courses', label: 'Courses', icon: BookOpen },
-  { href: '#notifications', label: 'Notifications', icon: BellIcon },
-  { href: '#profile', label: 'Profile', icon: User2 },
+  {
+    href: '/notifications',
+    label: 'Notifications',
+    onlySidebar: true,
+    icon: BellIcon,
+  },
+  { href: '/profile', label: 'Profile', onlySidebar: true, icon: User2 },
 ];
 
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeHref, setActiveHref] = useState('#overview');
-
-  // // Track scroll to highlight active sidebar link
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const sections = [
-  //       '#overview',
-  //       '#enrollment',
-  //       '#courses',
-  //       '#certifications',
-  //       '#notifications',
-  //       '#profile',
-  //     ];
-  //     let current = '#overview';
-  //     const scrollY = window.pageYOffset;
-
-  //     for (const href of sections) {
-  //       const element = document.querySelector(href);
-  //       if (element && element.offsetTop - 80 <= scrollY) {
-  //         current = href;
-  //       }
-  //     }
-  //     setActiveHref(current);
-  //   };
-
-  //   window.addEventListener('scroll', handleScroll, { passive: true });
-  //   return () => window.removeEventListener('scroll', handleScroll);
-  // }, []);
+  const [activeHref, setActiveHref] = useState('');
 
   const location = useLocation();
   useEffect(() => {
@@ -59,6 +36,7 @@ export default function DashboardLayout({ children }) {
     });
   }, [location]);
 
+  // https://o75955.ingest.sentry.io/api/4505953531199488/envelope/?sentry_key=6e2ba0bf7c73d34430ca15324ed93ae8&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.116.0https://o75955.ingest.sentry.io/api/4505953531199488/envelope/?sentry_key=6e2ba0bf7c73d34430ca15324ed93ae8&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.116.0
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 overflow-hidden">
       <Header
@@ -79,7 +57,7 @@ export default function DashboardLayout({ children }) {
           activeHref={activeHref}
         />
 
-        <main className="flex-1 overflow-y-auto mt-16 overscroll-contain">
+        <main className="overflow-y-auto mt-20 min-w-screen container overscroll-contain px-6">
           {children}
         </main>
       </div>

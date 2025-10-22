@@ -32,25 +32,29 @@ const Header = ({ isSidebarOpen, setIsSidebarOpen, activeHref, navItems }) => {
 
       <div className="options hidden md:inline-block px-4 py-2 ">
         <ul className="flex gap-3 justify-center ">
-          {navItems?.map(({ href, label, icon: Icon, onClick = null }) => (
-            <li key={href} title={label}>
-              <Link
-                to={href}
-                className={`flex gap-1  items-center ${
-                  href === activeHref
-                    ? 'text-blue-600 font-semibold'
-                    : 'text-gray-700'
-                }`}
-                onClick={() => {
-                  setIsSidebarOpen(false);
-                  if (onClick) onClick();
-                }}
-              >
-                <Icon size={20} />
-                <span className="hidden lg:inline">{label}</span>
-              </Link>
-            </li>
-          ))}
+          {navItems?.map(
+            ({ href, label, icon: Icon, onClick = null, onlySidebar }) => (
+              <li key={href} title={label}>
+                <Link
+                  to={href}
+                  className={`flex gap-1  items-center ${
+                    href === activeHref
+                      ? 'text-blue-600 font-semibold'
+                      : 'text-gray-700'
+                  }`}
+                  onClick={() => {
+                    setIsSidebarOpen(false);
+                    if (onClick) onClick();
+                  }}
+                >
+                  <Icon size={20} />
+                  <span className={`hidden ${onlySidebar ? '' : 'lg:inline'}`}>
+                    {label}
+                  </span>
+                </Link>
+              </li>
+            )
+          )}
         </ul>
       </div>
     </header>
