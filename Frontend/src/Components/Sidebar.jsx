@@ -7,7 +7,7 @@ const Sidebar = ({ isSidebarOpen, setIsSidebarOpen, activeHref, navItems }) => {
 
   return (
     <nav
-      className={` transition-all duration-200 z-30 fixed ${isSidebarOpen ? 'lg:w-[20%] md:w-[30%] w-[100%] px-2 py-4' : 'w-0 p-0 m-0'} opacity-90 md:hidden min-h-screen overflow-y-scroll bg-inherit  flex flex-col  items-start`}
+      className={` transition-all duration-200 z-30 fixed ${isSidebarOpen ? 'lg:w-[20%] md:w-[30%] w-[100%] px-2 py-4' : 'w-0 p-0 m-0'} opacity-90 md:hidden min-h-screen overflow-y-scroll bg-white  flex flex-col  items-start`}
     >
       <button
         className="md:hidden self-end mb-4 p-2 rounded-md hover:bg-gray-200 transition-colors"

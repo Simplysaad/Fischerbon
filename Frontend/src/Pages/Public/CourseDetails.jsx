@@ -115,7 +115,7 @@ const CourseDetails = () => {
             />
           )}
           <div className="text-start">
-            <h2 className="font-semibold text-[1.5rem] py-4 flex justify-between items-center">
+            <h2 className="font-semibold text-[1.5rem] py-4 flex flex-col md:flex-row justify-between md:items-center">
               <span>{course.title}</span>
               <span className="text-[1.2rem] font-light">{formattedPrice}</span>
             </h2>
