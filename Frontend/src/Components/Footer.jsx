@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import Logo from '../assets/logo-removebg-preview-removebg-preview.png';
 
 const Footer = () => {
   return (
@@ -12,7 +13,7 @@ const Footer = () => {
             aria-label="Homepage"
             className="text-2xl font-bold mb-3 inline-block hover:text-cyan-300"
           >
-            AutoCAD LMS
+            <img src={Logo} alt="Fischerbon LMS" />
           </Link>
           <p className="text-sm text-cyan-200 max-w-xs">
             Learn AutoCAD and CAD fundamentals with expert guidance. Build

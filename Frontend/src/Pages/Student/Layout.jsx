@@ -24,6 +24,7 @@ import Header from '../../Components/Header';
 import Sidebar from '../../Components/Sidebar';
 import { X, BellIcon, BookOpen, Layers, User2, Users } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import Footer from '../../Components/Footer';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: Layers },
@@ -78,6 +79,7 @@ export default function DashboardLayout({ children }) {
           {children}
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

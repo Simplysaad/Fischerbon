@@ -7,6 +7,7 @@ import Sidebar from '../../Components/Sidebar';
 import React, { useState, useEffect } from 'react';
 import { BellIcon, Layers, User2 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import Footer from '../../Components/Footer';
 
 const navItems = [
   { href: '/courses', label: 'Courses', icon: Layers },
@@ -55,6 +56,7 @@ export default function Layout({ children, hero }) {
           {children}
         </main>
       </div>
+      <Footer />
     </div>
   );
 }
