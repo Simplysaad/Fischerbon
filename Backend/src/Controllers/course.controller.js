@@ -21,8 +21,8 @@ export const getCourses = async (req, res, next) => {
 
     const courses = await Course.find(filter)
       .sort({ createdAt: -1 })
-      .skip(page ? Number((parseInt(page) - 1) * parseInt(limit)) : 0)
-      .limit(parseInt(limit) ?? null);
+      .skip(page ? Number((parseInt(page) - 1) * parseInt(limit)) : 0);
+    // .limit(parseInt(limit) ?? null);
 
     return res.status(200).json({
       success: true,
@@ -402,7 +402,9 @@ export const getCourse = async (req, res, next) => {
   try {
     const { courseId } = req.params;
 
-    const currentCourse = await Course.findById(courseId).populate("lessons");
+    const currentCourse = await Course.findById(courseId).populate({
+      path: ["instructor", "lessons"],
+    });
     if (!currentCourse) {
       return res.status(404).json({
         success: false,
@@ -424,6 +426,7 @@ export const getLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;
+    const { _id: userId } = req.user;
 
     const currentLesson = await Lesson.findOne({ _id: lessonId });
     if (!currentLesson) {
@@ -432,17 +435,28 @@ export const getLesson = async (req, res, next) => {
         message: "Invalid Lesson Id",
       });
     }
+    const currentEnrollment = await Enrollment.findOneAndUpdate({
+      $and: [{ courseId }, { userId }],
+    });
 
     if (completed) {
       const completedLesson = {
-        lessonId, //: new mongoose.Types.ObjectId(lessonId),
+        lessonId,
         completedAt: new Date(Date.now()),
       };
 
-      return res.status(201).json({
+      const isAlreadyCompleted = currentEnrollment.completedLessons.find(
+        (cl) => cl.lessonId.toString() === lessonId
+      );
+
+      if (!isAlreadyCompleted) {
+        currentEnrollment.completedLessons.push(completedLesson);
+        await currentEnrollment.save();
+      }
+
+      return res.status(200).json({
         success: true,
         message: "Lesson completed - progress saved",
-        data: completedLesson,
       });
     }
 

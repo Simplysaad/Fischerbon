@@ -1,7 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import CourseCard from '../../Components/CourseCard';
-import Hero from '../../Components/Hero';
-import Header from '../../Components/Header';
 import PublicLayout from './Layout';
 import axiosInstance from '../../utils/axios.util';
 
@@ -79,7 +77,7 @@ const CoursesPage = () => {
   useEffect(() => {
     async function fetchCourses() {
       try {
-        const { data: response } = await axiosInstance.get('/courses?limit=2');
+        const { data: response } = await axiosInstance.get('/courses');
         if (!response.success)
           throw new Error(response.message || 'unable to fetch courses');
         else setCourses(response.data);
@@ -107,7 +105,8 @@ const CoursesPage = () => {
         heading: 'Unlock Your CAD Potential, Explore Our Expert Courses',
         body: 'Learn AutoCAD, Revit, and CAD design skills with industry-recognized certification and hands-on projects.',
         ctaText: 'Enroll now',
-        ctaUrl: '#courseList',
+        ctaUrl: '/courses',
+        image: '/images/white-building.jpg',
       }}
     >
       {/* Filter/Search Section */}

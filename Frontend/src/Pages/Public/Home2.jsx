@@ -1,26 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
-  Menu,
-  Layers,
   FileText,
+  Layers,
   Truck,
   UserCheck,
   ClipboardList,
 } from 'lucide-react';
-import heroImage from '../../assets/autocadImage.jpg';
-import { Link, useLocation } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import CarouselWrapper from '../../Components/Carousel';
-import Header from '../../Components/Header';
 import Hero from '../../Components/Hero';
-import WaitlistForm from '../../Components/waitlistForm';
+import CourseCard from '../../Components/CourseCard';
 import PublicLayout from './Layout';
 
 const testimonials = [
   {
     id: 1,
     name: 'Muhammad Yakeen',
-    photo: '/images/muhammad_yakeen.jpg', // Placeholder path
+    photo: '/images/muhammad_yakeen.jpg',
     course: 'Piping Design and Drafting using AutoCAD',
     testimonial:
       'I was amazed by Engineer Iskeel’s teaching style. He connects lessons to real engineering scenarios, shares career advice, and ensures students gain knowledge and direction. His classes are engaging, practical, and inspiring. Under his guidance, I learned 2D and 3D drawing fundamentals, which reshaped my career outlook as a mechanical engineering student.',
@@ -29,7 +25,7 @@ const testimonials = [
   {
     id: 2,
     name: 'Eniola Fátima Aliru',
-    photo: '/images/eniola_fatima_aliru.jpg', // Placeholder path
+    photo: '/images/eniola_fatima_aliru.jpg',
     course: 'AutoCAD & Engineering Drafting',
     testimonial:
       'This training was more than just learning; it was a life-changing experience. The instructor, Engr. Iskeel, is more than a teacher — he is a listener and a guardian, attentive to details, making the learning deeply inspiring and practical.',
@@ -38,7 +34,7 @@ const testimonials = [
   {
     id: 3,
     name: 'Aminah Alabi',
-    photo: '/images/aminah_alabi.jpg', // Placeholder path
+    photo: '/images/aminah_alabi.jpg',
     course: 'Autodesk AutoCAD',
     testimonial:
       'Engr. Iskeel demonstrated exceptional patience and dedication. His teaching was interactive, with hands-on exercises and real-world examples, making complex concepts easy. His passion and expertise created a supportive environment which motivated me to learn and improve. I’m now proficient in AutoCAD 2D and 3D design.',
@@ -47,7 +43,7 @@ const testimonials = [
   {
     id: 4,
     name: 'Fareedah Fadahunsi',
-    photo: '/images/fareedah_fadahunsi.jpg', // Placeholder path
+    photo: '/images/fareedah_fadahunsi.jpg',
     course: 'AutoCAD Training',
     testimonial:
       'Engr Iskeel ensured I understood even difficult diagrams. The training taught me 2D and 3D AutoCAD design. I highly recommend Engr Iskeel to anyone looking for an AutoCAD instructor.',
@@ -55,18 +51,52 @@ const testimonials = [
   },
 ];
 
-const Testimonial = ({ id, name, testimonial, jobTitle }) => {
-  return (
-    <blockquote className="bg-white p-8 rounded-lg shadow-md italic text-gray-800">
-      <p>"{testimonial}"</p>
-      <footer className="text-right font-semibold text-blue-700 mt-4">
-        — {name}, {jobTitle}
-      </footer>
-    </blockquote>
-  );
-};
+const levels = ['all', 'beginner', 'intermediate', 'advanced'];
 
-const LandingPage = () => {
+const Testimonial = ({ name, testimonial, jobTitle }) => (
+  <blockquote className="bg-white p-8 rounded-lg shadow-md italic text-gray-800">
+    <p>"{testimonial}"</p>
+    <footer className="text-right font-semibold text-blue-700 mt-4">
+      — {name}, {jobTitle}
+    </footer>
+  </blockquote>
+);
+
+const MergedHomeCoursesPage = () => {
+  // Course listing states and fetch
+  const [search, setSearch] = useState('');
+  const [selectedLevel, setSelectedLevel] = useState('all');
+  const [expandSearch, setExpandSearch] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const { data: response } = await axiosInstance.get('/courses?limit=20');
+        if (response.success) {
+          setCourses(response.data);
+        } else {
+          throw new Error(response.message || 'Unable to fetch courses');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchCourses();
+  }, []);
+
+  const filteredCourses = useMemo(() => {
+    return courses.filter((course) => {
+      const matchesLevel =
+        selectedLevel === 'all' || course.level === selectedLevel;
+      const matchesSearch =
+        course.title.toLowerCase().includes(search.toLowerCase()) ||
+        course.description.toLowerCase().includes(search.toLowerCase());
+      return matchesLevel && matchesSearch;
+    });
+  }, [search, selectedLevel, courses]);
+
+  // Home page hero data for carousel
   const heros = [
     {
       heading: 'Master AutoCAD Drafting and Design',
@@ -82,10 +112,6 @@ const LandingPage = () => {
       ctaText: 'Explore BIM Courses',
       ctaUrl: '/courses/bim',
       image: '/images/white-building.jpg',
-      testimonial: {
-        quote: 'This platform helped me land my dream job in BIM!',
-        author: 'Sarah M., Structural Engineer',
-      },
     },
     {
       heading: '3D Drawing and PDMS Training Made Easy',
@@ -93,7 +119,6 @@ const LandingPage = () => {
       ctaText: 'Enroll Today',
       ctaUrl: '/courses/pdms',
       image: '/images/homepage-1.jpg',
-      highlight: 'Free trial lesson available',
     },
     {
       heading: 'Learn Engineering Software Anytime, Anywhere',
@@ -101,7 +126,6 @@ const LandingPage = () => {
       ctaText: 'Browse All Courses',
       ctaUrl: '/courses',
       image: '/images/workshop.jpg',
-      supportInfo: '24/7 student support included',
     },
     {
       heading: 'From Beginner to Expert: Your Engineering Software Journey',
@@ -109,7 +133,6 @@ const LandingPage = () => {
       ctaText: 'Choose Your Path',
       ctaUrl: '/learning-paths',
       image: '/images/cad-on-phone.jpg',
-      guarantee: '30-day money-back guarantee',
     },
   ];
 
@@ -118,14 +141,15 @@ const LandingPage = () => {
       header="landing"
       className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50"
     >
-      {/* // Hero Section */}
+      {/* Hero Carousel Section */}
       <section id="home" className="">
         <CarouselWrapper>
-          {heros.map((hero) => (
-            <Hero hero={hero} />
+          {heros.map((hero, index) => (
+            <Hero key={index} hero={hero} />
           ))}
         </CarouselWrapper>
       </section>
+
       {/* What We Teach - Features */}
       <section
         id="what"
@@ -151,7 +175,6 @@ const LandingPage = () => {
               more.
             </p>
           </div>
-
           <div className="flex flex-col items-center space-y-4 px-8">
             <Truck className="text-blue-600 w-16 h-16" />
             <h4 className="text-2xl font-semibold">Piping & Plant Design</h4>
@@ -160,10 +183,10 @@ const LandingPage = () => {
               industries.
             </p>
           </div>
-          {/* Suggestion: add images or diagrams related to these topics nearby */}
         </div>
       </section>
-      {/* Why FischerBon Section */}
+
+      {/* Why Choose FischerBon */}
       <section
         id="why"
         className="bg-cyan-50 my-32 py-20 px-6 max-w-7xl mx-auto"
@@ -196,10 +219,10 @@ const LandingPage = () => {
               go.
             </p>
           </div>
-          {/* Suggestion: Add testimonial image grid or student success photos here for personal touch */}
         </div>
       </section>
-      {/* Testimonials Section */}
+
+      {/* Testimonials */}
       <section
         id="testimonials"
         className="bg-gradient-to-r from-cyan-50 to-blue-50 py-16 px-6 max-w-4xl mx-auto rounded-xl"
@@ -219,27 +242,60 @@ const LandingPage = () => {
             ))}
           </CarouselWrapper>
         </div>
-        {/* Suggestion: Add a student photo carousel below quotes to enhance authenticity */}
       </section>
-      {/* Wait-list Sign Up (Main CTA) */}
-      <WaitlistForm />
-      {/* Future Launch CTA (commented for now) */}
-      {/* 
-      <section className="bg-blue-600 text-white py-20 text-center">
-        <h3 className="text-4xl font-extrabold max-w-4xl mx-auto mb-6"> 
-          Explore Full Course Access & Premium Features When We Launch
+
+      {/* Course Listing & Enrollment Section */}
+      <section className="max-w-7xl mx-auto px-6 py-10">
+        <h3 className="text-4xl font-bold text-center text-blue-700 mb-12">
+          Explore Our Courses
         </h3>
-        <p className="max-w-xl mx-auto mb-6">
-          Access complete course materials, personalized mentoring, project
-          reviews, and exclusive community networking.
-        </p>
-        <button className="bg-white text-blue-600 font-semibold px-12 py-4 rounded-lg shadow hover:bg-gray-100 transition">
-          Learn More
-        </button>
-      </section> */}
-      {/* </div> */}
+
+        <div className="flex md:flex-row items-center justify-between gap-6 mb-8">
+          <input
+            type="search"
+            placeholder="Search courses..."
+            className="px-5 py-3 rounded-lg border border-gray-300 shadow-sm w-full md:w-96 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+            value={search}
+            onFocus={() => setExpandSearch(true)}
+            onBlur={() => setExpandSearch(false)}
+            onChange={(e) => setSearch(e.target.value)}
+            aria-label="Search courses"
+          />
+          <select
+            className={`${expandSearch ? 'hidden' : ''} px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition`}
+            aria-label="Filter by level"
+            value={selectedLevel}
+            onChange={(e) => setSelectedLevel(e.target.value)}
+          >
+            {levels.map((level) => (
+              <option key={level} value={level}>
+                {level.charAt(0).toUpperCase() + level.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div
+          id="courseList"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
+          {filteredCourses.length === 0 ? (
+            <p className="text-center col-span-full text-gray-600">
+              No courses found.
+            </p>
+          ) : (
+            filteredCourses.map((course) => (
+              <CourseCard
+                key={course._id}
+                course={course}
+                // Override onClick or CTA in CourseCard to direct to enrollment or course details
+              />
+            ))
+          )}
+        </div>
+      </section>
     </PublicLayout>
   );
 };
 
-export default LandingPage;
+export default MergedHomeCoursesPage;

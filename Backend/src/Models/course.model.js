@@ -4,7 +4,7 @@ const courseSchema = new Schema(
   {
     title: String,
     description: String,
-    instructorId: {
+    instructor: {
       type: Schema.Types.ObjectId,
       ref: "user",
     },
@@ -44,9 +44,20 @@ const courseSchema = new Schema(
 );
 
 courseSchema.virtual("slug").get(function () {
-  // TODO: Include the slug
-  return `${this.title.slice(1, 150)}-${this._id}`;
+  if (!this.title) {
+    return `${this._id}`;
+  }
+  const normalized = this.title
+    .trim()
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+  return `${normalized}-${this._id}`;
 });
+
+courseSchema.set("toJSON", { virtuals: true });
+courseSchema.set("toObject", { virtuals: true });
 
 const Course = model("course", courseSchema);
 export default Course;

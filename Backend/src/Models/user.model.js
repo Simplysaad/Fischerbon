@@ -22,6 +22,25 @@ const userSchema = new Schema(
     },
     profilePicture: String,
     bio: String,
+    socials: [
+      {
+        type: {
+          type: String,
+          enum: [
+            "instagram",
+            "whatsapp",
+            "twitter",
+            "mail",
+            "others",
+            "facebook",
+          ],
+          default: "others",
+          required: true,
+        },
+        username: String,
+        url: String,
+      },
+    ],
     enrollments: [
       {
         type: Schema.Types.ObjectId,
@@ -32,7 +51,7 @@ const userSchema = new Schema(
       token: String,
       tokenExpiry: {
         type: Date,
-        default: new Date(Date.now() + 5 * 60 * 1000),
+        default: () => new Date(Date.now() + 5 * 60 * 1000),
       },
     },
   },

@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import DashboardLayout from './Layout';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
-import ProfileImage from '../../assets/autocadImage.jpg';
-import { Instagram, Star, Twitter } from 'lucide-react';
 
 import NotificationsList from '../../Components/NotificationList';
 import EnrollmentTable from '../../Components/EnrollmentTable';
 import CoursesTable from '../../Components/CoursesTable';
 import StatCard from '../../Components/StatCard';
+import ProfileCard from '../../Components/ProfileCard';
 
 const AdminDashboard = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -130,58 +129,7 @@ const AdminDashboard = () => {
           </section>
         </section>
         <div className="  flex flex-col w-full md:w-[30%] md:my-12  gap-4">
-          <section id="profile" className="shadow rounded p-2 py-4 ">
-            <div className="flex gap-2 items-center ">
-              <div className="profile-image border w-[3rem] h-[3rem] rounded-full overflow-hidden">
-                <img
-                  src={ProfileImage}
-                  className="w-[3rem] h-[3rem]"
-                  alt="profile"
-                />
-              </div>
-              <div className="flex flex-col ">
-                <span className="text-[1.5rem] p-0 m-0">John Doe</span>
-                <span className="text-gray-700 flex gap-2 text-[.9rem] p-0 m-0">
-                  <span>Instructor</span>
-                  <span>
-                    <Star
-                      fill="#ffa"
-                      size={12}
-                      className="inline text-yellow-500"
-                    />{' '}
-                    5.0
-                  </span>
-                </span>
-              </div>
-            </div>
-            <div className="description my-4 text-[.9rem]">
-              <p className="text-gray-700">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Velit
-                rerum repellat delectus deleniti officia nam quo pariatur
-                explicabo ullam illo.
-              </p>
-            </div>
-            <div className="contact text-[.8rem]">
-              <a
-                href="https://instagram.com/simply_saad"
-                target="_blank"
-                rel="noreferrer"
-                className=" flex gap-1 text-blue-600 hover:underline"
-              >
-                <Instagram className="inline" />
-                <span>@simply_saad</span>
-              </a>
-              <a
-                href="https://instagram.com/simply_saad"
-                target="_blank"
-                rel="noreferrer"
-                className=" flex gap-1 text-blue-600 hover:underline"
-              >
-                <Twitter className="inline" />
-                <span>@simply_saad</span>
-              </a>
-            </div>
-          </section>
+          <ProfileCard />
           <section id="extra" className="border h-auto ">
             extra
           </section>

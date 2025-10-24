@@ -10,6 +10,8 @@ import {
   ArrowRight,
   LucideArrowBigLeft,
 } from 'lucide-react';
+import LessonBox from '../../Components/LessonBox';
+import ProfileCard from '../../Components/ProfileCard';
 
 const LessonDetails = () => {
   const { courseSlug, lessonSlug } = useParams();
@@ -86,11 +88,11 @@ const LessonDetails = () => {
   return (
     <PublicLayout>
       <section className="flex lg:gap-6 gap-4 px-4 py-6 flex-col md:flex-row">
-        <main className="md:max-w-[70%]">
+        <main className="w-[70%]">
           {lesson.content?.video && (
-            <div className="mb-6 w-[100%]">
+            <div className="mb-6 min-w-[100%] border rounded">
               {lesson.content?.video && (
-                <div className="mb-6">
+                <div className="min-h-[100%] ">
                   <video
                     // src={lesson.content.video}
                     src={lessonVideo}
@@ -100,6 +102,7 @@ const LessonDetails = () => {
                   >
                     Your browser does not support the video tag.
                   </video>
+                  {/* Your browser does not support the video tag. */}
                 </div>
               )}
             </div>
@@ -141,65 +144,57 @@ const LessonDetails = () => {
                 onClick={() => {
                   hasPrev &&
                     navigate(
-                      `/courses/${courseId}/lessons/${course.lessons[lessonIndex - 1]._id}`
+                      `/courses/${course.slug}/lessons/${course.lessons[lessonIndex - 1].slug}`
                     );
                 }}
                 className="py-2 float-start flex px-4 text-green-600 rounded underline"
               >
                 <ArrowLeft />
-                <span>Previous Lesson</span>
+                <span>{course.lessons[lessonIndex - 1]?.title}</span>
               </button>
               <button
                 hidden={!hasNext}
                 disabled={!hasNext}
-                onClick={() => {
-                  hasNext &&
-                    navigate(
-                      `/courses/${courseId}/lessons/${course.lessons[lessonIndex + 1]._id}`
+                onClick={async () => {
+                  try {
+                    const { data: response } = await axiosInstance.get(
+                      `/courses/${courseId}/lessons/${lessonId}?completed=true`
                     );
+
+                    console.log(response.message);
+                    if (response?.success && hasNext) {
+                      navigate(
+                        `/courses/${course.slug}/lessons/${course.lessons[lessonIndex + 1].slug}`
+                      );
+                    }
+                  } catch (error) {
+                    console.error(error);
+                  }
                 }}
                 className="py-2 float-end flex justify-start px-4 text-green-600 rounded underline"
               >
-                <span>Next Lesson</span>
+                <span>{course.lessons[lessonIndex + 1]?.title}</span>
                 <ArrowRight />
               </button>
             </div>
           </section>
         </main>
-        <aside className="min-w-[30%]">
-          <h2 className="text-xl font-bold py-4">All Lessons</h2>
-          <section className="w-full  flex flex-col gap-2">
+        <aside className="w-[30%]">
+          <h2 className="text-xl font-bold py-4">{course.title}</h2>
+          <section className="w-full  my-6 flex flex-col gap-2">
             {course.lessons.length > 0 &&
               course.lessons.map((lesson, idx) => (
-                <div
-                  key={lesson._id || idx}
-                  className={`flex justify-start  items-center gap-2 border rounded p-2 py-1 min-w-full cursor-pointer ${
-                    false ? 'bg-green-100 border-green-400' : 'bg-white'
-                    //  completed ? 'bg-green-100 border-green-400' : 'bg-white'
-                  }`}
-                  onClick={() => {
-                    console.log(lesson.title);
-                    console.log(
-                      `/courses/${courseId}/lessons/${course.lessons[idx]._id}`
-                    );
-                    navigate(
-                      `/courses/${courseId}/lessons/${course.lessons[idx]._id}`
-                    );
-                  }}
-                  title={lesson.title}
-                >
-                  <span className="rounded-full text-center text-3xl font-bold px-4 py-2">
-                    {idx + 1}
-                  </span>
-                  <span className="font-light">
-                    {/* <p className={`${completed ? 'line-through text-green-600' : ''}`}> */}
-                    <p className={`'line-through text-green-600'}`}>
-                      {lesson.title}
-                    </p>
-                  </span>
-                </div>
+                <LessonBox
+                  enrollment={enrollment}
+                  key={idx}
+                  idx={idx}
+                  isActive={lessonIndex === idx}
+                  lesson={lesson}
+                  course={course}
+                />
               ))}
           </section>
+          <ProfileCard user={course.instructor} />
         </aside>
       </section>
     </PublicLayout>
