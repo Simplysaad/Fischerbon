@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 
 const CourseCard = ({ course }) => {
   return (
-    <div className="shadow min-w-[100%] p-4">
+    <div className="shadow w-[100%] p-4">
       <div className="card-image w-full overflow-hidden">
         <img
           src={course.thumbnailUrl || '/images/white-building-2.jpg'}

@@ -19,7 +19,6 @@ const Home = lazy(() => import('./Pages/Public/Home'));
 const LessonDetails = lazy(() => import('./Pages/Student/Lesson'));
 
 import useAuth, { AuthProvider } from './context/AuthContext';
-import MergedHomeCoursesPage from './Pages/Public/Home2';
 
 // ProtectedRoute Component with redirect to login preserving original path
 const ProtectedRoute = ({ allowedRoles = null }) => {
@@ -49,7 +48,6 @@ function App() {
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/home" element={<MergedHomeCoursesPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
