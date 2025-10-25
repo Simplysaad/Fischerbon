@@ -32,7 +32,7 @@ export default function Hero({
 
           {/* Optional supplementary info */}
           {trustBadge && (
-            <p className="text-sm md:text-base flex gap-2 border-white bg-opacity-20 p-2 rounded inline-block drop-shadow-sm max-w-max">
+            <p className="text-sm md:text-base  gap-2 border-white bg-opacity-20 p-2 rounded inline-block drop-shadow-sm max-w-max">
               <span>
                 <Star />{' '}
               </span>
@@ -72,7 +72,7 @@ export default function Hero({
         </div>
 
         {/* Image */}
-        <div className="flex-1 max-w-md md:max-w-lg h-full flex items-center justify-center">
+        <div className="flex-1 max-w-md  max-md:hidden md:max-w-lg h-full flex items-center justify-center">
           <img
             src={image}
             alt={heading}

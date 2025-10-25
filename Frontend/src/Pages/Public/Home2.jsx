@@ -1,22 +1,29 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import {
-  FileText,
-  Layers,
-  Truck,
-  UserCheck,
-  ClipboardList,
-} from 'lucide-react';
-import axiosInstance from '../../utils/axios.util';
-import CarouselWrapper from '../../Components/Carousel';
+import React, { useEffect, useState } from 'react';
 import Hero from '../../Components/Hero';
+import { ClipboardList, Layers, UserCheck } from 'lucide-react';
 import CourseCard from '../../Components/CourseCard';
-import PublicLayout from './Layout';
+import CarouselWrapper from '../../Components/Carousel';
+import axiosInstance from '../../utils/axios.util';
+import Layout from './Layout';
 
+// Extracted reusable components
+const Button = ({ children, href, primary }) => (
+  <a
+    href={href}
+    className={`inline-block font-semibold rounded-md px-6 py-3 transition-colors duration-300 ${
+      primary
+        ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-blue-500'
+        : 'text-blue-500 hover:text-cyan-600'
+    }`}
+  >
+    {children}
+  </a>
+);
 const testimonials = [
   {
     id: 1,
     name: 'Muhammad Yakeen',
-    photo: '/images/muhammad_yakeen.jpg',
+    photo: '/images/muhammad_yakeen.jpg', // Placeholder path
     course: 'Piping Design and Drafting using AutoCAD',
     testimonial:
       'I was amazed by Engineer Iskeel’s teaching style. He connects lessons to real engineering scenarios, shares career advice, and ensures students gain knowledge and direction. His classes are engaging, practical, and inspiring. Under his guidance, I learned 2D and 3D drawing fundamentals, which reshaped my career outlook as a mechanical engineering student.',
@@ -25,7 +32,7 @@ const testimonials = [
   {
     id: 2,
     name: 'Eniola Fátima Aliru',
-    photo: '/images/eniola_fatima_aliru.jpg',
+    photo: '/images/eniola_fatima_aliru.jpg', // Placeholder path
     course: 'AutoCAD & Engineering Drafting',
     testimonial:
       'This training was more than just learning; it was a life-changing experience. The instructor, Engr. Iskeel, is more than a teacher — he is a listener and a guardian, attentive to details, making the learning deeply inspiring and practical.',
@@ -34,7 +41,7 @@ const testimonials = [
   {
     id: 3,
     name: 'Aminah Alabi',
-    photo: '/images/aminah_alabi.jpg',
+    photo: '/images/aminah_alabi.jpg', // Placeholder path
     course: 'Autodesk AutoCAD',
     testimonial:
       'Engr. Iskeel demonstrated exceptional patience and dedication. His teaching was interactive, with hands-on exercises and real-world examples, making complex concepts easy. His passion and expertise created a supportive environment which motivated me to learn and improve. I’m now proficient in AutoCAD 2D and 3D design.',
@@ -43,41 +50,100 @@ const testimonials = [
   {
     id: 4,
     name: 'Fareedah Fadahunsi',
-    photo: '/images/fareedah_fadahunsi.jpg',
+    photo: '/images/fareedah_fadahunsi.jpg', // Placeholder path
     course: 'AutoCAD Training',
     testimonial:
       'Engr Iskeel ensured I understood even difficult diagrams. The training taught me 2D and 3D AutoCAD design. I highly recommend Engr Iskeel to anyone looking for an AutoCAD instructor.',
     jobTitle: 'Young School Leaver, University Aspirant',
   },
 ];
+const heros = [
+  {
+    heading: 'Master AutoCAD Drafting and Design',
+    body: 'Unlock your potential with expert-led courses on AutoCAD drafting, 3D modeling, and engineering design. Start your journey today and bring your ideas to life.',
+    ctaText: 'Start Learning Now',
+    ctaUrl: '/courses/autocad',
+    image: '/images/white-building-2.jpg',
+    trustBadge: 'Trusted by 10,000+ engineers worldwide',
+  },
+  {
+    heading: 'Become a Pro in BIM and Project Management',
+    body: "Learn Building Information Modeling with hands-on training and real-world projects. Elevate your career with the industry's most in-demand skills.",
+    ctaText: 'Explore BIM Courses',
+    ctaUrl: '/courses/bim',
+    image: '/images/white-building.jpg',
+    testimonial: {
+      quote: 'This platform helped me land my dream job in BIM!',
+      author: 'Sarah M., Structural Engineer',
+    },
+  },
+  {
+    heading: '3D Drawing and PDMS Training Made Easy',
+    body: 'Master 3D drafting and plant design with our comprehensive PDMS courses specially crafted for engineers and designers.',
+    ctaText: 'Enroll Today',
+    ctaUrl: '/courses/pdms',
+    image: '/images/homepage-1.jpg',
+    highlight: 'Free trial lesson available',
+  },
+  {
+    heading: 'Learn Engineering Software Anytime, Anywhere',
+    body: 'Flexible, self-paced courses on AutoCAD, BIM, PDMS, and more. Gain practical skills that employers want.',
+    ctaText: 'Browse All Courses',
+    ctaUrl: '/courses',
+    image: '/images/workshop.jpg',
+    supportInfo: '24/7 student support included',
+  },
+  {
+    heading: 'From Beginner to Expert: Your Engineering Software Journey',
+    body: 'Step-by-step training paths from fundamentals to advanced techniques in drafting and 3D modeling.',
+    ctaText: 'Choose Your Path',
+    ctaUrl: '/learning-paths',
+    image: '/images/cad-on-phone.jpg',
+    guarantee: '30-day money-back guarantee',
+  },
+];
 
-const levels = ['all', 'beginner', 'intermediate', 'advanced'];
-
-const Testimonial = ({ name, testimonial, jobTitle }) => (
-  <blockquote className="bg-white p-8 rounded-lg shadow-md italic text-gray-800">
-    <p>"{testimonial}"</p>
-    <footer className="text-right font-semibold text-blue-700 mt-4">
-      — {name}, {jobTitle}
-    </footer>
+const Testimonial = ({ quote, author }) => (
+  <blockquote className="max-w-3xl mx-auto italic  text-white text-lg sm:text-xl leading-relaxed">
+    “{quote}”
+    <cite className="block mt-4 font-semibold text-right"> - {author}</cite>
   </blockquote>
 );
 
-const MergedHomeCoursesPage = () => {
-  // Course listing states and fetch
-  const [search, setSearch] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState('all');
-  const [expandSearch, setExpandSearch] = useState(false);
-  const [courses, setCourses] = useState([]);
+// Sample course data
+const featuredCourses = [
+  {
+    id: 1,
+    title: 'AutoCAD Essentials',
+    description: 'Learn the basics of AutoCAD for engineering drawing.',
+    thumbnail: '/images/autocad-course.jpg',
+    videoUrl: 'https://www.example.com/autocad-intro.mp4',
+  },
+  {
+    id: 2,
+    title: 'Advanced Revit Techniques',
+    description: 'Master 3D modeling and BIM workflows in Revit.',
+    thumbnail: '/images/revit-course.jpg',
+    videoUrl: 'https://www.example.com/revit-intro.mp4',
+  },
+  {
+    id: 3,
+    title: 'Civil Engineering Drafting',
+    description: 'Hands-on drafting skills for civil engineering projects.',
+    thumbnail: '/images/civil-drafting.jpg',
+    videoUrl: 'https://www.example.com/civil-drafting-intro.mp4',
+  },
+];
 
+export default function Homepage() {
+  const [courses, setCourses] = useState([]);
   useEffect(() => {
     async function fetchCourses() {
       try {
-        const { data: response } = await axiosInstance.get('/courses?limit=20');
-        if (response.success) {
-          setCourses(response.data);
-        } else {
-          throw new Error(response.message || 'Unable to fetch courses');
-        }
+        const { data: response } = await axiosInstance.get('/courses');
+        if (!response.success)
+          throw new Error(response.message || 'unable to fetch courses');
+        else setCourses(response.data);
       } catch (error) {
         console.error(error);
       }
@@ -85,217 +151,116 @@ const MergedHomeCoursesPage = () => {
     fetchCourses();
   }, []);
 
-  const filteredCourses = useMemo(() => {
-    return courses.filter((course) => {
-      const matchesLevel =
-        selectedLevel === 'all' || course.level === selectedLevel;
-      const matchesSearch =
-        course.title.toLowerCase().includes(search.toLowerCase()) ||
-        course.description.toLowerCase().includes(search.toLowerCase());
-      return matchesLevel && matchesSearch;
-    });
-  }, [search, selectedLevel, courses]);
-
-  // Home page hero data for carousel
-  const heros = [
-    {
-      heading: 'Master AutoCAD Drafting and Design',
-      body: 'Unlock your potential with expert-led courses on AutoCAD drafting, 3D modeling, and engineering design. Start your journey today and bring your ideas to life.',
-      ctaText: 'Start Learning Now',
-      ctaUrl: '/courses/autocad',
-      image: '/images/white-building-2.jpg',
-      trustBadge: 'Trusted by 10,000+ engineers worldwide',
-    },
-    {
-      heading: 'Become a Pro in BIM and Project Management',
-      body: "Learn Building Information Modeling with hands-on training and real-world projects. Elevate your career with the industry's most in-demand skills.",
-      ctaText: 'Explore BIM Courses',
-      ctaUrl: '/courses/bim',
-      image: '/images/white-building.jpg',
-    },
-    {
-      heading: '3D Drawing and PDMS Training Made Easy',
-      body: 'Master 3D drafting and plant design with our comprehensive PDMS courses specially crafted for engineers and designers.',
-      ctaText: 'Enroll Today',
-      ctaUrl: '/courses/pdms',
-      image: '/images/homepage-1.jpg',
-    },
-    {
-      heading: 'Learn Engineering Software Anytime, Anywhere',
-      body: 'Flexible, self-paced courses on AutoCAD, BIM, PDMS, and more. Gain practical skills that employers want.',
-      ctaText: 'Browse All Courses',
-      ctaUrl: '/courses',
-      image: '/images/workshop.jpg',
-    },
-    {
-      heading: 'From Beginner to Expert: Your Engineering Software Journey',
-      body: 'Step-by-step training paths from fundamentals to advanced techniques in drafting and 3D modeling.',
-      ctaText: 'Choose Your Path',
-      ctaUrl: '/learning-paths',
-      image: '/images/cad-on-phone.jpg',
-    },
-  ];
-
   return (
-    <PublicLayout
-      header="landing"
-      className="min-h-screen flex flex-col font-sans text-gray-900 bg-gray-50"
-    >
-      {/* Hero Carousel Section */}
-      <section id="home" className="">
+    <Layout>
+      <div className="font-sans text-gray-800">
         <CarouselWrapper>
-          {heros.map((hero, index) => (
-            <Hero key={index} hero={hero} />
+          {heros.map((hero, idx) => (
+            <Hero key={idx} hero={hero} />
           ))}
-        </CarouselWrapper>
-      </section>
-
-      {/* What We Teach - Features */}
-      <section
-        id="what"
-        className="bg-white py-20 my-20 px-6 max-w-7xl mx-auto"
-      >
-        <h3 className="text-4xl font-bold text-center text-blue-700 mb-14">
-          What You'll Learn at FischerBon
-        </h3>
-        <div className="grid md:grid-cols-3 gap-12 text-center">
-          <div className="flex flex-col items-center space-y-4 px-8">
-            <FileText className="text-blue-600 w-16 h-16" />
-            <h4 className="text-2xl font-semibold">CAD Drafting & Design</h4>
-            <p className="text-gray-700">
-              Comprehensive AutoCAD 2D and 3D, PDMS and engineering drawings
-              training.
-            </p>
-          </div>
-          <div className="flex flex-col items-center space-y-4 px-8">
-            <Layers className="text-blue-600 w-16 h-16" />
-            <h4 className="text-2xl font-semibold">3D Modeling & BIM</h4>
-            <p className="text-gray-700">
-              Master Building Information Modeling using Revit, Navisworks, and
-              more.
-            </p>
-          </div>
-          <div className="flex flex-col items-center space-y-4 px-8">
-            <Truck className="text-blue-600 w-16 h-16" />
-            <h4 className="text-2xl font-semibold">Piping & Plant Design</h4>
-            <p className="text-gray-700">
-              Learn piping design and layout in 3D for oil, gas, and chemical
-              industries.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose FischerBon */}
-      <section
-        id="why"
-        className="bg-cyan-50 my-32 py-20 px-6 max-w-7xl mx-auto"
-      >
-        <h3 className="text-4xl font-bold text-center text-blue-700 mb-14">
-          Why Choose FischerBon LMS?
-        </h3>
-        <div className="grid md:grid-cols-3 gap-14 text-center text-gray-800">
-          <div className="flex flex-col items-center space-y-3 px-6">
-            <UserCheck className="text-blue-600 w-14 h-14" />
-            <h4 className="text-xl font-semibold">Expert Instructors</h4>
-            <p>
-              Learn from seasoned engineers and industry veterans with hands-on
-              training.
-            </p>
-          </div>
-          <div className="flex flex-col items-center space-y-3 px-6">
-            <ClipboardList className="text-blue-600 w-14 h-14" />
-            <h4 className="text-xl font-semibold">Certified Courses</h4>
-            <p>
-              Earn recognized certification that opens doors to top engineering
-              jobs worldwide.
-            </p>
-          </div>
-          <div className="flex flex-col items-center space-y-3 px-6">
-            <Layers className="text-blue-600 w-14 h-14 rotate-[20deg]" />
-            <h4 className="text-xl font-semibold">Flexible & Accessible</h4>
-            <p>
-              Enjoy 24/7 access with a modern LMS tailored for engineers on the
-              go.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section
-        id="testimonials"
-        className="bg-gradient-to-r from-cyan-50 to-blue-50 py-16 px-6 max-w-4xl mx-auto rounded-xl"
-      >
-        <h3 className="text-center text-3xl font-bold text-blue-700 mb-8">
-          Hear From Our Learners
-        </h3>
-        <div className="space-y-8">
-          <CarouselWrapper>
-            {testimonials.map((testimonial) => (
-              <Testimonial
-                key={testimonial.id}
-                name={testimonial.name}
-                testimonial={testimonial.testimonial}
-                jobTitle={testimonial.jobTitle}
-              />
-            ))}
-          </CarouselWrapper>
-        </div>
-      </section>
-
-      {/* Course Listing & Enrollment Section */}
-      <section className="max-w-7xl mx-auto px-6 py-10">
-        <h3 className="text-4xl font-bold text-center text-blue-700 mb-12">
-          Explore Our Courses
-        </h3>
-
-        <div className="flex md:flex-row items-center justify-between gap-6 mb-8">
-          <input
-            type="search"
-            placeholder="Search courses..."
-            className="px-5 py-3 rounded-lg border border-gray-300 shadow-sm w-full md:w-96 focus:border-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
-            value={search}
-            onFocus={() => setExpandSearch(true)}
-            onBlur={() => setExpandSearch(false)}
-            onChange={(e) => setSearch(e.target.value)}
-            aria-label="Search courses"
+          <Hero
+            hero={{
+              heading:
+                'Master Engineering Drawing with Expert AutoCAD & BIM Courses',
+              body: 'Join thousands of students learning real-world skills with step-by-step tutorials and hands-on projects.',
+              ctaText: 'Get Started Now',
+              ctaUrl: '#courses',
+              image: null,
+            }}
           />
-          <select
-            className={`${expandSearch ? 'hidden' : ''} px-4 py-3 rounded-lg border border-gray-300 shadow-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition`}
-            aria-label="Filter by level"
-            value={selectedLevel}
-            onChange={(e) => setSelectedLevel(e.target.value)}
-          >
-            {levels.map((level) => (
-              <option key={level} value={level}>
-                {level.charAt(0).toUpperCase() + level.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div
-          id="courseList"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        </CarouselWrapper>
+        <section
+          id="why"
+          className="bg-cyan-50 my-32 py-20 px-6 max-w-7xl mx-auto"
         >
-          {filteredCourses.length === 0 ? (
-            <p className="text-center col-span-full text-gray-600">
-              No courses found.
-            </p>
-          ) : (
-            filteredCourses.map((course) => (
-              <CourseCard
-                key={course._id}
-                course={course}
-                // Override onClick or CTA in CourseCard to direct to enrollment or course details
-              />
-            ))
-          )}
-        </div>
-      </section>
-    </PublicLayout>
-  );
-};
+          <h3 className="text-4xl font-bold text-center text-blue-700 mb-14">
+            Why Choose FischerBon LMS?
+          </h3>
+          <div className="grid md:grid-cols-3 gap-14 text-center text-gray-800">
+            <div className="flex flex-col items-center space-y-3 px-6">
+              <UserCheck className="text-blue-600 w-14 h-14" />
+              <h4 className="text-xl font-semibold">Expert Instructors</h4>
+              <p>
+                Learn from seasoned engineers and industry veterans with
+                hands-on training.
+              </p>
+            </div>
+            <div className="flex flex-col items-center space-y-3 px-6">
+              <ClipboardList className="text-blue-600 w-14 h-14" />
+              <h4 className="text-xl font-semibold">Certified Courses</h4>
+              <p>
+                Earn recognized certification that opens doors to top
+                engineering jobs worldwide.
+              </p>
+            </div>
+            <div className="flex flex-col items-center space-y-3 px-6">
+              <Layers className="text-blue-600 w-14 h-14 rotate-[20deg]" />
+              <h4 className="text-xl font-semibold">Flexible & Accessible</h4>
+              <p>
+                Enjoy 24/7 access with a modern LMS tailored for engineers on
+                the go.
+              </p>
+            </div>
+            {/* Suggestion: Add testimonial image grid or student success photos here for personal touch */}
+          </div>
+        </section>
 
-export default MergedHomeCoursesPage;
+        {/* Featured Courses */}
+        <section
+          id="courses"
+          className="py-16 px-6 max-w-6xl mx-auto"
+          aria-label="Featured Courses"
+        >
+          {courses && (
+            <>
+              <h2 className="text-3xl font-semibold mb-12 text-center text-cyan-600">
+                Featured Courses
+              </h2>
+
+              <div className=" flex gap-8 flex-wrap">
+                {courses?.map((course) => (
+                  <CourseCard key={course.id} course={course} />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* Testimonials */}
+        <section
+          className="bg-gradient-to-r from-cyan-600 to-blue-500 py-16 px-6"
+          aria-label="Testimonials"
+        >
+          <h2 className="text-3xl font-semibold text-white mb-10 text-center">
+            What Our Students Say
+          </h2>
+          <div className="space-y-8">
+            <CarouselWrapper>
+              {testimonials.map((testimonial, idx) => (
+                <Testimonial
+                  key={idx}
+                  author={testimonial.name + ' - ' + testimonial.jobTitle}
+                  quote={testimonial.testimonial}
+                />
+              ))}
+            </CarouselWrapper>
+          </div>
+        </section>
+
+        {/* Final Call to Action */}
+        <section className="text-center py-36 px-6">
+          <h2 className="text-3xl font-semibold mb-4 text-blue-700">
+            Ready to Start Learning?
+          </h2>
+          <p className="mb-8 text-lg max-w-xl mx-auto text-gray-700">
+            Sign up today and gain access to our full course catalog, expert
+            instructors, and community support.
+          </p>
+          <Button href="/signup" primary>
+            Join Now
+          </Button>
+        </section>
+      </div>
+    </Layout>
+  );
+}

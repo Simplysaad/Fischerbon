@@ -24,7 +24,7 @@ const CarouselWrapper = ({ children, interval = 3000 }) => {
 
   return (
     <div
-      className="carousel-wrapper flex gap-3"
+      className="carousel-wrapper flex justify-center gap-3"
       style={{
         position: 'relative',
         overflow: 'hidden',

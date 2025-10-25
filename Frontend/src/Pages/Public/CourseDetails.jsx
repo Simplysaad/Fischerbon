@@ -131,7 +131,7 @@ const CourseDetails = () => {
               </span>
               <span className="price">{formattedPrice}</span>
             </div>
-            <div className="md:hidden text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded ">
+            <div className="md:hidden my-4  w-full flex text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded ">
               {enrollment ? (
                 <Link
                   to={`/courses/${course.slug}/lessons/${course.lessons[0]?.slug}`}

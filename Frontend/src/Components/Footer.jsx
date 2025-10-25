@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from '../assets/logo-removebg-preview-removebg-preview.png';
+import axiosInstance from '../utils/axios.util';
 
 const Footer = () => {
+  const [courses, setCourses] = useState([]);
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const { data: response } = await axiosInstance.get('/courses');
+        if (!response.success)
+          throw new Error(response.message || 'unable to fetch courses');
+        else setCourses(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchCourses();
+  }, []);
   return (
     <footer className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white py-10 px-6 md:px-16">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
@@ -27,17 +42,16 @@ const Footer = () => {
             Courses
           </h3>
           <ul>
-            <li>
-              <Link to="/courses/1" className="hover:text-cyan-300">
-                AutoCAD Beginner Fundamentals
-              </Link>
-            </li>
-            <li>
-              <Link to="/courses/2" className="hover:text-cyan-300">
-                Advanced CAD Modeling
-              </Link>
-            </li>
-            {/* Add additional course links here */}
+            {courses.map((course) => (
+              <li key={course._id}>
+                <Link
+                  to={`/courses/${course.slug}`}
+                  className="hover:text-cyan-300"
+                >
+                  {course.title}
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
 
