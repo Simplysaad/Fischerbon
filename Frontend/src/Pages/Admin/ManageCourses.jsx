@@ -8,58 +8,13 @@ const payments = ['free', 'paid'];
 // API functions isolated outside component for clarity
 const api = {
   fetchCourses: async () => {
-    const { data: response } = await axiosInstance.get('/admin/courses');
-    if (response?.success) return response.data;
-    // fallback data for dev/testing
-    return [
-      {
-        _id: '1',
-        title: 'AutoCAD Beginner Fundamentals',
-        description: 'Learn basics of AutoCAD',
-        price: 0,
-        payment: 'free',
-        category: 'AutoCAD',
-        level: 'beginner',
-        thumbnailUrl: '',
-        lessons: [
-          {
-            _id: 'lesson1',
-            title: 'Introduction',
-            text: 'Welcome to AutoCAD Beginner',
-            lessonVideo: '',
-            lessonFiles: [],
-          },
-        ],
-      },
-      {
-        _id: '2',
-        title: 'Advanced CAD Modeling',
-        description: 'Master advanced modeling',
-        price: 199,
-        payment: 'paid',
-        category: 'CAD',
-        level: 'advanced',
-        thumbnailUrl: '',
-        lessons: [],
-      },
-    ];
+    try {
+      const { data: response } = await axiosInstance.get('/admin/courses');
+      if (response?.success) return response.data;
+    } catch (err) {
+      console.error(err);
+    }
   },
-  // createCourse: async (course) => {
-  //   console.log(course);
-  //   const formData = new FormData();
-  //   for (const key in course) {
-  //     console.log(key, course[key]);
-  //     if (course[key] instanceof File)
-  //       formData.append(key, course[key], course[key].name);
-  //     else formData.append(key, course[key]);
-  //   }
-  //   console.log(formData.get('thumbnail'));
-  //   const { data: response } = await axiosInstance.post(
-  //     '/courses/create',
-  //     formData
-  //   );
-  //   return response;
-  // },
   createCourse: async (course) => {
     try {
       console.log(course);
@@ -83,7 +38,6 @@ const api = {
           formData.append(key, value);
         }
       }
-      console.log(formData.get('thumbnail')); // for debugging the thumbnail file presence
       const { data: response } = await axiosInstance.post(
         '/courses/create',
         formData
@@ -95,15 +49,29 @@ const api = {
     }
   },
   updateCourse: async (courseId, updates) => {
-    const formData = new FormData();
-    for (const key in updates) {
-      formData.append(key, updates[key]);
+    try {
+      const formData = new FormData();
+      for (const key in updates) {
+        formData.append(key, updates[key]);
+      }
+      const { data: response } = await axiosInstance.post(
+        `/courses/${courseId}`,
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
     }
-    const { data: response } = await axiosInstance.post(
-      `/courses/${courseId}`,
-      formData
-    );
-    return response;
+  },
+  deleteCourse: async (courseId) => {
+    try {
+      const { data: response } = await axiosInstance.delete(
+        `/courses/${courseId}/`
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   },
   addLesson: async (courseId, lesson) => {
     try {
@@ -127,16 +95,6 @@ const api = {
       console.log('lessonVideo', lessonVideo);
       lessonVideo &&
         formData.append('lessonVideo', lessonVideo, lessonVideo.name);
-
-      // if (
-      //   Array.isArray(lesson[key]) &&
-      //   lesson[key].length > 0 &&
-      //   lesson[key][0] instanceof File
-      // ) {
-      //   lesson[key].forEach((file) => {
-      //     formData.append(key, file, file.name);
-      //   });
-      // }
 
       const { data: response } = await axiosInstance.post(
         `/courses/${courseId}/lessons`,
@@ -191,6 +149,9 @@ const CourseManagement = () => {
   const [thumbnailPreview, setThumbnailPreview] = useState('');
   const [lessonVideo, setLessonVideo] = useState(null);
   const [lessonFiles, setLessonFiles] = useState(null);
+
+  const [isCourseSubmitting, setIsCourseSubmitting] = useState(false);
+  const [isLessonSubmitting, setIsLessonSubmitting] = useState(false);
 
   const [lessonForm, setLessonForm] = useState({
     _id: null,
@@ -287,6 +248,7 @@ const CourseManagement = () => {
   // Handle course form submission (create or update)
   const handleCourseSubmit = async (e) => {
     e.preventDefault();
+    setIsCourseSubmitting(true);
     setError('');
     setMsg('');
 
@@ -314,12 +276,16 @@ const CourseManagement = () => {
       }
     } catch (e) {
       setError('Failed to save course: ' + e.message);
+    } finally {
+      setIsCourseSubmitting(false);
     }
   };
 
   // Handle lesson form submission (add or update)
   const handleLessonSubmit = async (e) => {
     e.preventDefault();
+    setIsLessonSubmitting(true);
+
     setError('');
     setMsg('');
 
@@ -374,6 +340,8 @@ const CourseManagement = () => {
       resetLessonForm();
     } catch (e) {
       setError('Failed to save lesson: ' + e.message);
+    } finally {
+      setIsLessonSubmitting(false);
     }
   };
 
@@ -408,7 +376,7 @@ const CourseManagement = () => {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-full bg-gray-50 p-6">
         <h1 className="text-3xl font-semibold mb-6">Course Management</h1>
         <div className="flex flex-col md:flex-row gap-8">
           {/* Courses List */}
@@ -577,12 +545,26 @@ const CourseManagement = () => {
                   }
                 />
               </div>
-              <button
-                type="submit"
-                className="bg-blue-600 text-white rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold"
-              >
-                {selectedCourseId ? 'Update Course' : 'Create Course'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isCourseSubmitting}
+                  className={`${isCourseSubmitting ? 'bg-blue-400' : 'bg-blue-600'} text-white rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold`}
+                >
+                  {selectedCourseId ? 'Update Course' : 'Create Course'}
+                </button>
+                {selectedCourseId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      api.deleteCourse(selectedCourseId);
+                    }}
+                    className={`border-red-600 border  text-red-600 rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold`}
+                  >
+                    Delete Course
+                  </button>
+                )}
+              </div>
             </form>
 
             {/* Lessons Management */}
