@@ -7,9 +7,11 @@ import axiosInstance from '../../utils/axios.util';
 import Layout from './Layout';
 
 // Extracted reusable components
+import { Link } from 'react-router-dom';
+
 const Button = ({ children, href, primary }) => (
-  <a
-    href={href}
+  <Link
+    to={href}
     className={`inline-block font-semibold rounded-md px-6 py-3 transition-colors duration-300 ${
       primary
         ? 'bg-gradient-to-r from-blue-500 to-cyan-600 text-white hover:from-cyan-600 hover:to-blue-500'
@@ -17,7 +19,7 @@ const Button = ({ children, href, primary }) => (
     }`}
   >
     {children}
-  </a>
+  </Link>
 );
 const testimonials = [
   {
