@@ -8,9 +8,6 @@ import CarouselWrapper from '../../Components/Carousel';
 import axiosInstance from '../../utils/axios.util';
 import Layout from './Layout';
 
-// Extracted reusable components
-import { Link } from 'react-router-dom';
-
 const Button = ({ children, href, primary }) => (
   <Link
     to={href}
