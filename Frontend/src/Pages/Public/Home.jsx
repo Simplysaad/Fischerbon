@@ -167,7 +167,6 @@ export default function Homepage() {
               body: 'Join thousands of students learning real-world skills with step-by-step tutorials and hands-on projects.',
               ctaText: 'Get Started Now',
               ctaUrl: '#courses',
-              image: null,
             }}
           />
         </CarouselWrapper>
