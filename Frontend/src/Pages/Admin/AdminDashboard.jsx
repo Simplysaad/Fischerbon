@@ -10,6 +10,7 @@ import EnrollmentTable from '../../Components/EnrollmentTable';
 import CoursesTable from '../../Components/CoursesTable';
 import StatCard from '../../Components/StatCard';
 import ProfileCard from '../../Components/ProfileCard';
+import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -80,12 +81,12 @@ const AdminDashboard = () => {
           <section id="courses" className="mb-12">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-blue-600">Courses</h3>
-              <a
+              <Link
                 href="/admin/courses"
                 className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
               >
                 Manage
-              </a>
+              </Link>
             </div>
             <div className="overflow-auto rounded-lg shadow bg-white p-4">
               <CoursesTable courses={courses} />
@@ -98,12 +99,12 @@ const AdminDashboard = () => {
               <h3 className="text-xl font-semibold text-blue-600">
                 Notifications
               </h3>
-              <a
+              <Link
                 href="/notifications"
                 className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
               >
                 Manage
-              </a>
+              </Link>
             </div>
             <NotificationsList
               notifications={
@@ -129,10 +130,8 @@ const AdminDashboard = () => {
           </section>
         </section>
         <div className="  flex flex-col w-full md:w-[30%] md:my-12  gap-4">
-          <ProfileCard />
-          <section id="extra" className="border h-auto ">
-            extra
-          </section>
+          <ProfileCard user={user} />
+          <section id="extra" className="border h-auto "></section>
         </div>
       </div>
     </DashboardLayout>

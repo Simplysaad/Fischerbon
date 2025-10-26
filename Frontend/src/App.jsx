@@ -5,7 +5,7 @@ const LoginPage = lazy(() => import('./Pages/Auth/Login'));
 const SignupPage = lazy(() => import('./Pages/Auth/Signup'));
 const ResetPasswordPage = lazy(() => import('./Pages/Auth/ResetPassword'));
 const ForgotPasswordPage = lazy(() => import('./Pages/Auth/ForgotPassword'));
-const Profile = lazy(() => import('./Pages/Auth/Profile'));
+// const Profile = lazy(() => import('./Pages/Auth/Profile'));
 
 const StudentDashboard = lazy(() => import('./Pages/Student/Dashboard'));
 const CourseListing = lazy(() => import('./Pages/Public/CourseListing'));

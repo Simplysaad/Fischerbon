@@ -21,9 +21,14 @@ export const getCourses = async (req, res, next) => {
 
     const courses = await Course.find(filter)
       .sort({ createdAt: -1 })
-      .skip(page ? Number((parseInt(page) - 1) * parseInt(limit)) : 0);
-    // .limit(parseInt(limit) ?? null);
-
+      .skip(
+        (function () {
+          const pageNum = Math.max(parseInt(page) || 1, 1);
+          const pageSize = Math.min(parseInt(limit) || 20, 100);
+          return (pageNum - 1) * pageSize;
+        })()
+      )
+      .limit(Math.min(parseInt(limit) || 20, 100));
     return res.status(200).json({
       success: true,
       message: `${courses.length} courses successfully retrieved`,
@@ -73,7 +78,7 @@ export const createCourse = async (req, res, next) => {
     const newCourse = new Course({
       ...req.body,
       thumbnailUrl,
-      instructorId: currentUser?._id,
+      instructor: currentUser?._id,
     });
 
     await newCourse.save();
@@ -141,7 +146,7 @@ export const updateCourse = async (req, res, next) => {
   }
 };
 
-export const createLesson = async (req, res, next) => {
+export const updateLesson = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -213,7 +218,7 @@ export const createLesson = async (req, res, next) => {
   }
 };
 
-export const updateLesson = async (req, res, next) => {
+export const createLesson = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -314,7 +319,7 @@ export const deleteLesson = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === currentUser._id ||
+      currentCourse.instructor.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {
@@ -370,7 +375,7 @@ export const deleteCourse = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === currentUser._id ||
+      currentCourse.instructor.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {
