@@ -1,12 +1,11 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/next';
 
 const LoginPage = lazy(() => import('./Pages/Auth/Login'));
 const SignupPage = lazy(() => import('./Pages/Auth/Signup'));
 const ResetPasswordPage = lazy(() => import('./Pages/Auth/ResetPassword'));
 const ForgotPasswordPage = lazy(() => import('./Pages/Auth/ForgotPassword'));
-// const Profile = lazy(() => import('./Pages/Auth/Profile'));
-
 const StudentDashboard = lazy(() => import('./Pages/Student/Dashboard'));
 const CourseListing = lazy(() => import('./Pages/Public/CourseListing'));
 const CourseDetails = lazy(() => import('./Pages/Public/CourseDetails'));
@@ -44,6 +43,7 @@ const ProtectedRoute = ({ allowedRoles = null }) => {
 function App() {
   return (
     <AuthProvider>
+      <Analytics />
       <Suspense>
         <Routes>
           {/* Public routes */}
