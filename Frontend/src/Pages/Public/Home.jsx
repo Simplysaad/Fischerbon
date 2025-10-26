@@ -78,17 +78,17 @@ const heros = [
       author: 'Sarah M., Structural Engineer',
     },
   },
-  {
-    heading: '3D Drawing and PDMS Training Made Easy',
-    body: 'Master 3D drafting and plant design with our comprehensive PDMS courses specially crafted for engineers and designers.',
-    ctaText: 'Enroll Today',
-    ctaUrl: '#courses',
-    image: '/images/homepage-1.jpg',
-    highlight: 'Free trial lesson available',
-  },
+  // {
+  //   heading: '3D Drawing and PDMS Training Made Easy',
+  //   body: 'Master 3D drafting and plant design with our comprehensive PDMS courses specially crafted for engineers and designers.',
+  //   ctaText: 'Enroll Today',
+  //   ctaUrl: '#courses',
+  //   image: '/images/homepage-1.jpg',
+  //   highlight: 'Free trial lesson available',
+  // },
   {
     heading: 'Learn Engineering Software Anytime, Anywhere',
-    body: 'Flexible, self-paced courses on AutoCAD, BIM, PDMS, and more. Gain practical skills that employers want.',
+    body: 'Flexible, self-paced courses on AutoCAD, BIM, and more. Gain practical skills that employers want.',
     ctaText: 'Browse All Courses',
     ctaUrl: '#courses',
     image: '/images/workshop.jpg',
@@ -209,21 +209,23 @@ export default function Homepage() {
           </div>
         </section>
 
-        {/* Featured Courses */}
-        {loading && <p className="text-center">Loading courses...</p>}
-        {error && <p className="text-center text-red-600">{error}</p>}
-        {!loading && !error && courses.length > 0 && (
-          <>
-            <h2 className="text-3xl font-semibold mb-12 text-center text-cyan-600">
-              Featured Courses
-            </h2>
-            <div className="flex gap-8 flex-wrap">
-              {courses.map((course) => (
-                <CourseCard key={course._id} course={course} />
-              ))}
-            </div>
-          </>
-        )}
+        <section className="py-36 px-6">
+          {/* Featured Courses */}
+          {loading && <p className="text-center">Loading courses...</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
+          {!loading && !error && courses.length > 0 && (
+            <>
+              <h2 className="text-3xl font-semibold mb-12 text-center text-cyan-600">
+                Featured Courses
+              </h2>
+              <div className="flex gap-8 max-md:flex-wrap">
+                {courses.map((course) => (
+                  <CourseCard key={course._id} course={course} />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
 
         {/* Final Call to Action */}
         <section className="text-center py-36 px-6">

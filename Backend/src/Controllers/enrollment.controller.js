@@ -143,11 +143,14 @@ export const verifyEnrollment = async (req, res, next) => {
       },
     });
 
-    return res.status(201).json({
-      success: true,
-      message: "user enrolled successfully",
-      data: newEnrollment,
-    });
+    return res
+      .redirect(`${process.env.FRONTEND_URL}/courses/${currentCourse.slug}`)
+      .end();
+    // return res.status(201).json({
+    //   success: true,
+    //   message: "user enrolled successfully",
+    //   data: newEnrollment,
+    // });
   } catch (err) {
     next(err);
   }

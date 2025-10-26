@@ -12,18 +12,6 @@ import CourseCard from '../../Components/CourseCard';
 import EmptyMessage from '../../Components/EmptyMessage';
 import LessonBox from '../../Components/LessonBox';
 
-const EnrollButton = () => (
-  <div className="text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded">
-    {enrollment ? (
-      <Link to={`/courses/${course.slug}/lessons/${course.lessons[0]?.slug}`}>
-        Continue Learning
-      </Link>
-    ) : (
-      <button onClick={handleEnroll}>Enroll now</button>
-    )}
-  </div>
-);
-
 const CourseDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -65,22 +53,42 @@ const CourseDetails = () => {
     fetchCourseDetails();
   }, [courseId, user]);
 
-  const handleEnroll = async () => {
-    try {
-      if (!user) {
-        navigate('/login', { state: { from: location } });
-        return null;
+  const EnrollButton = ({}) => {
+    const handleEnroll = async () => {
+      try {
+        if (!user) {
+          navigate('/login', { state: { from: location } });
+          return null;
+        }
+        const { data: response } = await axiosInstance.post(
+          `/enrollments/new/${courseId}`
+        );
+        if (!response.success)
+          throw new Error(response.message || 'Unable to enroll user');
+        window.location = response.data.authorization_url;
+      } catch (error) {
+        console.error(error);
       }
-      const { data: response } = await axiosInstance.post(
-        `/enrollments/new/${courseId}`
-      );
-      if (!response.success)
-        throw new Error(response.message || 'Unable to enroll user');
-      location.href = response.data.authorization_url;
-      window.location = response.data.authorization_url;
-    } catch (error) {
-      console.error(error);
-    }
+    };
+
+    const lastCompletedLesson = enrollment?.completedLessons
+      .slice()
+      .sort((a, b) => a.completedAt - b.completedAt)
+      ?.pop();
+
+    return (
+      <div className="text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded">
+        {enrollment ? (
+          <Link
+            to={`/courses/${course.slug}/lessons/${lastCompletedLesson?.lessonId || course.lessons[0]?.slug}`}
+          >
+            Continue Learning
+          </Link>
+        ) : (
+          <button onClick={handleEnroll}>Enroll now</button>
+        )}
+      </div>
+    );
   };
 
   if (loading) {
@@ -118,7 +126,6 @@ const CourseDetails = () => {
   return (
     <Layout>
       <div className="flex max-md:flex-col  gap-3 p-4">
-        ? Math.round((completedLessonIds.length / course.lessons.length) * 100)
         <main className="md:w-[70%] shadow p-4">
           <section id="courseInfo">
             <div className="flex  max-md:flex-col gap-3 items-start justify-between">

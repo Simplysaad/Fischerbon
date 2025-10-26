@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
-import { Analytics } from '@vercel/analytics/next';
+// import { Analytics } from '@vercel/analytics/next';
 
 const LoginPage = lazy(() => import('./Pages/Auth/Login'));
 const SignupPage = lazy(() => import('./Pages/Auth/Signup'));
@@ -43,7 +43,7 @@ const ProtectedRoute = ({ allowedRoles = null }) => {
 function App() {
   return (
     <AuthProvider>
-      <Analytics />
+      {/*Analytics />*/}
       <Suspense>
         <Routes>
           {/* Public routes */}
@@ -62,7 +62,7 @@ function App() {
           <Route
             element={<ProtectedRoute allowedRoles={['student', 'admin']} />}
           >
-            <Route path="/profile" element={<Profile />} />
+            {/* <Route path="/profile" element={<Profile />} /> */}
           </Route>
 
           {/* <Route element={<ProtectedRoute allowedRoles={['student']} />}> */}

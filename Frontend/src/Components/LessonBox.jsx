@@ -24,12 +24,14 @@ const LessonBox = ({ idx, enrollment, isActive, lesson, course }) => {
       <li
         className={`flex gap-2 shadow p-2 rounded justify-start items-center hover:border border-blue-300 ${isActive ? 'border-2 ' : ''}`}
       >
-        <span className="min-w-[10%] rounded-full text-center text-3xl font-bold py-2">
+        <span className="min-w-[10%] rounded-full text-center text-3xl font-bold p-2 ">
           {idx + 1}
         </span>
         <span className="info w-full">
           <p className="text-">{lesson.title}</p>
-          <p className="text-gray-400 text-[.9rem]">video</p>
+          <p className="text-gray-400 text-[.9rem]">
+            {lesson.content?.video ? 'video' : 'text'}
+          </p>
         </span>
         <span className="status float-end">
           {enrollment?.completedLessons.find(

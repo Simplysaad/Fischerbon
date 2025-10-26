@@ -5,7 +5,7 @@ export const getDashboardInfo = async (req, res, next) => {
   try {
     const currentUser = req.user;
 
-    const courses = await Course.find({ instructorId: currentUser._id });
+    const courses = await Course.find({ instructor: currentUser._id });
     const enrollments = await Enrollment.find({
       courseId: { $in: courses.map((course) => course._id) },
     })
@@ -65,7 +65,7 @@ export const getDashboardInfo = async (req, res, next) => {
           (enrollments.filter((enrollment) => enrollment.status === "completed")
             .length *
             100) /
-          enrollments.length
+            enrollments.length || 0
         }%`,
       },
       {

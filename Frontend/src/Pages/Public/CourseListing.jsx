@@ -105,7 +105,7 @@ const CoursesPage = () => {
         heading: 'Unlock Your CAD Potential, Explore Our Expert Courses',
         body: 'Learn AutoCAD, Revit, and CAD design skills with industry-recognized certification and hands-on projects.',
         ctaText: 'Enroll now',
-        ctaUrl: '/courses',
+        ctaUrl: '#courseList',
         image: '/images/white-building.jpg',
       }}
     >

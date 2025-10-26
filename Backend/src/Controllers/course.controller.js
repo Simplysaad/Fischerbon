@@ -200,9 +200,13 @@ export const updateLesson = async (req, res, next) => {
       content.video = lessonVideoPath;
       content.files = lessonFilesPaths;
     }
-
+    if (title || content) updates.$set = {};
     if (title) updates.$set.title = title;
-    if (content) updates.$set.content = content;
+    if (content) {
+      if (content.text) updates.$set["content.text"] = content.text;
+      if (content.video) updates.$set["content.text"] = content.video;
+      // if(content.files) updates.$push["content.files"] = content.files; // TODO: use $each operator
+    }
 
     const updatedLesson = await Lesson.findByIdAndUpdate(lessonId, updates, {
       new: true,

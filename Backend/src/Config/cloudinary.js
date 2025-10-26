@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import path from "path";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -19,10 +20,9 @@ function getPublicId(file) {
     .replace(/[^a-z0-9_-]/gi, "-")
     .replace(/[\/\\]+/g, "-")
     .toLowerCase();
-  const nonce = crypto.randomBytes(6).toString("hex");
   // don’t embed the extension in public_id; let Cloudinary use format
-  if (isImage || isVideo) return `${base}-${Date.now()}-${nonce}`;
-  return `${base}-${Date.now()}-${nonce}-${ext}`;
+  if (isImage || isVideo) return `${base}-${Date.now()}`;
+  return `${base}-${Date.now()}-${ext}`;
 }
 
 const cloudStorage = new CloudinaryStorage({
@@ -51,5 +51,5 @@ const localStorage = multer.diskStorage({
   },
 });
 // export const upload = multer({ storage: localStorage });
-// export const upload = multer({ dest: "./uploads" });
+// export const upload = multer({ dest: "./src/Public/uploads" });
 export const upload = multer({ storage: cloudStorage });

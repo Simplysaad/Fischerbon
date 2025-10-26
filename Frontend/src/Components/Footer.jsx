@@ -19,7 +19,7 @@ const Footer = () => {
     fetchCourses();
   }, []);
   return (
-    <footer className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white py-10 px-6 md:px-16">
+    <footer className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white mt-32 py-10 px-6 md:px-16">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Brand & Brief */}
         <div>
@@ -43,7 +43,7 @@ const Footer = () => {
           </h3>
           <ul>
             {courses.map((course) => (
-              <li key={course._id}>
+              <li style={{ listStyle: 'disc' }} key={course._id}>
                 <Link
                   to={`/courses/${course.slug}`}
                   className="hover:text-cyan-300"
