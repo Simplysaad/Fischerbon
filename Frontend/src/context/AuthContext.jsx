@@ -35,8 +35,9 @@ export const AuthProvider = ({ children }) => {
     if (response.success) {
       setUser(response.data);
       // Navigate back to the original page or default to home
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
+      const fallbackUrl = user.role === 'admin' ? '/admin/' : '/dashboard';
+      const from = location.state?.from?.pathname || fallbackUrl;
+      setTimeout(() => navigate(from, { replace: true }), 1500);
     }
     return response;
   };

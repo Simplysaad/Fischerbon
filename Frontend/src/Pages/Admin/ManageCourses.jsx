@@ -1,105 +1,142 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axiosInstance from '../../utils/axios.util';
+import DashboardLayout from './Layout';
 
+const levels = ['beginner', 'intermediate', 'advanced'];
+const payments = ['free', 'paid'];
+
+// API functions isolated outside component for clarity
 const api = {
   fetchCourses: async () => {
-    const { data: response } = await axiosInstance.get('/admin/courses');
-    if (response.success) return response.data;
-    else
-      return [
-        {
-          _id: '1',
-          title: 'AutoCAD Beginner Fundamentals',
-          description: 'Learn basics of AutoCAD',
-          price: 0,
-          payment: 'free',
-          category: 'AutoCAD',
-          level: 'beginner',
-          thumbnailUrl: '',
-          lessons: [
-            {
-              _id: 'lesson1',
-              title: 'Introduction',
-              text: 'Welcome to AutoCAD Beginner',
-              video: '',
-              files: [],
-            },
-          ],
-        },
-        {
-          _id: '2',
-          title: 'Advanced CAD Modeling',
-          description: 'Master advanced modeling',
-          price: 199,
-          payment: 'paid',
-          category: 'CAD',
-          level: 'advanced',
-          thumbnailUrl: '',
-          lessons: [],
-        },
-      ];
-  },
-  createCourse: async (course) => {
-    const newFormdata = new FormData();
-
-    Object.keys(course).forEach((key) => {
-      console.log(key, course[key]);
-      newFormdata.append(key, course[key]);
-    });
-
-    console.log(course['th']);
-
-    console.log(newFormdata.entries());
-    console.log(Object.keys(course));
-
     try {
-      const { data: response } = await axiosInstance.post(
-        '/courses/create',
-        newFormdata
-      );
-      console.log(response);
-      if (response.success) return response.data;
-      else return response.message;
+      const { data: response } = await axiosInstance.get('/admin/courses');
+      if (response?.success) return response.data;
     } catch (err) {
       console.error(err);
     }
   },
+  createCourse: async (course) => {
+    try {
+      console.log(course);
+      const formData = new FormData();
+      for (const key in course) {
+        const value = course[key];
+        if (value instanceof File) {
+          // Append single file with filename
+          formData.append(key, value, value.name);
+        } else if (
+          Array.isArray(value) &&
+          value.length > 0 &&
+          value[0] instanceof File
+        ) {
+          // Append array of lessonFiles
+          value.forEach((file) => {
+            formData.append(key, file, file.name);
+          });
+        } else {
+          // Append other types like string, number
+          formData.append(key, value);
+        }
+      }
+      const { data: response } = await axiosInstance.post(
+        '/courses/create',
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error('Error creating course:', error);
+      throw error;
+    }
+  },
   updateCourse: async (courseId, updates) => {
-    console.log('Updating course', courseId, updates);
-    return { ...updates, _id: courseId };
+    try {
+      const formData = new FormData();
+      for (const key in updates) {
+        formData.append(key, updates[key]);
+      }
+      const { data: response } = await axiosInstance.post(
+        `/courses/${courseId}`,
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  deleteCourse: async (courseId) => {
+    try {
+      const { data: response } = await axiosInstance.delete(
+        `/courses/${courseId}/`
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   },
   addLesson: async (courseId, lesson) => {
-    // POST /course/:id/lessons logic
-    console.log('Adding lesson to', courseId, lesson);
-    return { ...lesson, _id: Math.random().toString(36).substr(2, 9) };
+    try {
+      const formData = new FormData();
+      const { lessonForm, lessonFiles, lessonVideo } = lesson;
+
+      for (let key in lessonForm) {
+        console.log('lessonForm', key);
+        formData.append(key, lessonForm[key]);
+      }
+
+      if (Array.isArray(lessonFiles)) {
+        for (let file of lessonFiles) {
+          console.log('lessonfile', file);
+          formData.append('lessonFiles', file, file.name);
+        }
+      } else {
+        formData.append('lessonFiles', file, file.name);
+      }
+
+      console.log('lessonVideo', lessonVideo);
+      lessonVideo &&
+        formData.append('lessonVideo', lessonVideo, lessonVideo.name);
+
+      const { data: response } = await axiosInstance.post(
+        `/courses/${courseId}/lessons`,
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error('Error adding lesson:', error);
+      throw error;
+    }
   },
   updateLesson: async (courseId, lessonId, updates) => {
-    console.log('Updating lesson', lessonId, 'in course', courseId, updates);
-    return { ...updates, _id: lessonId };
+    try {
+      const formData = new FormData();
+      for (const key in updates) {
+        formData.append(key, updates[key]);
+      }
+      const { data: response } = await axiosInstance.post(
+        `/courses/${courseId}/lessons/${lessonId}`,
+        formData
+      );
+      return response;
+    } catch (error) {
+      console.error('Error updating lesson:', error);
+      throw error;
+    }
+  },
+  deleteLesson: async (courseId, lessonId) => {
+    try {
+      const { data: response } = await axiosInstance.delete(
+        `/courses/${courseId}/lessons/${lessonId}`
+      );
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   },
 };
-
-const handleImageChange = (e) => {
-  const file = e.target.files[0];
-  const inputName = e.target.name;
-  if (!file) return;
-  const previewURL = URL.createObjectURL(file);
-  setThumbnail(file);
-  setThumbnailPreview(previewURL);
-  setData((prevForm) => ({
-    ...prevForm,
-    [inputName]: file,
-    [`${inputName}Preview`]: previewURL,
-  }));
-};
-const levels = ['beginner', 'intermediate', 'advanced'];
-const payments = ['free', 'paid'];
 
 const CourseManagement = () => {
   const [courses, setCourses] = useState([]);
   const [selectedCourseId, setSelectedCourseId] = useState(null);
-
-  // Form state for creating/editing a course
   const [courseForm, setCourseForm] = useState({
     title: '',
     description: '',
@@ -107,55 +144,111 @@ const CourseManagement = () => {
     payment: 'paid',
     category: '',
     level: 'beginner',
-    thumbnail: null,
   });
+  const [thumbnail, setThumbnail] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState('');
+  const [lessonVideo, setLessonVideo] = useState(null);
+  const [lessonFiles, setLessonFiles] = useState(null);
 
-  // Form state for adding/editing lessons
+  const [isCourseSubmitting, setIsCourseSubmitting] = useState(false);
+  const [isLessonSubmitting, setIsLessonSubmitting] = useState(false);
+
   const [lessonForm, setLessonForm] = useState({
     _id: null,
     title: '',
     text: '',
-    video: null,
-    files: [],
   });
-
-  // Error and status messages
   const [msg, setMsg] = useState('');
   const [error, setError] = useState('');
 
+  // Fetch courses once on mount
   useEffect(() => {
-    // Load courses on mount
-    (async () => {
-      const data = await api.fetchCourses();
-      setCourses(data);
-      if (data.length) setSelectedCourseId(data[0]._id);
-    })();
+    async function loadCourses() {
+      try {
+        const data = await api.fetchCourses();
+        setCourses(data);
+        if (data.length) setSelectedCourseId(data[0]._id);
+      } catch (e) {
+        setError('Error loading courses');
+      }
+    }
+    loadCourses();
   }, []);
 
-  // Select course and populate form
+  // Update form when selected course changes
   useEffect(() => {
-    if (!selectedCourseId) return;
+    if (!selectedCourseId) {
+      setCourseForm({
+        title: '',
+        description: '',
+        price: 0,
+        payment: 'paid',
+        category: '',
+        level: 'beginner',
+      });
+      setThumbnail(null);
+      setThumbnailPreview(null);
+      resetLessonForm();
+      return;
+    }
     const course = courses.find((c) => c._id === selectedCourseId);
-    if (!course) return;
-    setCourseForm({
-      title: course.title,
-      description: course.description,
-      price: course.price,
-      payment: course.payment,
-      category: course.category,
-      level: course.level,
-      thumbnailUrl: course.thumbnailUrl,
-    });
-    resetLessonForm();
+    if (course) {
+      setCourseForm({
+        title: course.title,
+        description: course.description,
+        price: course.price,
+        payment: course.payment,
+        category: course.category,
+        level: course.level,
+      });
+      setThumbnail(null);
+      setThumbnailPreview(course.thumbnailUrl || '');
+      resetLessonForm();
+    }
   }, [selectedCourseId, courses]);
 
   const resetLessonForm = () => {
-    setLessonForm({ _id: null, title: '', text: '', video: '', files: [] });
+    setLessonForm({
+      _id: null,
+      title: '',
+      text: '',
+    });
+    setLessonVideo(null);
+    setLessonFiles(null);
   };
 
-  // Handle course form submit for create/update
+  // Cleanup function for object URLs
+  useEffect(() => {
+    return () => {
+      if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(thumbnailPreview);
+      }
+    };
+  }, [thumbnailPreview]);
+
+  useEffect(() => {
+    console.log(lessonFiles);
+  }, [lessonFiles]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Revoke previous URL if it exists
+    if (thumbnailPreview && thumbnailPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(thumbnailPreview);
+    }
+
+    const previewURL = URL.createObjectURL(file);
+
+    setThumbnail(file);
+    setThumbnailPreview(previewURL);
+  };
+
+  // Handle course form submission (create or update)
   const handleCourseSubmit = async (e) => {
     e.preventDefault();
+    setIsCourseSubmitting(true);
     setError('');
     setMsg('');
 
@@ -166,28 +259,33 @@ const CourseManagement = () => {
 
     try {
       if (selectedCourseId) {
-        // update existing
-        const updated = await api.updateCourse(selectedCourseId, courseForm);
+        const response = await api.updateCourse(selectedCourseId, courseForm);
+        if (!response.success) throw new Error(response.message);
+
         setCourses((prev) =>
-          prev.map((c) => (c._id === selectedCourseId ? updated : c))
+          prev.map((c) => (c._id === selectedCourseId ? response.data : c))
         );
         setMsg('Course updated successfully.');
       } else {
-        // create new
-        const created = await api.createCourse(courseForm);
-        setCourses((prev) => [...prev, created]);
-        setSelectedCourseId(created._id);
+        const response = await api.createCourse({ ...courseForm, thumbnail });
+        if (!response.success) throw new Error(response.message);
+
+        setCourses((prev) => [...prev, response.data]);
+        setSelectedCourseId(response.data._id);
         setMsg('Course created successfully.');
       }
-    } catch (err) {
-      setError('Failed to save course.');
-      console.error(err);
+    } catch (e) {
+      setError('Failed to save course: ' + e.message);
+    } finally {
+      setIsCourseSubmitting(false);
     }
   };
 
-  // Handle lesson form submit for add/update
+  // Handle lesson form submission (add or update)
   const handleLessonSubmit = async (e) => {
     e.preventDefault();
+    setIsLessonSubmitting(true);
+
     setError('');
     setMsg('');
 
@@ -196,57 +294,89 @@ const CourseManagement = () => {
       return;
     }
 
-    try {
-      if (!selectedCourseId) {
-        setError('Select a course first.');
-        return;
-      }
+    if (!selectedCourseId) {
+      setError('Select a course first.');
+      return;
+    }
 
+    try {
       if (lessonForm._id) {
-        // update lesson
-        const updatedLesson = await api.updateLesson(
+        const response = await api.updateLesson(
           selectedCourseId,
           lessonForm._id,
-          lessonForm
+          { lessonForm, lessonFiles, lessonVideo }
         );
+        console.log(lessonFiles);
+        if (!response.success) throw new Error(response.message);
+
         setCourses((prev) =>
           prev.map((course) => {
             if (course._id !== selectedCourseId) return course;
             return {
               ...course,
               lessons: course.lessons.map((l) =>
-                l._id === lessonForm._id ? updatedLesson : l
+                l._id === lessonForm._id ? response.data : l
               ),
             };
           })
         );
         setMsg('Lesson updated successfully.');
       } else {
-        // add new lesson
-        const newLesson = await api.addLesson(selectedCourseId, lessonForm);
+        const response = await api.addLesson(selectedCourseId, {
+          lessonForm,
+          lessonVideo,
+          lessonFiles,
+        });
+        if (!response.success) throw new Error(response.message);
+
         setCourses((prev) =>
           prev.map((course) => {
             if (course._id !== selectedCourseId) return course;
-            return { ...course, lessons: [...course.lessons, newLesson] };
+            return { ...course, lessons: [...course.lessons, response.data] };
           })
         );
         setMsg('Lesson added successfully.');
       }
       resetLessonForm();
-    } catch {
-      setError('Failed to save lesson.');
+    } catch (e) {
+      setError('Failed to save lesson: ' + e.message);
+    } finally {
+      setIsLessonSubmitting(false);
     }
   };
 
-  // Handle file input (just storing file names for demo)
-  const handleFileChange = (e) => {
-    const filesArray = Array.from(e.target.files).map((file) => file.name);
-    setLessonForm({ ...lessonForm, files: filesArray });
+  // Handle lesson file input
+  // const handleFileChange = (e) => {
+  //   const lessonFilesArray = Array.from(e.target.files);
+  //   setLessonFiles(lessonFilesArray);
+  // };
+
+  const deleteLesson = async (courseId, lessonId) => {
+    try {
+      const response = await api.deleteLesson(courseId, lessonId);
+      if (!response.success) throw new Error(response.message);
+
+      // Update courses state to remove the deleted lesson
+      setCourses((prev) =>
+        prev.map((course) => {
+          if (course._id !== courseId) return course;
+          return {
+            ...course,
+            lessons: course.lessons.filter((l) => l._id !== lessonId),
+          };
+        })
+      );
+
+      resetLessonForm();
+      setMsg('Lesson deleted successfully.');
+    } catch (error) {
+      setError('Failed to delete lesson: ' + error.message);
+    }
   };
 
   return (
-    null || (
-      <div className="min-h-screen bg-gray-50 p-6">
+    <DashboardLayout>
+      <div className="min-h-full bg-gray-50 p-6">
         <h1 className="text-3xl font-semibold mb-6">Course Management</h1>
         <div className="flex flex-col md:flex-row gap-8">
           {/* Courses List */}
@@ -278,8 +408,9 @@ const CourseManagement = () => {
                   payment: 'paid',
                   category: '',
                   level: 'beginner',
-                  thumbnailUrl: '',
                 });
+                setThumbnail(null);
+                setThumbnailPreview('');
                 resetLessonForm();
                 setMsg('');
                 setError('');
@@ -291,7 +422,6 @@ const CourseManagement = () => {
 
           {/* Course Form and Lessons */}
           <main className="md:w-3/4 bg-white rounded shadow p-6 overflow-auto max-h-[600px]">
-            {/* Feedback Messages */}
             {msg && (
               <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
                 {msg}
@@ -385,22 +515,20 @@ const CourseManagement = () => {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium mb-1">
-                    Thumbnail URL
-                  </label>
+                  <label className="block font-medium mb-1">Thumbnail</label>
                   <input
                     type="file"
                     accept="image/*"
                     className="w-full border rounded px-3 py-2"
-                    value={courseForm.thumbnail}
-                    onChange={(e) =>
-                      setCourseForm({
-                        ...courseForm,
-                        thumbnail: e.target.value,
-                      })
-                    }
-                    placeholder="http://example.com/image.jpg"
+                    onChange={handleImageChange}
                   />
+                  {thumbnailPreview && (
+                    <img
+                      src={thumbnailPreview}
+                      alt="Thumbnail Preview"
+                      className="mt-2 rounded max-h-32 object-contain"
+                    />
+                  )}
                 </div>
               </div>
               <div>
@@ -415,14 +543,28 @@ const CourseManagement = () => {
                       description: e.target.value,
                     })
                   }
-                ></textarea>
+                />
               </div>
-              <button
-                type="submit"
-                className="bg-blue-600 text-white rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold"
-              >
-                {selectedCourseId ? 'Update Course' : 'Create Course'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  disabled={isCourseSubmitting}
+                  className={`${isCourseSubmitting ? 'bg-blue-400' : 'bg-blue-600'} text-white rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold`}
+                >
+                  {selectedCourseId ? 'Update Course' : 'Create Course'}
+                </button>
+                {selectedCourseId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      api.deleteCourse(selectedCourseId);
+                    }}
+                    className={`border-red-600 border  text-red-600 rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold`}
+                  >
+                    Delete Course
+                  </button>
+                )}
+              </div>
             </form>
 
             {/* Lessons Management */}
@@ -432,17 +574,17 @@ const CourseManagement = () => {
                 <ul className="mb-6 space-y-3 max-h-48 overflow-auto border border-gray-300 rounded p-3 bg-gray-50">
                   {courses
                     .find((c) => c._id === selectedCourseId)
-                    ?.lessons.map((lesson) => (
+                    ?.lessons?.map((lesson, idx) => (
                       <li
-                        key={lesson._id}
+                        key={lesson._id || idx}
                         className="p-3 bg-white rounded shadow-sm cursor-pointer hover:bg-indigo-50"
                         onClick={() =>
                           setLessonForm({
                             _id: lesson._id,
                             title: lesson.title,
                             text: lesson.text,
-                            video: lesson.video,
-                            files: lesson.files,
+                            // lessonVideo: lesson.video,
+                            // lessonFiles: lesson.files,
                           })
                         }
                       >
@@ -469,7 +611,7 @@ const CourseManagement = () => {
                       onChange={(e) =>
                         setLessonForm({ ...lessonForm, title: e.target.value })
                       }
-                      required
+                      // required
                     />
                   </div>
                   <div>
@@ -484,15 +626,13 @@ const CourseManagement = () => {
                     />
                   </div>
                   <div>
-                    <label className="block font-medium mb-1">Video URL</label>
+                    <label className="block font-medium mb-1">Video</label>
                     <input
-                      type="text"
+                      type="file"
+                      accept="video/*"
                       className="w-full border rounded px-3 py-2"
-                      value={lessonForm.video}
-                      onChange={(e) =>
-                        setLessonForm({ ...lessonForm, video: e.target.value })
-                      }
-                      placeholder="YouTube or direct video link"
+                      onChange={(e) => setLessonVideo(e.target.files[0])}
+                      placeholder=""
                     />
                   </div>
                   <div>
@@ -502,13 +642,15 @@ const CourseManagement = () => {
                     <input
                       type="file"
                       multiple
-                      onChange={handleFileChange}
+                      onChange={(e) =>
+                        setLessonFiles(Array.from(e.target.files))
+                      }
                       className="w-full"
                     />
-                    {lessonForm.files.length > 0 && (
+                    {lessonFiles?.length > 0 && (
                       <ul className="mt-2 text-sm text-gray-700 list-disc list-inside">
-                        {lessonForm.files.map((f, i) => (
-                          <li key={i}>{f}</li>
+                        {lessonFiles.map((f, i) => (
+                          <li key={i}>{f.name || f}</li>
                         ))}
                       </ul>
                     )}
@@ -528,13 +670,24 @@ const CourseManagement = () => {
                       Cancel Edit
                     </button>
                   )}
+                  {lessonForm._id && (
+                    <button
+                      type="button"
+                      className="ml-4 text-red-600 hover:underline"
+                      onClick={() =>
+                        deleteLesson(selectedCourseId, lessonForm._id)
+                      }
+                    >
+                      Delete Lesson
+                    </button>
+                  )}
                 </form>
               </section>
             )}
           </main>
         </div>
       </div>
-    )
+    </DashboardLayout>
   );
 };
 

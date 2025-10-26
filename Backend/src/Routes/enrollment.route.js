@@ -15,11 +15,12 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/", getEnrollments);
-router.get("/:enrollmentId", getEnrollment);
 
 router.post("/new/:courseId", createEnrollment);
 
 router.get("/verify/:courseId", verifyEnrollment);
+
+router.get("/:enrollmentId", getEnrollment);
 
 const enrollmentRoutes = router;
 export default enrollmentRoutes;

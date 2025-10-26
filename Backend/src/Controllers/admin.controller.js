@@ -101,32 +101,13 @@ export const getCourses = async (req, res, next) => {
     const currentUser = req.user;
 
     const courses = await Course.find({
-      instructorId: currentUser._id,
+      instructor: currentUser._id,
     }).populate("lessons");
     console.log(courses);
     const enrollments = await Enrollment.find({
       courseId: { $in: courses.map((course) => course._id) },
     });
 
-    // {
-    //       id: '1',
-    //       title: 'AutoCAD Beginner Fundamentals',
-    //       description: 'Learn basics of AutoCAD',
-    //       price: 0,
-    //       payment: 'free',
-    //       category: 'AutoCAD',
-    //       level: 'beginner',
-    //       thumbnailUrl: '',
-    //       lessons: [
-    //         {
-    //           id: 'lesson1',
-    //           title: 'Introduction',
-    //           text: 'Welcome to AutoCAD Beginner',
-    //           video: '',
-    //           files: [],
-    //         },
-    //       ],
-    //     },
     courses.forEach(
       (course) =>
         (course.enrollments = enrollments.filter(

@@ -1,45 +1,44 @@
-import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
+const getAverageRating = (ratings) => {
+  if (!ratings?.length) return '5.0';
+  const sum = ratings.reduce((acc, cur) => acc + cur.rating, 0);
+  return (sum / ratings.length).toFixed(1);
+};
 
-export default function CourseCard({ course }) {
-  const getAverageRating = (ratings) => {
-    if (!ratings?.length) return '5.0';
-    const sum = ratings.reduce((acc, cur) => acc + cur.rating, 0);
-    return (sum / ratings.length).toFixed(1);
-  };
+import { Star } from 'lucide-react';
+import formatCurrency from '../utils/formatCurrency';
+import { Link } from 'react-router-dom';
+
+const CourseCard = ({ course }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden h-ful hover:shadow-lg transition cursor-pointer">
-      <img
-        src={course.image}
-        alt={course.title}
-        className="w-full h-40 object-cover"
-      />
-      <div className="p-4 flex flex-col justify-between h-52">
-        <div>
-          <h3 className="text-xl font-semibold mb-1 text-gray-900">
-            {course.title}
-          </h3>
-          <p className="text-gray-600 text-sm mb-2">{course.description}</p>
-        </div>
-        <div className="flex  items-center justify-start gap-2 text-gray-700 text-sm font-medium">
-          {/* <span>Duration: {course.duration}</span> */}
-          {/* {course.certified && (
-            <span className="text-yellow-600 font-semibold">Certificate</span>
-          )} */}
-          <span className="font-semibold flex gap-1 items-center">
-            <span className="">{getAverageRating(course.ratings)}</span>
-            <span className="text-yellow-600">
-              <Star className="text-yellow-600" size={10} fill="#df0" />
-            </span>
+    <div className="shadow w-[100%] p-4">
+      <div className="card-image w-full overflow-hidden">
+        <img
+          src={course.thumbnailUrl || '/images/white-building-2.jpg'}
+          alt="image"
+        />
+      </div>
+      <div className="card-content py-4">
+        <Link to={`/courses/${course.slug || course._id}`}>
+          <h3 className="card-title text-[1.2rem]">{course.title}</h3>
+        </Link>
+        <p className="card-description py-2">
+          {course.description?.split(' ').slice(0, 15).join(' ') + '...'}
+        </p>
+        <span className="flex gap-6 text-[1rem] ">
+          <span className="card-duration text-nowrap">
+            <Star className="inline text-yellow-500" fill="#ffa" size={12} />{' '}
+            {getAverageRating(course.ratings)}
           </span>
-          <span> ${(course.price ?? 10) * 1 - 0.01}</span>
-        </div>
-        <Link to={`/courses/${course._id}`}>
-          <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold transition">
-            Learn More
+          <span className="card-level">{formatCurrency(course.price)}</span>
+        </span>
+        <Link to={`/courses/${course.slug || course._id}`}>
+          <button className="enroll-button w-full  px-4 py-2 my-4 border hover:bg-blue-500 focus:bg-blue-500 focus:text-white hover:text-white  border-blue-500 rounded">
+            Enroll Now
           </button>
         </Link>
       </div>
     </div>
   );
-}
+};
+
+export default CourseCard;

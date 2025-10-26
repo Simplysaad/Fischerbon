@@ -1,58 +1,78 @@
+# LMS Platform Pages & Routes Checklist
 
+## Created Pages & Routes
 
-Here's a feasible two-month timeline for building your paid AutoCAD tutorial learning platform, assuming solo work. The timeline balances design, development, testing, and deployment phases.
+- [x] **Landing Page**
 
-***
+  - Route: `/`
+  - Features: Hero, waitlist signup, selling points, testimonials
 
-## Month 1: Foundation and Core Features
+- [x] **Waitlist Form Component**
 
-### Week 1: Planning & Setup
-- Define detailed project requirements and features. ✅
-- Design overall architecture (frontend, backend, database). ✅
-- Setup dev environment & repositories.✅
-- Choose tech stack (Express, MongoDB, React).✅
-- Setup basic Express backend and MongoDB connection.✅
+  - Integrated on landing page and reused elsewhere
+  - Collects full name and email with validation
 
-### Week 2: User Management & Authentication
-- Implement user registration, login, and roles (student, instructor, admin).✅
-- Setup JWT-based authentication and authorization middleware.✅
-- Create User schema and APIs for profile management.✅
+- [x] **Course Listing Page**
 
-### Week 3: Courses & Content Management
-- Design and create schemas for Courses and Lessons only (no Modules). ✅
-- Build APIs to create✅, update, delete✅ courses and lessons.✅
-- Implement file uploads for videos and documents with Multer/cloud storage.✅
-- Build Instructor dashboard basics for course creation.✅
+  - Route: `/courses`
+  - Features: Static hero, search/filter, sorting, pagination, course cards
 
-### Week 4: Student Enrollment & Progress Tracking
-- Develop enrollment logic, enrollment and payments schemas.✅
-- Implement course access control based on payments/enrollments.
-- Create APIs to track student progress and quiz results.
+- [x] **Course Management (Admin)**
 
-***
+  - Route: `/admin/courses`
+  - Features: View/create/edit courses and lessons, file uploads (thumbnail, lesson files)
 
-## Month 2: Advanced Features & Deployment
+- [x] **Admin Layout**
 
-### Week 5: Quizzes & Assessments
-- Build Quiz schema and APIs for quizzes.
-- Integrate quiz functionality with lessons.
-- Develop frontend quiz components for students.
-- Add grading and progress updates from quiz results.
+  - Sidebar, header, footer wrapping admin pages for consistent UI
 
-### Week 6: Frontend UI & UX Enhancements
-- Design and implement student dashboard, course catalog, lesson views.
-- Add progress visualization and notifications.
-- Implement responsive design for mobile devices.
-- Polish instructor and admin dashboards.
+- [x] **404 Not Found Page**
+  - Route: For unmatched URLs
+  - Features: Friendly, branded error message with call-to-action
 
-### Week 7: Testing, Deployment & Documentation
-- Write automated tests for backend and frontend.
-- Conduct usability testing and fix bugs.
-- Setup deployment pipeline (Heroku, AWS, or similar).
-- Prepare documentation for users and maintenance.
-- Launch platform and monitor initially.
+---
 
-***
+## Yet To Create Pages & Routes
 
-This timeline balances manageable weekly goals allowing you to build a robust e-learning platform with the added audio tool, completing key milestones progressively within two months. Adjust based on skill level and time availability.
+- [x] **Course Details Page**
 
+  - Route: `/courses/:courseId`
+  - Features: Full course info, syllabus, enrollment CTA, reviews
+
+- [x] **User Authentication**
+
+  - Routes: `/login`, `/signup`
+  - Features: User registration and login forms
+
+- [ ] **User Profile & Dashboard**
+
+  - Route: `/profile` or `/dashboard`
+  - Features: Learner progress, enrolled courses, certificates
+
+- [ ] **Enrollment Tracking (Admin)**
+
+  - Route: `/admin/enrollments`
+  - Features: Track users’ course progress, certificate management
+
+- [ ] **Payment & Subscription Management**
+
+  - Routes: `/billing`, `/subscriptions`
+  - Features: Manage payments, subscriptions, and billing info
+
+- [ ] **Site Settings (Admin)**
+
+  - Route: `/admin/settings`
+  - Features: Platform configuration, email templates, notifications
+
+- [ ] **Support & Communication**
+
+  - Routes: `/support`, `/admin/support`
+  - Features: User tickets, announcements, messaging
+
+- [ ] **Reports & Analytics (Admin)**
+
+  - Route: `/admin/reports`
+  - Features: Course metrics, revenue data, export functionality
+
+- [ ] **Additional Resources**
+  - Optional pages like FAQs, tutorials, blog, or community forums

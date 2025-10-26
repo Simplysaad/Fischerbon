@@ -21,13 +21,13 @@ export const getCourses = async (req, res, next) => {
 
     const courses = await Course.find(filter)
       .sort({ createdAt: -1 })
-      .skip(page ? Number((parseInt(page) - 1) * parseInt(limit)) : 0)
-      .limit(parseInt(limit) ?? null);
+      .skip(page ? Number((parseInt(page) - 1) * parseInt(limit)) : 0);
+    // .limit(parseInt(limit) ?? null);
 
     return res.status(200).json({
       success: true,
       message: `${courses.length} courses successfully retrieved`,
-      data: courses
+      data: courses,
     });
   } catch (err) {
     next(err);
@@ -36,42 +36,44 @@ export const getCourses = async (req, res, next) => {
 
 export const createCourse = async (req, res, next) => {
   try {
-    if (!req.body) { 
+    if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad request - Nothing is being sent"
+        message: "Bad request - Nothing is being sent",
       });
     }
 
-    const { _id: userId } = req.user
+    const currentUser = req.user;
 
-    const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id "
+        message: "Invalid user Id ",
       });
     }
 
-    const isAuthorized =
-      currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized = currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only instructor or admin can access this route"
+        message: "Unauthorized - only admin can access this route",
       });
     }
 
     // const { title, description, price, category, tags, level } = req.body;
+    console.log(req.file, req.files, req.body);
 
-    if (!req.file)
-      throw new Error("thumbnail is not uploaded ", { cause: "no req.file" });
-
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Thumbnail is required for course creation",
+      });
+    }
     const thumbnailUrl = req.file?.path;
     const newCourse = new Course({
       ...req.body,
       thumbnailUrl,
-      instructorId: currentUser?._id
+      instructorId: currentUser?._id,
     });
 
     await newCourse.save();
@@ -79,7 +81,7 @@ export const createCourse = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: "new course created",
-      data: newCourse
+      data: newCourse,
     });
   } catch (err) {
     next(err);
@@ -91,7 +93,7 @@ export const updateCourse = async (req, res, next) => {
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad Request - Nothing is being sent"
+        message: "Bad Request - Nothing is being sent",
       });
     }
     console.log(req.body);
@@ -119,20 +121,20 @@ export const updateCourse = async (req, res, next) => {
     }
 
     const updatedCourse = await Course.findByIdAndUpdate(courseId, update, {
-      new: true
+      new: true,
     });
 
     if (!updatedCourse) {
       return res.status(404).json({
         success: false,
-        message: "course could not be found "
+        message: "course could not be found ",
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "course updated successfully",
-      data: updatedCourse
+      data: updatedCourse,
     });
   } catch (err) {
     next(err);
@@ -144,19 +146,89 @@ export const createLesson = async (req, res, next) => {
     if (!req.body) {
       return res.status(400).json({
         success: false,
-        message: "Bad request - Nothing is being sent"
+        message: "Bad request - Nothing is being sent",
       });
     }
 
-    const { userId } = req;
-    const currentUser = await User.findOne({ _id: userId });
+    const currentUser = req.user;
 
-    const isAuthorized =
-      currentUser.role === "instructor" || currentUser.role === "admin";
+    const isAuthorized = currentUser.role === "admin";
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only instructor or admin can access this route"
+        message: "Unauthorized - only admin can access this route",
+      });
+    }
+
+    const { courseId, lessonId } = req.params;
+    const { title, text } = req.body;
+
+    if (!text && !req.files) {
+      return res.status(400).json({
+        success: false,
+        message: "neither text nor file is uploaded",
+      });
+    }
+
+    const updates = {};
+    const content = {};
+
+    if (text) {
+      content.text = text;
+    }
+
+    if (req.files) {
+      console.log(req.files);
+      const { lessonVideo, lessonFiles } = req.files;
+
+      console.log(lessonFiles);
+      const lessonFilesPaths = lessonFiles
+        ? Array.isArray(lessonFiles)
+          ? lessonFiles?.map((file) => file.path)
+          : lessonFiles[0]?.path
+        : null;
+      console.log("lessonFilesPaths", lessonFilesPaths);
+
+      const lessonVideoPath = lessonVideo ? lessonVideo[0]?.path : null;
+      console.log("lessonVideoPath", lessonVideoPath);
+
+      content.video = lessonVideoPath;
+      content.files = lessonFilesPaths;
+    }
+
+    if (title) updates.$set.title = title;
+    if (content) updates.$set.content = content;
+
+    const updatedLesson = await Lesson.findByIdAndUpdate(lessonId, updates, {
+      new: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "lesson updated successfully",
+      data: updatedLesson,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateLesson = async (req, res, next) => {
+  try {
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request - Nothing is being sent",
+      });
+    }
+
+    const currentUser = req.user;
+
+    const isAuthorized = currentUser.role === "admin";
+    if (!isAuthorized) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized - only admin can access this route",
       });
     }
 
@@ -166,7 +238,7 @@ export const createLesson = async (req, res, next) => {
     if (!text && !req.files) {
       return res.status(400).json({
         success: false,
-        message: "neither text nor file is uploaded"
+        message: "neither text nor file is uploaded",
       });
     }
 
@@ -177,21 +249,28 @@ export const createLesson = async (req, res, next) => {
     }
 
     if (req.files) {
+      console.log(req.files);
       const { lessonVideo, lessonFiles } = req.files;
 
-      const lessonFilesPaths = lessonFiles.map((file) => file.path);
+      console.log(lessonFiles);
+      const lessonFilesPaths = lessonFiles
+        ? Array.isArray(lessonFiles)
+          ? lessonFiles?.map((file) => file.path)
+          : lessonFiles[0]?.path
+        : null;
       console.log("lessonFilesPaths", lessonFilesPaths);
 
-      const lessonVideoPath = lessonVideo[0].path;
+      const lessonVideoPath = lessonVideo ? lessonVideo[0]?.path : null;
       console.log("lessonVideoPath", lessonVideoPath);
 
-      (content.video = lessonVideoPath), (content.files = lessonFilesPaths);
+      content.video = lessonVideoPath;
+      content.files = lessonFilesPaths;
     }
 
     const newLesson = new Lesson({
       courseId,
       title,
-      content
+      content,
     });
 
     await newLesson.save();
@@ -199,7 +278,7 @@ export const createLesson = async (req, res, next) => {
     const updatedCourse = await Course.findOneAndUpdate(
       { _id: courseId },
       {
-        $push: { lessons: newLesson._id }
+        $push: { lessons: newLesson._id },
       },
       { new: true }
     );
@@ -207,24 +286,22 @@ export const createLesson = async (req, res, next) => {
     return res.status(201).json({
       success: true,
       message: "new lesson added successfully",
-      data: newLesson
+      data: newLesson,
     });
   } catch (err) {
     next(err);
   }
 };
 
-
 export const deleteLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
-    const { userId } = req;
 
-    const currentUser = await User.findById(userId);
+    const currentUser = req.user;
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id"
+        message: "Invalid user Id",
       });
     }
 
@@ -232,18 +309,18 @@ export const deleteLesson = async (req, res, next) => {
     if (!currentCourse) {
       return res.status(400).json({
         success: false,
-        message: "Invalid course Id"
+        message: "Invalid course Id",
       });
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === userId ||
+      currentCourse.instructorId.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only owner or admin can delete lesson"
+        message: "Unauthorized - only owner or admin can delete lesson",
       });
     }
 
@@ -252,7 +329,7 @@ export const deleteLesson = async (req, res, next) => {
     if (!deletedLesson) {
       return res.status(404).json({
         success: false,
-        message: "Lesson not found"
+        message: "Lesson not found",
       });
     }
 
@@ -265,7 +342,7 @@ export const deleteLesson = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Lesson deleted successfully",
-      data: currentCourse
+      data: currentCourse,
     });
   } catch (err) {
     next(err);
@@ -275,13 +352,12 @@ export const deleteLesson = async (req, res, next) => {
 export const deleteCourse = async (req, res, next) => {
   try {
     const { courseId } = req.params;
-    const { userId } = req;
 
-    const currentUser = await User.findById(userId);
+    const currentUser = req.user;
     if (!currentUser) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user Id"
+        message: "Invalid user Id",
       });
     }
 
@@ -289,18 +365,18 @@ export const deleteCourse = async (req, res, next) => {
     if (!currentCourse) {
       return res.status(404).json({
         success: false,
-        message: "Course not found"
+        message: "Course not found",
       });
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === userId ||
+      currentCourse.instructorId.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized - only owner or admin can delete course"
+        message: "Unauthorized - only owner or admin can delete course",
       });
     }
 
@@ -308,14 +384,14 @@ export const deleteCourse = async (req, res, next) => {
     if (!deletedCourse) {
       return res.status(404).json({
         success: false,
-        message: "Course already deleted or not found"
+        message: "Course already deleted or not found",
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Course deleted successfully",
-      data: deletedCourse
+      data: deletedCourse,
     });
   } catch (err) {
     next(err);
@@ -324,42 +400,22 @@ export const deleteCourse = async (req, res, next) => {
 
 export const getCourse = async (req, res, next) => {
   try {
-    const { userId } = req;
     const { courseId } = req.params;
 
-    const currentUser = await User.findById(userId);
-    if (!currentUser) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated"
-      });
-    }
-
-    // Uncomment and implement enrollment and instructor checks before sending course data
-    /*
-    const isInstructor = await Course.exists({ _id: courseId, instructorId: userId });
-    const isEnrolled = await Enrollment.exists({ userId, courseId });
-
-    if (!isInstructor && !isEnrolled && currentUser.role !== 'admin') {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied - not enrolled or instructor",
-      });
-    }
-    */
-
-    const currentCourse = await Course.findById(courseId).populate("lessons");
+    const currentCourse = await Course.findById(courseId).populate({
+      path: ["instructor", "lessons"],
+    });
     if (!currentCourse) {
       return res.status(404).json({
         success: false,
-        message: "Course not found"
+        message: "Course not found",
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Course data retrieved successfully",
-      data: currentCourse
+      data: currentCourse,
     });
   } catch (err) {
     next(err);
@@ -370,46 +426,44 @@ export const getLesson = async (req, res, next) => {
   try {
     const { courseId, lessonId } = req.params;
     const { completed } = req.query;
-    const { userId } = req;
-
-    // const currentEnrollment = await Enrollment.findOne({
-    //   $and: [{ courseId }, { userId }]
-    // });
-
-    // if (!currentEnrollment) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: "Forbidden - User not enrolled to this course"
-    //   });
-    // }
+    const { _id: userId } = req.user;
 
     const currentLesson = await Lesson.findOne({ _id: lessonId });
     if (!currentLesson) {
       return res.status(404).json({
         success: false,
-        message: "Invalid Lesson Id"
+        message: "Invalid Lesson Id",
       });
     }
+    const currentEnrollment = await Enrollment.findOneAndUpdate({
+      $and: [{ courseId }, { userId }],
+    });
 
     if (completed) {
       const completedLesson = {
-        lessonId: new mongoose.Types.ObjectId(lessonId),
-        completedAt: new Date(Date.now())
+        lessonId,
+        completedAt: new Date(Date.now()),
       };
 
-      // await currentEnrollment.save();
+      const isAlreadyCompleted = currentEnrollment.completedLessons.find(
+        (cl) => cl.lessonId.toString() === lessonId
+      );
 
-      return res.status(201).json({
+      if (!isAlreadyCompleted) {
+        currentEnrollment.completedLessons.push(completedLesson);
+        await currentEnrollment.save();
+      }
+
+      return res.status(200).json({
         success: true,
         message: "Lesson completed - progress saved",
-        data: completedLesson
       });
     }
 
     return res.status(200).json({
       success: true,
       message: "Lesson retrieved successfully",
-      data: currentLesson
+      data: currentLesson,
     });
   } catch (err) {
     next(err);
