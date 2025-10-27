@@ -99,10 +99,7 @@ const Dashboard = () => {
                 <ul>
                   {filteredEnrollments.map((enrollment, idx) => (
                     <li key={enrollment._id || idx}>
-                      <EnrollmentCard
-                        key={enrollment.id}
-                        enrollment={enrollment}
-                      />
+                      <EnrollmentCard enrollment={enrollment} />
                     </li>
                   ))}
                 </ul>

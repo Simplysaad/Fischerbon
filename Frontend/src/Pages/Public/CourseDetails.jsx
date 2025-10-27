@@ -170,18 +170,11 @@ const CourseDetails = () => {
             <section id="recommendations" className="my-4 py-6 w-full ">
               <h2 className="text-2xl mb-2">Recommendations</h2>
               <ul className="flex gap-4 overflow-scroll w-full">
-                {!course.recommendations ? (
-                  <EmptyMessage
-                    className=""
-                    message={'No Recommendations Yet'}
-                  />
-                ) : (
-                  course.recommendations?.map((course, idx) => (
-                    <li key={idx}>
-                      <CourseCard course={course} />
-                    </li>
-                  ))
-                )}
+                {course.recommendations.map((course, idx) => (
+                  <li key={idx}>
+                    <CourseCard course={course} />
+                  </li>
+                ))}
               </ul>
             </section>
           )}

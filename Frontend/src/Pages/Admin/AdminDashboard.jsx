@@ -82,7 +82,7 @@ const AdminDashboard = () => {
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold text-blue-600">Courses</h3>
               <Link
-                href="/admin/courses"
+                to="/admin/courses"
                 className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
               >
                 Manage
@@ -100,7 +100,7 @@ const AdminDashboard = () => {
                 Notifications
               </h3>
               <Link
-                href="/notifications"
+                to="/notifications"
                 className="bg-blue-600 rounded text-white py-2 px-4 hover:bg-blue-700 transition"
               >
                 Manage

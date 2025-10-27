@@ -18,18 +18,20 @@ export default function EnrollmentCard({ enrollment }) {
           value={enrollment.progress}
         ></progress>
       </div>
-      <div className="last-lesson px-4 py-2 border border-gray-300 rounded  md:flex justify-between items-center ">
-        <span className=" font-medium">
-          <p className="font-medium">{enrollment.lastCompleted.title}</p>
-          <p className="text-gray-500 text-[.8rem]  font-medium">video</p>
-        </span>
-        <Link
-          to={`/courses/${enrollment.slug}/lessons/${enrollment.lastCompleted.slug}`}
-          className="inline-block px-4 py-2 max-md:mt-4 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-center text-[.8rem]"
-        >
-          Resume Course
-        </Link>
-      </div>
+      {enrollment.lastCompleted && (
+        <div className="last-lesson px-4 py-2 border border-gray-300 rounded  md:flex justify-between items-center ">
+          <span className=" font-medium">
+            <p className="font-medium">{enrollment.lastCompleted?.title}</p>
+            <p className="text-gray-500 text-[.8rem]  font-medium">video</p>
+          </span>
+          <Link
+            to={`/courses/${enrollment.slug}/lessons/${enrollment.lastCompleted?.slug}`}
+            className="inline-block px-4 py-2 max-md:mt-4 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-center text-[.8rem]"
+          >
+            Resume Course
+          </Link>
+        </div>
+      )}
     </div>
   );
 }

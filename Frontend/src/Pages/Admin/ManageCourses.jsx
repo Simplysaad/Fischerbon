@@ -90,7 +90,7 @@ const api = {
             formData.append('lessonFiles', file, file.name);
           }
         } else {
-          formData.append('lessonFiles', lessonFiles, file.name);
+          formData.append('lessonFiles', lessonFiles, lessonFiles.name);
         }
       }
 
@@ -125,7 +125,7 @@ const api = {
             formData.append('lessonFiles', file, file.name);
           }
         } else {
-          formData.append('lessonFiles', lessonFiles, file.name);
+          formData.append('lessonFiles', lessonFiles, lessonFiles.name);
         }
       }
 

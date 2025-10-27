@@ -207,7 +207,7 @@ export const updateLesson = async (req, res, next) => {
     if (title) updates.$set.title = title;
     if (content) {
       if (content.text) updates.$set["content.text"] = content.text;
-      if (content.video) updates.$set["content.text"] = content.video;
+      if (content.video) updates.$set["content.video"] = content.video;
       // if(content.files) updates.$push["content.files"] = content.files; // TODO: use $each operator
     }
 
