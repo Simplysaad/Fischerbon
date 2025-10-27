@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+
 import Hero from '../../Components/Hero';
 import { ClipboardList, Layers, UserCheck } from 'lucide-react';
 import CourseCard from '../../Components/CourseCard';
 import CarouselWrapper from '../../Components/Carousel';
 import axiosInstance from '../../utils/axios.util';
 import Layout from './Layout';
-
-// Extracted reusable components
-import { Link } from 'react-router-dom';
 
 const Button = ({ children, href, primary }) => (
   <Link
@@ -64,34 +63,35 @@ const heros = [
     heading: 'Master AutoCAD Drafting and Design',
     body: 'Unlock your potential with expert-led courses on AutoCAD drafting, 3D modeling, and engineering design. Start your journey today and bring your ideas to life.',
     ctaText: 'Start Learning Now',
-    ctaUrl: '/courses/autocad',
+    ctaUrl: '#courses',
     image: '/images/white-building-2.jpg',
-    trustBadge: 'Trusted by 10,000+ engineers worldwide',
+    testimonial: {
+      quote:
+        'This training was more than just learning; it was a life-changing experience.',
+      author: 'Eniola Fátima Aliru - Architecture student, UNN',
+    },
   },
   {
     heading: 'Become a Pro in BIM and Project Management',
     body: "Learn Building Information Modeling with hands-on training and real-world projects. Elevate your career with the industry's most in-demand skills.",
     ctaText: 'Explore BIM Courses',
-    ctaUrl: '/courses/bim',
+    ctaUrl: '#courses',
     image: '/images/white-building.jpg',
-    testimonial: {
-      quote: 'This platform helped me land my dream job in BIM!',
-      author: 'Sarah M., Structural Engineer',
-    },
+    trustBadge: 'Trusted by 10,000+ engineers worldwide',
   },
-  {
-    heading: '3D Drawing and PDMS Training Made Easy',
-    body: 'Master 3D drafting and plant design with our comprehensive PDMS courses specially crafted for engineers and designers.',
-    ctaText: 'Enroll Today',
-    ctaUrl: '/courses/pdms',
-    image: '/images/homepage-1.jpg',
-    highlight: 'Free trial lesson available',
-  },
+  // {
+  //   heading: '3D Drawing and PDMS Training Made Easy',
+  //   body: 'Master 3D drafting and plant design with our comprehensive PDMS courses specially crafted for engineers and designers.',
+  //   ctaText: 'Enroll Today',
+  //   ctaUrl: '#courses',
+  //   image: '/images/homepage-1.jpg',
+  //   highlight: 'Free trial lesson available',
+  // },
   {
     heading: 'Learn Engineering Software Anytime, Anywhere',
-    body: 'Flexible, self-paced courses on AutoCAD, BIM, PDMS, and more. Gain practical skills that employers want.',
+    body: 'Flexible, self-paced courses on AutoCAD, BIM, and more. Gain practical skills that employers want.',
     ctaText: 'Browse All Courses',
-    ctaUrl: '/courses',
+    ctaUrl: '#courses',
     image: '/images/workshop.jpg',
     supportInfo: '24/7 student support included',
   },
@@ -99,9 +99,9 @@ const heros = [
     heading: 'From Beginner to Expert: Your Engineering Software Journey',
     body: 'Step-by-step training paths from fundamentals to advanced techniques in drafting and 3D modeling.',
     ctaText: 'Choose Your Path',
-    ctaUrl: '/learning-paths',
+    ctaUrl: '#courses',
     image: '/images/cad-on-phone.jpg',
-    guarantee: '30-day money-back guarantee',
+    // guarantee: '30-day money-back guarantee',
   },
 ];
 
@@ -112,42 +112,25 @@ const Testimonial = ({ quote, author }) => (
   </blockquote>
 );
 
-// Sample course data
-const featuredCourses = [
-  {
-    id: 1,
-    title: 'AutoCAD Essentials',
-    description: 'Learn the basics of AutoCAD for engineering drawing.',
-    thumbnail: '/images/autocad-course.jpg',
-    videoUrl: 'https://www.example.com/autocad-intro.mp4',
-  },
-  {
-    id: 2,
-    title: 'Advanced Revit Techniques',
-    description: 'Master 3D modeling and BIM workflows in Revit.',
-    thumbnail: '/images/revit-course.jpg',
-    videoUrl: 'https://www.example.com/revit-intro.mp4',
-  },
-  {
-    id: 3,
-    title: 'Civil Engineering Drafting',
-    description: 'Hands-on drafting skills for civil engineering projects.',
-    thumbnail: '/images/civil-drafting.jpg',
-    videoUrl: 'https://www.example.com/civil-drafting-intro.mp4',
-  },
-];
-
 export default function Homepage() {
+  const [loading, setLoading] = useState(true);
   const [courses, setCourses] = useState([]);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     async function fetchCourses() {
       try {
+        setLoading(true);
+        setError(null);
         const { data: response } = await axiosInstance.get('/courses');
         if (!response.success)
           throw new Error(response.message || 'unable to fetch courses');
         else setCourses(response.data);
       } catch (error) {
         console.error(error);
+        setError(error.message || 'Failed to load courses');
+      } finally {
+        setLoading(false);
       }
     }
     fetchCourses();
@@ -227,21 +210,20 @@ export default function Homepage() {
           </div>
         </section>
 
-        {/* Featured Courses */}
-        <section
-          id="courses"
-          className="py-16 px-6 max-w-6xl mx-auto"
-          aria-label="Featured Courses"
-        >
-          {courses && (
+        <section className="py-36 px-6 min-h-[500px]">
+          {/* Featured Courses */}
+          {loading && <p className="text-center">Loading courses...</p>}
+          {error && <p className="text-center text-red-600">{error}</p>}
+          {!loading && !error && courses.length > 0 && (
             <>
               <h2 className="text-3xl font-semibold mb-12 text-center text-cyan-600">
                 Featured Courses
               </h2>
-
-              <div className=" flex gap-8 max-md:flex-wrap">
-                {courses?.map((course) => (
-                  <CourseCard key={course.id} course={course} />
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
+                {courses.map((course) => (
+                  <div key={course._id} className="justify-self-center">
+                    <CourseCard course={course} />
+                  </div>
                 ))}
               </div>
             </>

@@ -19,11 +19,19 @@ export const getCourses = async (req, res, next) => {
     if (category) filter.category = category;
     if (level) filter.level = level;
 
+    const parsedPage = Number.parseInt(page, 10);
+    const parsedLimit = Number.parseInt(limit, 10);
+    const pageNum =
+      Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+    const pageSize =
+      Number.isFinite(parsedLimit) && parsedLimit > 0
+        ? Math.min(parsedLimit, 100)
+        : 20;
+
     const courses = await Course.find(filter)
       .sort({ createdAt: -1 })
-      .skip(page ? Number((parseInt(page) - 1) * parseInt(limit)) : 0);
-    // .limit(parseInt(limit) ?? null);
-
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize);
     return res.status(200).json({
       success: true,
       message: `${courses.length} courses successfully retrieved`,
@@ -73,7 +81,7 @@ export const createCourse = async (req, res, next) => {
     const newCourse = new Course({
       ...req.body,
       thumbnailUrl,
-      instructorId: currentUser?._id,
+      instructor: currentUser?._id,
     });
 
     await newCourse.save();
@@ -141,7 +149,7 @@ export const updateCourse = async (req, res, next) => {
   }
 };
 
-export const createLesson = async (req, res, next) => {
+export const updateLesson = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -195,9 +203,13 @@ export const createLesson = async (req, res, next) => {
       content.video = lessonVideoPath;
       content.files = lessonFilesPaths;
     }
-
+    if (title || content) updates.$set = {};
     if (title) updates.$set.title = title;
-    if (content) updates.$set.content = content;
+    if (content) {
+      if (content.text) updates.$set["content.text"] = content.text;
+      if (content.video) updates.$set["content.video"] = content.video;
+      // if(content.files) updates.$push["content.files"] = content.files; // TODO: use $each operator
+    }
 
     const updatedLesson = await Lesson.findByIdAndUpdate(lessonId, updates, {
       new: true,
@@ -213,7 +225,7 @@ export const createLesson = async (req, res, next) => {
   }
 };
 
-export const updateLesson = async (req, res, next) => {
+export const createLesson = async (req, res, next) => {
   try {
     if (!req.body) {
       return res.status(400).json({
@@ -314,7 +326,7 @@ export const deleteLesson = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === currentUser._id ||
+      currentCourse.instructor.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {
@@ -370,7 +382,7 @@ export const deleteCourse = async (req, res, next) => {
     }
 
     const isAuthorized =
-      currentCourse.instructorId.toString() === currentUser._id ||
+      currentCourse.instructor.toString() === currentUser._id ||
       currentUser.role === "admin";
 
     if (!isAuthorized) {

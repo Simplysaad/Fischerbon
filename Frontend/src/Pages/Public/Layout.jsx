@@ -5,19 +5,15 @@ import Header from '../../Components/Header';
 import Sidebar from '../../Components/Sidebar';
 
 import React, { useState, useEffect } from 'react';
-import { BellIcon, Layers, User2 } from 'lucide-react';
+import { Layers, User2 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import Footer from '../../Components/Footer';
-
-const navItems = [
-  { href: '/courses', label: 'Courses', icon: Layers },
-  { href: '/login', label: 'Login', icon: User2 },
-  { href: '#notifications', label: 'Notifications', icon: BellIcon },
-];
 
 export default function Layout({ children, hero }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeHref, setActiveHref] = useState('');
+
+  const { user } = useAuth();
 
   const location = useLocation();
   useEffect(() => {
@@ -26,12 +22,20 @@ export default function Layout({ children, hero }) {
     currentPath.forEach((item) => {
       navItems.forEach((i) => {
         if (item !== '' && i.href.split('/').includes(item)) {
-          console.log(i.href, item);
           return setActiveHref(i.href);
         }
       });
     });
   }, [location]);
+  const navItems = [{ href: '/courses', label: 'Courses', icon: Layers }];
+
+  if (!user) navItems.push({ href: '/login', label: 'Login', icon: User2 });
+  else
+    navItems.push({
+      href: '/dashboard',
+      label: 'Dashboard',
+      icon: User2,
+    });
 
   return (
     <div className="">

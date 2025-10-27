@@ -19,7 +19,7 @@ const Footer = () => {
     fetchCourses();
   }, []);
   return (
-    <footer className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white py-10 px-6 md:px-16">
+    <footer className="bg-gradient-to-r from-blue-700 to-cyan-600 text-white mt-32 py-10 px-6 md:px-16">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Brand & Brief */}
         <div>
@@ -41,7 +41,7 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-3 border-b border-cyan-400 pb-2">
             Courses
           </h3>
-          <ul>
+          <ul className="list-disc list-inside">
             {courses.map((course) => (
               <li key={course._id}>
                 <Link
@@ -60,7 +60,7 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-3 border-b border-cyan-400 pb-2">
             Resources
           </h3>
-          <ul>
+          <ul className="list-disc list-inside">
             <li>
               <Link to="/profile" className="hover:text-cyan-300">
                 Your Profile

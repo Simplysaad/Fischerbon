@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import PublicLayout from './Layout';
-import Header from '../../Components/Header';
-import { Check, CircleCheck, Lock, Phone, Star, Users } from 'lucide-react';
-import {
-  Link,
-  Navigate,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+
+import { Star } from 'lucide-react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
 import formatCurrency from '../../utils/formatCurrency';
@@ -60,22 +53,42 @@ const CourseDetails = () => {
     fetchCourseDetails();
   }, [courseId, user]);
 
-  const handleEnroll = async () => {
-    try {
-      if (!user) {
-        navigate('/login', { state: { from: location } });
-        // <Navigate to={'/login'} state={} />;
-        return null;
+  const EnrollButton = ({}) => {
+    const handleEnroll = async () => {
+      try {
+        if (!user) {
+          navigate('/login', { state: { from: location } });
+          return null;
+        }
+        const { data: response } = await axiosInstance.post(
+          `/enrollments/new/${courseId}`
+        );
+        if (!response.success)
+          throw new Error(response.message || 'Unable to enroll user');
+        window.location = response.data.authorization_url;
+      } catch (error) {
+        console.error(error);
       }
-      const { data: response } = await axiosInstance.post(
-        `/enrollments/new/${courseId}`
-      );
-      if (!response.success)
-        throw new Error(response.message || 'Unable to enroll user');
-      location.href = response.data.authorization_url;
-    } catch (error) {
-      console.error(error);
-    }
+    };
+
+    const lastCompletedLesson = enrollment?.completedLessons
+      .slice()
+      .sort((a, b) => a.completedAt - b.completedAt)
+      ?.pop();
+
+    return (
+      <div className="text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded">
+        {enrollment ? (
+          <Link
+            to={`/courses/${course.slug}/lessons/${lastCompletedLesson?.lessonId || course.lessons[0]?.slug}`}
+          >
+            Continue Learning
+          </Link>
+        ) : (
+          <button onClick={handleEnroll}>Enroll now</button>
+        )}
+      </div>
+    );
   };
 
   if (loading) {
@@ -83,14 +96,19 @@ const CourseDetails = () => {
   }
 
   if (!course) {
-    return <div className="text-center py-12">Course not found.</div>;
+    navigate('/404');
+    return null; //<div className="text-center py-12">Course not found.</div>;
   }
 
   // Calculate completed lessons IDs and progress percentage
-  const completedLessonIds =
-    enrollment?.completedLessons?.map((l) => l.lessonId) || [];
-  const progressPercent = course.lessons?.length
-    ? Math.round((completedLessonIds.length / course.lessons.length) * 100)
+  let completedLessonIds = [];
+  if (Array.isArray(enrollment?.completedLessons)) {
+    completedLessonIds =
+      enrollment.completedLessons.map((l) => l.lessonId) || [];
+  }
+
+  const progressPercent = course.lessons
+    ? (completedLessonIds.length / course.lessons?.length) * 100
     : 0;
 
   // Calculate average rating
@@ -112,16 +130,8 @@ const CourseDetails = () => {
           <section id="courseInfo">
             <div className="flex  max-md:flex-col gap-3 items-start justify-between">
               <h1 className="text-[1.5rem]">{course.title}</h1>
-              <div className="max-md:hidden text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded ">
-                {enrollment ? (
-                  <Link
-                    to={`/courses/${course.slug}/lessons/${course.lessons[0]?.slug}`}
-                  >
-                    Continue Learning
-                  </Link>
-                ) : (
-                  <button onClick={handleEnroll}>Enroll now</button>
-                )}
+              <div className="max-md:hidden">
+                <EnrollButton />
               </div>
             </div>
             <div className="flex gap-3 py-4 text-gray-700 text-[1rem] items-center justify-start">
@@ -131,16 +141,8 @@ const CourseDetails = () => {
               </span>
               <span className="price">{formattedPrice}</span>
             </div>
-            <div className="md:hidden my-4  w-full flex text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded ">
-              {enrollment ? (
-                <Link
-                  to={`/courses/${course.slug}/lessons/${course.lessons[0]?.slug}`}
-                >
-                  Continue Learning
-                </Link>
-              ) : (
-                <button onClick={handleEnroll}>Enroll now</button>
-              )}
+            <div className="md:hidden my-4 w-full flex">
+              <EnrollButton />
             </div>
             <div className="description">
               <span>{course.description}</span>
@@ -164,20 +166,18 @@ const CourseDetails = () => {
               )}
             </ul>
           </section>
-          <section id="recommendations" className="my-4 py-6 w-full ">
-            <h2 className="text-2xl mb-2">Recommendations</h2>
-            <ul className="flex gap-4 overflow-scroll w-full">
-              {!course.recommendation ? (
-                <EmptyMessage className="" message={'No Recommendations Yet'} />
-              ) : (
-                course.recommendations?.map((course, idx) => (
+          {course.recommendations && (
+            <section id="recommendations" className="my-4 py-6 w-full ">
+              <h2 className="text-2xl mb-2">Recommendations</h2>
+              <ul className="flex gap-4 overflow-scroll w-full">
+                {course.recommendations.map((course, idx) => (
                   <li key={idx}>
                     <CourseCard course={course} />
                   </li>
-                ))
-              )}
-            </ul>
-          </section>
+                ))}
+              </ul>
+            </section>
+          )}
         </main>
         <aside className="md:w-[30%] flex-1">
           <ProfileCard user={course.instructor} />

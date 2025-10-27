@@ -1,106 +1,121 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from './Layout';
+import useAuth from '../../context/AuthContext';
+import axiosInstance from '../../utils/axios.util';
+import ProfileCard from '../../Components/ProfileCard';
+import EnrollmentCard from '../../Components/EnrollmentCard';
+import EmptyMessage from '../../Components/EmptyMessage';
 
-// Mock data representing enrolled courses and progress
-const mockEnrollments = [
-  {
-    id: 'course1',
-    title: 'AutoCAD Beginner Fundamentals',
-    instructor: 'Admin',
-    progress: 75, // in percentage
-    completedLessons: 15,
-    totalLessons: 20,
-    certificateEarned: false,
-  },
-  {
-    id: 'course2',
-    title: 'Revit Essentials',
-    instructor: 'Admin',
-    progress: 45,
-    completedLessons: 9,
-    totalLessons: 20,
-    certificateEarned: false,
-  },
-  {
-    id: 'course3',
-    title: 'Advanced CAD Modeling',
-    instructor: 'Admin',
-    progress: 100,
-    completedLessons: 30,
-    totalLessons: 30,
-    certificateEarned: true,
-  },
+const filterOptions = [
+  { name: 'All', value: '' },
+  { name: 'In Progress', value: 'in_progress' },
+  { name: 'Completed', value: 'completed' },
 ];
 
-const StudentDashboard = () => {
+const Dashboard = () => {
+  const { user } = useAuth();
   const [enrollments, setEnrollments] = useState([]);
+  const [filteredEnrollments, setFilteredEnrollments] = useState([]);
+  const [activeFilter, setActiveFilter] = useState('');
+  const time = new Date().getHours();
 
+  // Fetch enrollments once on mount
   useEffect(() => {
-    // Simulate API fetch
-    setEnrollments(mockEnrollments);
+    const fetchEnrollments = async () => {
+      try {
+        const { data } = await axiosInstance.get('/enrollments');
+        if (!data.success) throw new Error(data.message);
+        setEnrollments(data.data);
+      } catch (error) {
+        console.error('Failed to load enrollments:', error);
+      }
+    };
+    fetchEnrollments();
   }, []);
+
+  // Update filtered enrollments whenever enrollments or filter changes
+  useEffect(() => {
+    if (!activeFilter) {
+      setFilteredEnrollments(enrollments);
+    } else if (activeFilter === 'completed') {
+      setFilteredEnrollments(enrollments.filter((e) => e.progress === 100));
+    } else if (activeFilter === 'in_progress') {
+      setFilteredEnrollments(enrollments.filter((e) => e.progress < 100));
+    }
+  }, [enrollments, activeFilter]);
+
+  const handleFilterChange = useCallback((filterValue) => {
+    setActiveFilter(filterValue);
+  }, []);
+
+  const greeting =
+    time < 12 ? 'Good Morning' : time < 18 ? 'Good Afternoon' : 'Good Evening';
+  const firstName = user?.name?.split(' ')[0] || '';
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gray-50 p-8">
-        <h1 className="text-3xl font-bold mb-6 text-gray-900">
-          Your Learning Dashboard
-        </h1>
-        {enrollments.length === 0 ? (
-          <p className="text-gray-600">
-            You are not enrolled in any courses yet.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {enrollments.map((course) => (
-              <div
-                key={course.id}
-                className="bg-white rounded-lg shadow p-6 flex flex-col justify-between"
+      <div className="flex flex-col md:flex-row gap-4 md:p-4 max-w-7xl mx-auto">
+        <main className="md:w-2/3 w-full space-y-6">
+          <header>
+            <h1 className="text-3xl font-semibold text-gray-900">
+              {greeting}
+              {firstName && (
+                <span className="font-light ml-1">{`, ${firstName}`}</span>
+              )}
+            </h1>
+          </header>
+
+          <section aria-labelledby="enrollments-heading">
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-4">
+              <h2
+                id="enrollments-heading"
+                className="text-2xl font-medium text-gray-800"
               >
-                <div>
-                  <h2 className="text-xl font-semibold text-indigo-700 mb-2">
-                    {course.title}
-                  </h2>
-                  <p className="text-gray-700 mb-4">
-                    Instructor: {course.instructor}
-                  </p>
-                  <div className="mb-2">
-                    <label
-                      htmlFor={`progress-${course.id}`}
-                      className="block text-gray-600 mb-1 font-medium"
-                    >
-                      Progress
-                    </label>
-                    <progress
-                      id={`progress-${course.id}`}
-                      className="w-full h-4 rounded overflow-hidden"
-                      max="100"
-                      value={course.progress}
-                    />
-                  </div>
-                  <p className="text-gray-700 mb-2">
-                    Lessons: {course.completedLessons} / {course.totalLessons}{' '}
-                    completed
-                  </p>
-                  {course.certificateEarned && (
-                    <p className="text-green-600 font-semibold mt-2">
-                      🎉 Certificate Earned
-                    </p>
-                  )}
-                </div>
-                <a
-                  href={`/courses/${course.id}`}
-                  className="inline-block mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition text-center"
-                >
-                  Resume Course
-                </a>
+                Your Enrollments
+              </h2>
+              <div className="flex gap-2">
+                {filterOptions.map(({ name, value }) => (
+                  <button
+                    key={value}
+                    onClick={() => handleFilterChange(value)}
+                    className={`px-4 text-[.8rem] py-2 rounded-full border transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                    ${activeFilter === value ? 'bg-blue-600 text-white border-blue-600' : 'text-blue-600 border-blue-600 hover:bg-blue-100'}`}
+                    aria-pressed={activeFilter === value}
+                  >
+                    {name}
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+
+            <div className="space-y-4">
+              {filteredEnrollments.length === 0 ? (
+                <EmptyMessage
+                  message="No enrollments found."
+                  ctaUrl={'/courses'}
+                  ctaText={'Check courses'}
+                />
+              ) : (
+                <ul>
+                  {filteredEnrollments.map((enrollment, idx) => (
+                    <li key={enrollment._id || idx}>
+                      <EnrollmentCard enrollment={enrollment} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        </main>
+
+        <aside className="md:w-1/3 w-full space-y-4">
+          <section className="border border-gray-300 rounded-lg p-4 shadow-sm">
+            <ProfileCard user={user} />
+          </section>
+        </aside>
       </div>
     </DashboardLayout>
   );
 };
 
-export default StudentDashboard;
+export default Dashboard;

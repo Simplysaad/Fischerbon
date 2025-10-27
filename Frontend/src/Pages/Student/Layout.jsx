@@ -43,21 +43,23 @@ export default function DashboardLayout({ children }) {
   const [activeHref, setActiveHref] = useState('');
 
   const location = useLocation();
+
   useEffect(() => {
-    const currentPath = location.pathname.split('/');
-    console.log(currentPath);
-    currentPath.forEach((item) => {
-      for (let i = 0; i < navItems.length; i++) {
-        if (item !== '' && navItems[i].href.split('/').includes(item)) {
-          console.log(navItems[i].href, item);
-          setActiveHref(navItems[i].href);
-          break;
-        }
+    // Find exact match first, then try to match path prefix
+    const exactMatch = navItems.find((item) => item.href === location.pathname);
+    if (exactMatch) {
+      setActiveHref(exactMatch.href);
+    } else {
+      // Find the longest matching prefix
+      const prefixMatch = navItems
+        .filter((item) => location.pathname.startsWith(item.href))
+        .sort((a, b) => b.href.length - a.href.length)[0];
+      if (prefixMatch) {
+        setActiveHref(prefixMatch.href);
       }
-    });
+    }
   }, [location]);
 
-  // https://o75955.ingest.sentry.io/api/4505953531199488/envelope/?sentry_key=6e2ba0bf7c73d34430ca15324ed93ae8&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.116.0https://o75955.ingest.sentry.io/api/4505953531199488/envelope/?sentry_key=6e2ba0bf7c73d34430ca15324ed93ae8&sentry_version=7&sentry_client=sentry.javascript.browser%2F7.116.0
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 overflow-hidden">
       <Header

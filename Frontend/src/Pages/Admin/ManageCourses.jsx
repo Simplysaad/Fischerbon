@@ -83,13 +83,15 @@ const api = {
         formData.append(key, lessonForm[key]);
       }
 
-      if (Array.isArray(lessonFiles)) {
-        for (let file of lessonFiles) {
-          console.log('lessonfile', file);
-          formData.append('lessonFiles', file, file.name);
+      if (lessonFiles) {
+        if (Array.isArray(lessonFiles)) {
+          for (let file of lessonFiles) {
+            console.log('lessonfile', file);
+            formData.append('lessonFiles', file, file.name);
+          }
+        } else {
+          formData.append('lessonFiles', lessonFiles, lessonFiles.name);
         }
-      } else {
-        formData.append('lessonFiles', file, file.name);
       }
 
       console.log('lessonVideo', lessonVideo);
@@ -109,9 +111,28 @@ const api = {
   updateLesson: async (courseId, lessonId, updates) => {
     try {
       const formData = new FormData();
-      for (const key in updates) {
-        formData.append(key, updates[key]);
+      const { lessonForm, lessonFiles, lessonVideo } = updates;
+
+      for (let key in lessonForm) {
+        console.log('lessonForm', key);
+        formData.append(key, lessonForm[key]);
       }
+
+      if (lessonFiles) {
+        if (Array.isArray(lessonFiles)) {
+          for (let file of lessonFiles) {
+            console.log('lessonfile', file);
+            formData.append('lessonFiles', file, file.name);
+          }
+        } else {
+          formData.append('lessonFiles', lessonFiles, lessonFiles.name);
+        }
+      }
+
+      console.log('lessonVideo', lessonVideo);
+      lessonVideo &&
+        formData.append('lessonVideo', lessonVideo, lessonVideo.name);
+
       const { data: response } = await axiosInstance.post(
         `/courses/${courseId}/lessons/${lessonId}`,
         formData
@@ -300,6 +321,7 @@ const CourseManagement = () => {
     }
 
     try {
+      setIsLessonSubmitting(true);
       if (lessonForm._id) {
         const response = await api.updateLesson(
           selectedCourseId,
@@ -383,7 +405,7 @@ const CourseManagement = () => {
           <aside className="md:w-1/4 bg-white p-4 rounded shadow overflow-auto max-h-[600px]">
             <h2 className="text-xl font-semibold mb-4">Courses</h2>
             <ul>
-              {courses.map((course) => (
+              {courses?.map((course) => (
                 <li
                   key={course._id}
                   className={`cursor-pointer px-3 py-2 rounded mb-2 ${
@@ -582,7 +604,7 @@ const CourseManagement = () => {
                           setLessonForm({
                             _id: lesson._id,
                             title: lesson.title,
-                            text: lesson.text,
+                            text: lesson.content?.text,
                             // lessonVideo: lesson.video,
                             // lessonFiles: lesson.files,
                           })
@@ -656,10 +678,15 @@ const CourseManagement = () => {
                     )}
                   </div>
                   <button
+                    disabled={isLessonSubmitting}
                     type="submit"
-                    className="bg-green-600 text-white rounded px-6 py-3 hover:bg-green-700 font-semibold"
+                    className={`${isLessonSubmitting ? 'bg-blue-400' : 'bg-blue-600'} text-white rounded px-6 py-3 mt-2 hover:bg-blue-700 font-semibold`}
                   >
-                    {lessonForm._id ? 'Update Lesson' : 'Add Lesson'}
+                    {lessonForm._id
+                      ? 'Update Lesson'
+                      : isLessonSubmitting
+                        ? 'Adding Lesson...'
+                        : 'Add Lesson'}
                   </button>
                   {lessonForm._id && (
                     <button

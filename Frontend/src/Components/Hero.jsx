@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Hero({
   hero: {
@@ -61,14 +62,13 @@ export default function Hero({
             </p>
           )}
 
-          <a
-            // href= {ctaUrl}
-            href={ctaUrl || '/'}
+          <Link
+            to={ctaUrl || '/'}
             className="inline-block mt-4 bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-cyan-400 transition-colors focus:outline-none focus:ring-4 focus:ring-cyan-300 max-w-max"
             aria-label={ctaText}
           >
             {ctaText}
-          </a>
+          </Link>
         </div>
 
         {/* Image */}

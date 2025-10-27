@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import path from "path";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,14 +11,18 @@ cloudinary.config({
 
 // Utility to generate public_id based on file name
 function getPublicId(file) {
-  const isImage = file.mimetype.startsWith("image/");
-  const isVideo = file.mimetype.startsWith("video/");
-
-  const ext = file.originalname.split(".").pop();
-  const baseName = file.originalname.replace(/\./g, "-");
-
-  if (isImage || isVideo) return `${baseName}-${Date.now()}`;
-  return `${baseName}-${Date.now()}-${ext}`;
+  const isImage = file.mimetype?.startsWith("image/");
+  const isVideo = file.mimetype?.startsWith("video/");
+  const parsed = path.parse(file.originalname || "file");
+  const ext = (parsed.ext || "").replace(/^\./, "").toLowerCase();
+  // remove slashes and non-url-safe chars
+  const base = (parsed.name || "file")
+    .replace(/[^a-z0-9_-]/gi, "-")
+    .replace(/[\/\\]+/g, "-")
+    .toLowerCase();
+  // don’t embed the extension in public_id; let Cloudinary use format
+  if (isImage || isVideo) return `${base}-${Date.now()}`;
+  return `${base}-${Date.now()}-${ext}`;
 }
 
 const cloudStorage = new CloudinaryStorage({
@@ -35,7 +40,7 @@ const cloudStorage = new CloudinaryStorage({
 });
 
 const localStorage = multer.diskStorage({
-  destination: "./src/public/uploads",
+  destination: "./uploads",
   filename: function (req, file, cb) {
     const ext = file.originalname.split(".").at(-1);
     const name = file.originalname.split(".").join("-");
@@ -46,5 +51,5 @@ const localStorage = multer.diskStorage({
   },
 });
 // export const upload = multer({ storage: localStorage });
-// export const upload = multer({ dest: "./uploads" });
+// export const upload = multer({ dest: "./src/Public/uploads" });
 export const upload = multer({ storage: cloudStorage });

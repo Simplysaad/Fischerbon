@@ -18,7 +18,7 @@ const ProfileCard = ({ user = null }) => {
         <div className="flex flex-col ">
           <span className="text-[1.5rem] p-0 m-0">{user.name}</span>
           <span className="text-gray-700 flex gap-2 text-[.9rem] p-0 m-0">
-            <span>Instructor</span>
+            <span>{user.role === 'admin' ? 'Instructor' : 'Student'}</span>
             <span>
               <Star fill="#ffa" size={12} className="inline text-yellow-500" />{' '}
               5.0
