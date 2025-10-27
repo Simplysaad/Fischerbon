@@ -19,12 +19,17 @@ export const getCourses = async (req, res, next) => {
     if (category) filter.category = category;
     if (level) filter.level = level;
 
+    const parsedPage = Number.parseInt(page, 10);
+    const parsedLimit = Number.parseInt(limit, 10);
+    const pageNum =
+      Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+    const pageSize =
+      Number.isFinite(parsedLimit) && parsedLimit > 0
+        ? Math.min(parsedLimit, 100)
+        : 20;
+
     const courses = await Course.find(filter)
       .sort({ createdAt: -1 })
-      const parsedPage = Number.parseInt(page, 10);
-      const parsedLimit = Number.parseInt(limit, 10);
-      const pageNum = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
-      const pageSize = Number.isFinite(parsedLimit) && parsedLimit > 0 ? Math.min(parsedLimit, 100) : 20;
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
     return res.status(200).json({
