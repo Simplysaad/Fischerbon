@@ -41,9 +41,9 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-3 border-b border-cyan-400 pb-2">
             Courses
           </h3>
-          <ul>
+          <ul className="list-disc list-inside">
             {courses.map((course) => (
-              <li style={{ listStyle: 'disc' }} key={course._id}>
+              <li key={course._id}>
                 <Link
                   to={`/courses/${course.slug}`}
                   className="hover:text-cyan-300"
@@ -60,7 +60,7 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-3 border-b border-cyan-400 pb-2">
             Resources
           </h3>
-          <ul>
+          <ul className="list-disc list-inside">
             <li>
               <Link to="/profile" className="hover:text-cyan-300">
                 Your Profile

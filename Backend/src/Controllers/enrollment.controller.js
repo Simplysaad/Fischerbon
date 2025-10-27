@@ -227,7 +227,7 @@ export const getEnrollments = async (req, res, next) => {
     const enrollments = await Enrollment.find(filter)
       .sort({ createdAt: -1 })
       .populate({
-        path: ["courseId"],
+        path: "courseId",
         select: "_id  slug title instructor lessons",
         populate: { path: "lessons", select: "_id title" },
       })

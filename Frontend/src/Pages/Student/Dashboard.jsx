@@ -50,7 +50,7 @@ const Dashboard = () => {
 
   const greeting =
     time < 12 ? 'Good Morning' : time < 18 ? 'Good Afternoon' : 'Good Evening';
-  const firstName = user?.name.split(' ')[0] || '';
+  const firstName = user?.name?.split(' ')[0] || '';
 
   return (
     <DashboardLayout>

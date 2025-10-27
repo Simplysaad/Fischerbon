@@ -65,7 +65,11 @@ const heros = [
     ctaText: 'Start Learning Now',
     ctaUrl: '#courses',
     image: '/images/white-building-2.jpg',
-    trustBadge: 'Trusted by 10,000+ engineers worldwide',
+    testimonial: {
+      quote:
+        'This training was more than just learning; it was a life-changing experience.',
+      author: 'Eniola Fátima Aliru - Architecture student, UNN',
+    },
   },
   {
     heading: 'Become a Pro in BIM and Project Management',
@@ -73,10 +77,7 @@ const heros = [
     ctaText: 'Explore BIM Courses',
     ctaUrl: '#courses',
     image: '/images/white-building.jpg',
-    testimonial: {
-      quote: 'This platform helped me land my dream job in BIM!',
-      author: 'Sarah M., Structural Engineer',
-    },
+    trustBadge: 'Trusted by 10,000+ engineers worldwide',
   },
   // {
   //   heading: '3D Drawing and PDMS Training Made Easy',
@@ -112,8 +113,8 @@ const Testimonial = ({ quote, author }) => (
 );
 
 export default function Homepage() {
-  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [courses, setCourses] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
