@@ -1,4 +1,4 @@
-import { CircleCheck, Lock } from 'lucide-react';
+import { CircleCheck, Lock, Text, Video, Videotape } from 'lucide-react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -29,8 +29,18 @@ const LessonBox = ({ idx, enrollment, isActive, lesson, course }) => {
         </span>
         <span className="info w-full">
           <p className="text-">{lesson.title}</p>
-          <p className="text-gray-400 text-[.9rem]">
-            {lesson.content?.video ? 'video' : 'text'}
+          <p className="text-gray-400 text-[.9rem] flex gap-2 items-center">
+            {lesson.content?.video ? (
+              <>
+                <Videotape size={12} />
+                Video
+              </>
+            ) : (
+              <>
+                <Text size={12} />
+                Reading
+              </>
+            )}
           </p>
         </span>
         <span className="status float-end">

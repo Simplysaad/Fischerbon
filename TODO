@@ -1,9 +1,11 @@
 URGENT
 
-- Refactor the student dashboard
-- Test Update lesson in manageCourses.jsx
-- Change Payment redirect to frontend url "{{BASE_URL}}/courses/{{course.slug}}"
-
 LONG TERM
 
 - Implement Ai support, for students to ask questions when stuck
+
+COMPLETED
+
+- Refactor the student dashboard
+- Test Update lesson in manageCourses.jsx
+- Change Payment redirect to frontend url "{{BASE_URL}}/courses/{{course.slug}}"

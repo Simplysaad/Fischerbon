@@ -30,6 +30,13 @@ export default function Layout({ children, hero }) {
   const navItems = [{ href: '/courses', label: 'Courses', icon: Layers }];
 
   if (!user) navItems.push({ href: '/login', label: 'Login', icon: User2 });
+  else
+    navItems.push({
+      href: '/dashboard',
+      label: 'Dashboard',
+      icon: User2,
+    });
+
   return (
     <div className="">
       <Header

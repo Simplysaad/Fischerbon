@@ -156,24 +156,119 @@ export const verifyEnrollment = async (req, res, next) => {
   }
 };
 
+// export const getEnrollments = async (req, res, next) => {
+//   try {
+//     const currentUser = req.user;
+//     if (!currentUser) throw new Error("Unauthorized - User  not logged in ");
+
+//     let isAdmin = currentUser.role === "admin";
+//     let filter = !isAdmin ? { _id: currentUser._id } : null;
+
+//     const enrollments = await Enrollment.find(filter)
+//       .sort({ createdAt: -1 })
+//       // .populate({ path: "courseId", populate: { path: "lessons" } })
+//       .populate({
+//         path: "courseId",
+//         select: "_id title lessons",
+//         populate: { path: "lessons" },
+//         path: "completedLessons",
+//       })
+//       .select("courseId completedLessons");
+
+//     console.log(enrollments);
+
+//     const enrollments2 = enrollments?.map((e) => {
+//       // x = {
+//       //   id: "course1",
+//       //   title: "AutoCAD Beginner Fundamentals",
+//       //   instructor: "Admin",
+//       //   progress: 75, // in percentage
+//       //   completedLessons: 15,
+//       // };
+
+//       const lastCompleted = e.completedLessons
+//         .sort((a, b) => b.completedAt - a.completedAt)
+//         .pop();
+
+//       return {
+//         _id: e.courseId._id || e.courseId,
+//         progress:
+//           (e.courseId.lessons?.length / e.completedLessons.length) * 100,
+//         instructor: e.courseId.instructor,
+//         lastCompleted,
+//       };
+//     });
+
+//     return res.status(200).json({
+//       success: true,
+//       message: `${enrollments.length} retrieved successfully`,
+//       data: enrollments,
+//     });
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
 export const getEnrollments = async (req, res, next) => {
   try {
     const currentUser = req.user;
-    if (!currentUser) throw new Error("Unauthorized - User  not logged in ");
+    if (!currentUser) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized - User not logged in",
+      });
+    }
+    const isAdmin = currentUser.role === "admin";
 
-    let isAdmin = currentUser.role === "admin";
-    let filter = !isAdmin ? { _id: currentUser._id } : null;
+    // If not admin, filter enrollments by userId reference field, assuming Enrollment has user ref.
+    const filter = !isAdmin ? { userId: currentUser._id } : {};
 
+    // Fetch enrollments with nested lessons populated, selecting necessary fields only
     const enrollments = await Enrollment.find(filter)
       .sort({ createdAt: -1 })
-      .populate("courseId");
+      .populate({
+        path: ["courseId"],
+        select: "_id  slug title instructor lessons",
+        populate: { path: "lessons", select: "_id title" },
+      })
+      .populate("completedLessons.lessonId")
+      .select("courseId completedLessons");
+
+    // Transform enrollments for response - calculate progress and last completed lesson
+    const processedEnrollments = enrollments.map((enrollment) => {
+      const { courseId, completedLessons } = enrollment;
+
+      // Defensive default values
+      const totalLessons = courseId?.lessons?.length || 0;
+      const completedCount = completedLessons?.length || 0;
+
+      // Calculate progress %, avoid division by zero
+      const progress =
+        totalLessons > 0 ? (completedCount / totalLessons) * 100 : 0;
+
+      // Get last completed lesson by completedAt desc
+      const lastCompleted =
+        completedLessons
+          ?.slice()
+          .sort((a, b) => b.completedAt - a.completedAt)
+          .shift()?.lessonId || null;
+
+      return {
+        _id: courseId?._id || null,
+        title: courseId?.title || "",
+        slug: courseId?.slug,
+        instructor: courseId?.instructor || "",
+        progress: Math.round(progress * 100) / 100, // rounded to 2 decimals
+        lastCompleted,
+      };
+    });
     return res.status(200).json({
       success: true,
-      message: `${enrollments.length} retrieved successfully`,
-      data: enrollments,
+      message: `${processedEnrollments.length} enrollments retrieved successfully`,
+      data: processedEnrollments,
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -197,7 +292,7 @@ export const getEnrollment = async (req, res, next) => {
     const currentEnrollment = await Enrollment.findOne({
       _id: enrollmentId,
     }).populate({
-      path: "courseId",
+      path: ["courseId", "completedLessons"],
     });
 
     return res.status(200).json({

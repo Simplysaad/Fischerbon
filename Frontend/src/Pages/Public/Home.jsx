@@ -209,7 +209,7 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section className="py-36 px-6">
+        <section className="py-36 px-6 min-h-[500px]">
           {/* Featured Courses */}
           {loading && <p className="text-center">Loading courses...</p>}
           {error && <p className="text-center text-red-600">{error}</p>}
@@ -218,9 +218,11 @@ export default function Homepage() {
               <h2 className="text-3xl font-semibold mb-12 text-center text-cyan-600">
                 Featured Courses
               </h2>
-              <div className="flex gap-8 max-md:flex-wrap">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
                 {courses.map((course) => (
-                  <CourseCard key={course._id} course={course} />
+                  <div key={course._id} className="justify-self-center">
+                    <CourseCard course={course} />
+                  </div>
                 ))}
               </div>
             </>
