@@ -14,7 +14,7 @@ const LessonBox = ({ idx, enrollment, isActive, lesson, course }) => {
           <p className="text-gray-400 text-[.9rem]">video</p>
         </span>
         <span className="status float-end">
-          <Lock color="#fff" fill="#3c3" size={16} />
+          <Lock size={16} />
         </span>
       </li>
     );

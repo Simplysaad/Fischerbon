@@ -110,7 +110,7 @@ const Loading = ({
             ))}
           </div>
           {label && (
-            <span className="mt-4 text-cyan-700 font-medium select-none">
+            <span className="mt-4 text-white font-medium select-none">
               {label}
             </span>
           )}
@@ -129,7 +129,9 @@ const Loading = ({
             />
           ))}
           {label && (
-            <span className="ml-2 text-cyan-600 select-none">{label}</span>
+            <span className="ml-2 text-white font-bold select-none">
+              {label}
+            </span>
           )}
         </div>
       )}

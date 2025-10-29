@@ -74,7 +74,6 @@ export default async function sendEmail(emailOptions) {
       let templatePath = path.join(dir, `${template}.ejs`);
 
       let htmlMessage = await ejs.renderFile(templatePath, { name: "saad" });
-      console.log(htmlMessage);
       layoutOptions.message = htmlMessage;
     } else {
       layoutOptions.message = message;

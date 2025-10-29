@@ -19,6 +19,7 @@ const SignupPage = () => {
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [alert, setAlert] = useState('');
+  const [result, setResult] = useState({});
 
   const validateForm = () => {
     const newErrors = {};

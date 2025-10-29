@@ -10,7 +10,7 @@ import User from "../Models/user.model.js";
 export const createEnrollment = async (req, res, next) => {
   try {
     // check if logged in
-    if (!req.user) {
+    if (!req.user && !req.body) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized - user not logged in",
@@ -44,19 +44,19 @@ export const createEnrollment = async (req, res, next) => {
     const { price: amount } = currentCourse;
 
     const amountInKobo = amount * 100;
-    // await sendEmail({
-    //     to: currentUser.email,
-    //     subject: "Course Enrollment Confirmation",
-    //     template: "enrollmentSuccess",
-    //     // message: "Thamks for enrolling in this course",
-    //     data: {
-    //       courseId,
-    //       name: currentUser.name.split(" ")[0] || "",
-    //       title: currentCourse.title,
-    //       amount: amountInKobo / 100,
-    //       date: format(Date.now()),
-    //     },
-    //  });
+    await sendEmail({
+      to: currentUser.email,
+      subject: "Course Enrollment Confirmation",
+      template: "enrollmentSuccess",
+      message: "Thanks for enrolling in this course",
+      data: {
+        courseId,
+        name: currentUser.name.split(" ")[0] || "",
+        title: currentCourse.title,
+        amount: amountInKobo / 100,
+        date: format(Date.now()),
+      },
+    });
     const payment = await initialize(email, amountInKobo, courseId);
 
     if (!payment || !payment.status) {
@@ -146,68 +146,10 @@ export const verifyEnrollment = async (req, res, next) => {
     return res
       .redirect(`${process.env.FRONTEND_URL}/courses/${currentCourse.slug}`)
       .end();
-    // return res.status(201).json({
-    //   success: true,
-    //   message: "user enrolled successfully",
-    //   data: newEnrollment,
-    // });
   } catch (err) {
     next(err);
   }
 };
-
-// export const getEnrollments = async (req, res, next) => {
-//   try {
-//     const currentUser = req.user;
-//     if (!currentUser) throw new Error("Unauthorized - User  not logged in ");
-
-//     let isAdmin = currentUser.role === "admin";
-//     let filter = !isAdmin ? { _id: currentUser._id } : null;
-
-//     const enrollments = await Enrollment.find(filter)
-//       .sort({ createdAt: -1 })
-//       // .populate({ path: "courseId", populate: { path: "lessons" } })
-//       .populate({
-//         path: "courseId",
-//         select: "_id title lessons",
-//         populate: { path: "lessons" },
-//         path: "completedLessons",
-//       })
-//       .select("courseId completedLessons");
-
-//     console.log(enrollments);
-
-//     const enrollments2 = enrollments?.map((e) => {
-//       // x = {
-//       //   id: "course1",
-//       //   title: "AutoCAD Beginner Fundamentals",
-//       //   instructor: "Admin",
-//       //   progress: 75, // in percentage
-//       //   completedLessons: 15,
-//       // };
-
-//       const lastCompleted = e.completedLessons
-//         .sort((a, b) => b.completedAt - a.completedAt)
-//         .pop();
-
-//       return {
-//         _id: e.courseId._id || e.courseId,
-//         progress:
-//           (e.courseId.lessons?.length / e.completedLessons.length) * 100,
-//         instructor: e.courseId.instructor,
-//         lastCompleted,
-//       };
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       message: `${enrollments.length} retrieved successfully`,
-//       data: enrollments,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 export const getEnrollments = async (req, res, next) => {
   try {

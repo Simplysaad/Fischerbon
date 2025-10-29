@@ -11,6 +11,7 @@ import ProfileCard from '../../Components/ProfileCard';
 import CourseCard from '../../Components/CourseCard';
 import EmptyMessage from '../../Components/EmptyMessage';
 import LessonBox from '../../Components/LessonBox';
+import AuthModal from '../../Components/AuthModal';
 
 const CourseDetailsSkeleton = () => {
   return (
@@ -28,10 +29,7 @@ const CourseDetailsSkeleton = () => {
             <h2 className="text-xl mb-2">Lessons</h2>
             <ul className="flex flex-col gap-3">
               {[...Array(5)].map((_, idx) => (
-                <div
-                  key={idx}
-                  className="h-10 bg-gray-300 rounded w-full animate-pulse"
-                ></div>
+                <LessonBox.LessonBoxSkeleton key={idx} />
               ))}
             </ul>
           </section>
@@ -55,6 +53,8 @@ const CourseDetails = () => {
   const [enrollment, setEnrollment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
   const location = useLocation();
 
   useEffect(() => {
@@ -110,7 +110,7 @@ const CourseDetails = () => {
       ?.pop();
 
     return (
-      <div className="text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded">
+      <div className="text-nowrap bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded">
         {enrollment ? (
           <Link
             to={`/courses/${course.slug}/lessons/${lastCompletedLesson?.lessonId || course.lessons[0]?.slug}`}
@@ -199,19 +199,17 @@ const CourseDetails = () => {
           <section id="lessons" className="my-4">
             <h2 className="text-xl mb-2">Lessons</h2>
             <ul className="flex flex-col gap-3">
-              {course.lessons || course.lessons.length === 0 ? (
-                <LessonBox.LessonBoxSkeleton />
-              ) : (
-                course.lessons?.map((lesson, idx) => (
-                  <LessonBox
-                    key={idx}
-                    idx={idx}
-                    enrollment={enrollment}
-                    course={course}
-                    lesson={lesson}
-                  />
-                ))
-              )}
+              {!course.lessons || course.lessons.length === 0
+                ? null
+                : course.lessons?.map((lesson, idx) => (
+                    <LessonBox
+                      key={idx}
+                      idx={idx}
+                      enrollment={enrollment}
+                      course={course}
+                      lesson={lesson}
+                    />
+                  ))}
             </ul>
           </section>
           {course.recommendations && (

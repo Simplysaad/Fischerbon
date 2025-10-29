@@ -11,6 +11,7 @@ import CoursesTable from '../../Components/CoursesTable';
 import StatCard from '../../Components/StatCard';
 import ProfileCard from '../../Components/ProfileCard';
 import { Link } from 'react-router-dom';
+import Loading from '../../Components/Loading';
 
 const AdminDashboard = () => {
   const [enrollments, setEnrollments] = useState([]);
@@ -48,9 +49,7 @@ const AdminDashboard = () => {
   if (loading)
     return (
       <DashboardLayout>
-        <div className="text-center py-20 text-gray-600 font-semibold">
-          Loading dashboard data...
-        </div>
+        <Loading overlay />
       </DashboardLayout>
     );
   return (
