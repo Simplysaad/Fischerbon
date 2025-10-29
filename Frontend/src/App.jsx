@@ -18,12 +18,13 @@ const Home = lazy(() => import('./Pages/Public/Home'));
 const LessonDetails = lazy(() => import('./Pages/Student/Lesson'));
 
 import useAuth, { AuthProvider } from './context/AuthContext';
+import Loading from './Components/Loading';
 
 const ProtectedRoute = ({ allowedRoles = null }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (!isLoading) return <Loading />;
 
   if (allowedRoles) {
     if (!user) {
@@ -31,7 +32,7 @@ const ProtectedRoute = ({ allowedRoles = null }) => {
     }
 
     if (!allowedRoles.includes(user.role) && user.role !== 'admin') {
-      return <Navigate to="/404" replace />; 
+      return <Navigate to="/404" replace />;
     }
   }
 
@@ -39,10 +40,11 @@ const ProtectedRoute = ({ allowedRoles = null }) => {
 };
 
 function App() {
+  if (true) return <Loading overlay />;
   return (
     <>
       <AuthProvider>
-        <Suspense>
+        <Suspense fallback={<Loading />}>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Home />} />

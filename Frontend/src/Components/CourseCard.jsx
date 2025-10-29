@@ -41,4 +41,21 @@ const CourseCard = ({ course }) => {
   );
 };
 
+CourseCard.CourseCardSkeleton = () => {
+  return (
+    <div className="shadow w-[100%] p-4">
+      <div className="card-image w-full overflow-hidden">
+        <div className="w-full h-40 bg-gray-300 animate-pulse"></div>
+      </div>
+      <div className="card-content py-4">
+        <div className="w-3/4 h-6 bg-gray-300 animate-pulse mb-2"></div>
+        <div className="w-full h-4 bg-gray-300 animate-pulse mb-2"></div>
+        <div className="w-full h-4 bg-gray-300 animate-pulse mb-2"></div>
+        <div className="w-1/2 h-4 bg-gray-300 animate-pulse mb-4"></div>
+        <div className="w-full h-10 bg-gray-300 rounded animate-pulse"></div>
+      </div>
+    </div>
+  );
+};
+
 export default CourseCard;

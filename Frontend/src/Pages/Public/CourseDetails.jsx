@@ -12,6 +12,38 @@ import CourseCard from '../../Components/CourseCard';
 import EmptyMessage from '../../Components/EmptyMessage';
 import LessonBox from '../../Components/LessonBox';
 
+const CourseDetailsSkeleton = () => {
+  return (
+    <Layout>
+      <div className="flex max-md:flex-col  gap-3 p-4">
+        <main className="md:w-[70%] shadow p-4">
+          <section id="courseInfo" className="animate-pulse">
+            <div className="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
+            <div className="h-6 bg-gray-300 rounded w-1/4 mb-4"></div>
+            <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+            <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+            <div className="h-4 bg-gray-300 rounded w-5/6 mb-2"></div>
+          </section>
+          <section id="lessons" className="my-4">
+            <h2 className="text-xl mb-2">Lessons</h2>
+            <ul className="flex flex-col gap-3">
+              {[...Array(5)].map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-10 bg-gray-300 rounded w-full animate-pulse"
+                ></div>
+              ))}
+            </ul>
+          </section>
+        </main>
+        <aside className="md:w-[30%] flex-1">
+          <ProfileCard.ProfileCardSkeleton />
+        </aside>
+      </div>
+    </Layout>
+  );
+};
+
 const CourseDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -22,6 +54,7 @@ const CourseDetails = () => {
   const [course, setCourse] = useState(null);
   const [enrollment, setEnrollment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -92,7 +125,7 @@ const CourseDetails = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-12">Loading course details...</div>;
+    return <CourseDetailsSkeleton />;
   }
 
   if (!course) {
@@ -145,14 +178,29 @@ const CourseDetails = () => {
               <EnrollButton />
             </div>
             <div className="description">
-              <span>{course.description}</span>
+              <span>
+                <p>
+                  {isDescriptionExpanded
+                    ? course.description
+                    : course.description.split(' ').splice(0, 50).join(' ') +
+                      (course.description.split(' ').length > 50 ? '...' : '')}
+                  <span
+                    className="text-blue-600 cursor-pointer"
+                    onClick={() =>
+                      setIsDescriptionExpanded(!isDescriptionExpanded)
+                    }
+                  >
+                    {isDescriptionExpanded ? ' Show Less' : ' Read More'}
+                  </span>
+                </p>
+              </span>
             </div>
           </section>
           <section id="lessons" className="my-4">
             <h2 className="text-xl mb-2">Lessons</h2>
             <ul className="flex flex-col gap-3">
-              {!course.lessons || course.lessons.length === 0 ? (
-                <EmptyMessage message={'No Lessons Yet'} />
+              {course.lessons || course.lessons.length === 0 ? (
+                <LessonBox.LessonBoxSkeleton />
               ) : (
                 course.lessons?.map((lesson, idx) => (
                   <LessonBox
