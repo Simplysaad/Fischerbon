@@ -37,19 +37,15 @@ const LoginPage = () => {
 
       const response = await login({ ...formData });
 
-      console.log(formData);
-
-      if (response.success) {
-        const currentUser = response.data;
-
-        console.log(currentUser); //TODO: Remove this;
-        setAlert('success');
-        setResult({ message: 'Welcome back!' });
-      } else {
+      if (!response.success) {
         setAlert('failure');
-        setResult({ message: 'Invalid credentials' });
+        setResult({ message: response.message });
+      } else {
+        setResult({ message: response.message });
+        setAlert('success');
       }
     } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -62,8 +58,8 @@ const LoginPage = () => {
           Welcome Back to FischerBon
         </h2>
         <p className="text-xl mb-8 max-w-md">
-          Access your engineering design courses, including PDMS, CAD, BIM,
-          Piping 3D and more. Learn from industry experts, anytime, anywhere.
+          Access your engineering design courses, including AutoCAD, BIM, 3D
+          Modelling and more. Learn from industry experts, anytime, anywhere.
         </p>
         {/* Suggest adding an illustrative engineering graphic or animation here */}
       </div>
@@ -97,7 +93,7 @@ const LoginPage = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
+              className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
             >
               <UserCircle className="w-5 h-5 text-blue-600" /> Email Address
             </label>
@@ -121,7 +117,7 @@ const LoginPage = () => {
           <div className="relative">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
+              className=" text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
             >
               <Lock className="w-5 h-5 text-blue-600" /> Password
             </label>

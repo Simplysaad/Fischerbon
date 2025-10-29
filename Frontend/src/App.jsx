@@ -40,11 +40,11 @@ const ProtectedRoute = ({ allowedRoles = null }) => {
 };
 
 function App() {
-  if (true) return <Loading overlay />;
+  // if (true) return <Loading overlay />;
   return (
     <>
       <AuthProvider>
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Loading overlay />}>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Home />} />

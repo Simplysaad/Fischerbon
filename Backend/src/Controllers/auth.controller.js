@@ -42,37 +42,46 @@ export const postRegister = async (req, res, next) => {
 
     const isUserExist = await User.findOne({ email }).select("_id");
 
-    if (isUserExist) {
-      return res.status(400).json({
-        success: false,
-        message: "user exist already, log in instead",
-      });
-    }
+    // if (isUserExist) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "user exist already, log in instead",
+    //   });
+    // }
 
-    const newUser = new User({
-      name,
-      email,
-      role,
-      password: hashedPassword,
-    });
+    // const newUser = new User({
+    //   name,
+    //   email,
+    //   role,
+    //   password: hashedPassword,
+    // });
 
-    await newUser.save();
+    // await newUser.save();
 
-    const { SECRET_KEY } = process.env;
-    if (!SECRET_KEY)
-      throw new Error("SECRET_KEY is not defined in environment variables");
+    // const { SECRET_KEY } = process.env;
+    // if (!SECRET_KEY)
+    //   throw new Error("SECRET_KEY is not defined in environment variables");
 
-    const token = jwt.sign({ userId: newUser._id }, SECRET_KEY);
+    // const token = jwt.sign({ userId: newUser._id }, SECRET_KEY);
 
-    res.cookie("token", token, {
-      maxAge: 60 * 60 * 1000,
-      httpOnly: true,
+    // res.cookie("token", token, {
+    //   maxAge: 60 * 60 * 1000,
+    //   httpOnly: true,
+    // });
+
+    await sendEmail({
+      to: email,
+      subject: "Welcome to Fischerbon LMS!",
+      template: "welcomeEmail",
+      data: {
+        name,
+      },
     });
 
     return res.status(201).json({
       success: true,
       message: "user registered successfully",
-      data: newUser,
+      // data: newUser,
     });
   } catch (err) {
     next(err);

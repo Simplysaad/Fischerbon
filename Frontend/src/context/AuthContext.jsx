@@ -34,10 +34,27 @@ export const AuthProvider = ({ children }) => {
     });
     if (response.success) {
       setUser(response.data);
-      // Navigate back to the original page or default to home
-      const fallbackUrl = user.role === 'admin' ? '/admin/' : '/dashboard';
+      const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
       const from = location.state?.from?.pathname || fallbackUrl;
-      setTimeout(() => navigate(from, { replace: true }), 1500);
+
+      navigate(from, { replace: true });
+    }
+    return response;
+  };
+
+  const register = async ({ email, password, fullName, role = 'student' }) => {
+    const { data: response } = await axiosInstance.post('/auth/register', {
+      email,
+      password,
+      fullName,
+      role,
+    });
+    if (response.success) {
+      setUser(response.data);
+      const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
+      const from = location.state?.from?.pathname || fallbackUrl;
+
+      navigate(from, { replace: true });
     }
     return response;
   };
@@ -49,7 +66,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, register, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );
