@@ -1,6 +1,6 @@
 import { Eye, EyeOff } from 'lucide-react';
 import AuthAlert from './AuthAlert';
-import AdminButton from '../Pages/AdminDashboard/AdminButton';
+import AdminButton from './AdminButton';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -43,7 +43,7 @@ const ProfileTemplate = ({ stats, form, name, email }) => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${BASE_URL}/auth/register`, {
+      const response = await fetch(`${BASE_URL}/auth/profile`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

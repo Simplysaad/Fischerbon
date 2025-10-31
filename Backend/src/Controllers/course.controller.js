@@ -36,16 +36,14 @@ export const getCourses = async (req, res, next) => {
 
 export const createCourse = async (req, res, next) => {
   try {
-    if (!req.body) {
+    if (!req.body) { 
       return res.status(400).json({
         success: false,
         message: "Bad request - Nothing is being sent"
       });
     }
-    console.log(JSON.stringify(req.body));
 
-    const { userId } = req;
-    // console.log(userId);
+    const { _id: userId } = req.user
 
     const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {

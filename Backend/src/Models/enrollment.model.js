@@ -4,44 +4,48 @@ const enrollmentSchema = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "user"
+      ref: "user",
     },
     courseId: {
       type: Schema.Types.ObjectId,
-      ref: "course"
+      ref: "course",
     },
     payment: {
       type: Schema.Types.ObjectId,
-      ref: "payment"
+      ref: "payment",
     },
     completedLessons: [
       {
         lessonId: {
           type: Schema.Types.ObjectId,
-          ref: "lesson"
+          ref: "lesson",
         },
-        completedAt: Date
-      }
+        completedAt: Date,
+      },
     ],
     quizResults: [
       {
         quizId: {
           type: Schema.Types.ObjectId,
-          ref: "quiz"
+          ref: "quiz",
         },
         score: Number,
-        attemptedAt: Date
-      }
+        attemptedAt: Date,
+      },
     ],
     status: {
       type: String,
       enum: ["in progress", "abandoned", "completed"],
-      default: "in progress"
+      default: "in progress",
     },
-    lastAccessed: Date
+    lastAccessed: Date,
+    // referral: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "referral"
+    // }
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

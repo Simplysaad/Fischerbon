@@ -1,16 +1,17 @@
 import { Router } from "express";
 const router = Router();
 
+import authMiddleware from "../Middleware/auth.middleware.js";
 import {
   checkAuthStatus,
   postRegister,
   postLogin,
   forgotPassword,
   resetPassword,
-  logout
+  logout,
 } from "../Controllers/auth.controller.js";
 
-router.get("/status", checkAuthStatus);
+router.get("/status", authMiddleware, checkAuthStatus);
 
 router.post("/register", postRegister);
 

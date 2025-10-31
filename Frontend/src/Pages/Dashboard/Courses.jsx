@@ -17,6 +17,7 @@ courses.forEach((course) => {
 
 const Courses = () => {
   const params = useParams();
+<<<<<<< HEAD
 
   let currentCourse =
     courses.find(
@@ -27,14 +28,26 @@ const Courses = () => {
           .replace(/[^\w-]+/g, '') === params.courseId
     ) || courses[0];
 
+=======
+  console.log(params);
+  let currentCourse = courses.find(
+    (course) =>
+      course.course.replace(/\s+/g, '-').replace(/[^\w-]+/g, '') ===
+      params.course
+  );
+  console.log(currentCourse);
+>>>>>>> 1c2e9ab08ffb72eeb582c4476783dc41514e2110
   const [playVideo, setPlayVideo] = useState(false);
   const [video, setVideo] = useState();
   const [alert, setAlert] = useState('');
 
+<<<<<<< HEAD
   console.log(params);
   console.log(currentCourse);
   console.log(params.courseId);
 
+=======
+>>>>>>> 1c2e9ab08ffb72eeb582c4476783dc41514e2110
   return (
     <>
       {alert === 'playing' && (
@@ -70,6 +83,7 @@ const Courses = () => {
                   </tr>
                 </thead>
 
+<<<<<<< HEAD
                 <tbody>
                   {currentCourse.lessons.map((item, index) => {
                     return (
@@ -105,6 +119,14 @@ const Courses = () => {
                           }}
                           title={`Play ${item.title}`}
                           className='cursor-pointer text-xs md:text-[16px] flex items-center text-center w-fit text-white hover:bg-primary gap-1 bg-primaryHover rounded-sm shadow-sm hover:shadow-md px-3 py-1 text-white"'
+=======
+                  <tbody>
+                    {currentCourse.lessons.map((item, index) => {
+                      return (
+                        <tr
+                          key={index}
+                          className={`*:px-3 *:md:my-4 *:my-3 ${index % 2 === 0 ? 'bg-[hsl(203,11%,89%)]' : 'bg-white'}`}
+>>>>>>> 1c2e9ab08ffb72eeb582c4476783dc41514e2110
                         >
                           <span>
                             <Play
