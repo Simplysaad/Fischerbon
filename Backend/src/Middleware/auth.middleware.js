@@ -9,7 +9,7 @@ export default async function authMiddleware(req, res, next) {
       // return res.redirect("/auth/login");
       return res.status(401).json({
         success: false,
-        message: "No token provided"
+        message: "User not logged in",
       });
     }
 
@@ -21,11 +21,13 @@ export default async function authMiddleware(req, res, next) {
 
     if (decoded?.userId) {
       const { userId } = decoded;
-      const currentUser = await User.findOne({ _id: userId });
-      
+      const currentUser = await User.findOne({ _id: userId }).populate(
+        "enrollments"
+      );
+
       req.userId = userId;
       req.user = currentUser;
-      
+
       next();
     }
   } catch (err) {

@@ -1,155 +1,191 @@
 import React, { useEffect, useState } from 'react';
-import Hero from '../../Components/Hero';
-import Header from '../../Components/Header';
-import { Phone, Star, Users } from 'lucide-react';
-import PublicLayout from './Layout';
-import { useNavigate, useParams } from 'react-router-dom';
-import axiosInstance from '../../utils/axios.util';
 
-const currentCourse = {
-  _id: '1',
-  title: 'AutoCAD Essentials: The Ultimate beginner course',
-  description:
-    'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, nemo deleniti laudantium itaque totam blanditiis minima rerum omnis modi optio? Doloribus.',
-  price: 23.99,
-  payment: 'free',
-  enrollments: 24,
-  category: 'AutoCAD',
-  level: 'beginner',
-  thumbnailUrl: 'https://via.placeholder.com/400x240?text=AutoCAD+Beginner',
-  ratings: [{ rating: 4 }, { rating: 5 }, { rating: 4 }],
-  lessons: [
-    {
-      title: 'Introduction to AutoCAD ',
-    },
-  ],
-  instructor: {
-    _id: '12aac',
-    name: 'IDRIS, SAAD',
-    bio: 'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ratione, nemo deleniti laudantium itaque totam blanditiis minima rerum omnis modi optio? Doloribus.',
-    profession: 'Pipeline Engineer',
-    rating: 4.9,
-  },
-};
+import { Star } from 'lucide-react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import axiosInstance from '../../utils/axios.util';
+import useAuth from '../../context/AuthContext';
+import formatCurrency from '../../utils/formatCurrency';
+
+import Layout from './Layout';
+import ProfileCard from '../../Components/ProfileCard';
+import CourseCard from '../../Components/CourseCard';
+import EmptyMessage from '../../Components/EmptyMessage';
+import LessonBox from '../../Components/LessonBox';
 
 const CourseDetails = () => {
-  const [course, setCourse] = useState(currentCourse);
   const { slug } = useParams();
   const navigate = useNavigate();
-  let courseId = slug.split('-').at(-1);
+  const courseId = slug.split('-').at(-1);
+
+  const { user } = useAuth();
+
+  const [course, setCourse] = useState(null);
+  const [enrollment, setEnrollment] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
-    async function getCourseDetails() {
-      const { data: response } = await axiosInstance.get(
-        `/courses/${courseId}`
-      );
+    async function fetchCourseDetails() {
+      setLoading(true);
+      try {
+        // Fetch course data
+        const { data: response } = await axiosInstance.get(
+          `/courses/${courseId}`
+        );
+        if (!response?.success)
+          throw new Error(response.message || 'Unable to fetch course details');
+        const courseData = response.data;
+        setCourse(courseData);
 
-      if (!response || !response.success) return null;
-
-      return setCourse(response);
+        // Detect enrollment from user context enrollments array
+        if (user?.enrollments) {
+          const userEnrollment = user.enrollments.find(
+            (e) => e.courseId === courseData._id
+          );
+          setEnrollment(userEnrollment || null);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
     }
-    getCourseDetails();
-  }, [courseId]);
+    fetchCourseDetails();
+  }, [courseId, user]);
 
-  async function handleEnroll() {
-    try {
-      const { data: response } = await axiosInstance.get(
-        `/enrollments/new/${courseId}`
-      );
+  const EnrollButton = ({}) => {
+    const handleEnroll = async () => {
+      try {
+        if (!user) {
+          navigate('/login', { state: { from: location } });
+          return null;
+        }
+        const { data: response } = await axiosInstance.post(
+          `/enrollments/new/${courseId}`
+        );
+        if (!response.success)
+          throw new Error(response.message || 'Unable to enroll user');
+        window.location = response.data.authorization_url;
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-      if (!response || !response.success) return null;
-      location.href = response?.data?.AuthorizationUrl ?? location.href + '/dj';
-    } catch (err) {
-      console.error(err);
-    }
+    const lastCompletedLesson = enrollment?.completedLessons
+      .slice()
+      .sort((a, b) => a.completedAt - b.completedAt)
+      ?.pop();
+
+    return (
+      <div className="text-nowrap border border-blue-500 hover:bg-blue-500 hover:text-white px-2 py-2 rounded">
+        {enrollment ? (
+          <Link
+            to={`/courses/${course.slug}/lessons/${lastCompletedLesson?.lessonId || course.lessons[0]?.slug}`}
+          >
+            Continue Learning
+          </Link>
+        ) : (
+          <button onClick={handleEnroll}>Enroll now</button>
+        )}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return <div className="text-center py-12">Loading course details...</div>;
   }
 
+  if (!course) {
+    navigate('/404');
+    return null; //<div className="text-center py-12">Course not found.</div>;
+  }
+
+  // Calculate completed lessons IDs and progress percentage
+  let completedLessonIds = [];
+  if (Array.isArray(enrollment?.completedLessons)) {
+    completedLessonIds =
+      enrollment.completedLessons.map((l) => l.lessonId) || [];
+  }
+
+  const progressPercent = course.lessons
+    ? (completedLessonIds.length / course.lessons?.length) * 100
+    : 0;
+
+  // Calculate average rating
+  const avgRating =
+    course.ratings && course.ratings.length > 0
+      ? (
+          course.ratings.reduce((a, r) => a + r.rating, 0) /
+          course.ratings.length
+        ).toFixed(1)
+      : 'No ratings';
+
+  // Format price display
+  const formattedPrice =
+    course.payment === 'free' ? 'Free' : `${formatCurrency(course.price)}`;
   return (
-    <PublicLayout
-      hero={{
-        heading: course?.title,
-        ctaText: 'Get Started',
-        body:
-          course?.description ||
-          'Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis, harum ratione? Architecto tempora voluptates praesentium quia natus alias veniam blanditiis!',
-      }}
-    >
-      <div className="lg:flex justify-between py-8  md:px-8 px-4">
-        <section className="h-full lg:w-[60%]">
-          <div className="">{/* <img src="" alt="" /> */}</div>
-          <div className="text-start">
-            <h2 className="font-semibold flex flex-col md:justify-between  text-[1.5rem] py-4">
-              <span>{course.title}</span>
-              <span className="text-[1.2rem] font-light">${course.price}</span>
-            </h2>
-            <p className="font-light pb-2">{course.description}</p>
-            <ul className="text-gray-600 ">
-              <li className="flex items-center gap-1">
-                <Users size={12} />
-                <span>89 students registered</span>
-              </li>
-              <li className="flex items-center gap-1">
-                <Star size={12} />
-                <span>4.9 rating</span>
-              </li>
-              <li className="flex items-center gap-1">
-                <Phone size={12} />
-                <span>24/7 Offline support</span>
-              </li>
-            </ul>
-          </div>
-          <div className="cta flex text-white gap-2 py-8">
-            <button
-              onClick={handleEnroll}
-              className="hover:bg-blue-400 py-2 px-4 rounded bg-blue-500"
-            >
-              Enroll now
-            </button>
-            <button className="hover:bg-blue-400  py-2 px-4 rounded bg-blue-500">
-              Add to Cart
-            </button>
-          </div>
-          <h2 className="text-2xl py-4 font-semibold">What you'll learn:</h2>
-          <div className="flex flex-col  md:flex-row flex-wrap gap-2 py-4">
-            {course.lessons?.length === 0
-              ? null
-              : course.lessons.map((lesson, idx) => (
-                  <div className="flex justify-start items-center gap-2 border rounded p-2 py-1 md:max-w-[100%]">
-                    <span className="rounded-full text-center text-3xl font-bold px-4 py-2">
-                      {idx + 1}
-                    </span>
-                    <span className="font-light">
-                      <p className="">{lesson.title}</p>
-                      {/* <p className="text-gray-600 font-lg">3 days</p> */}
-                    </span>
-                  </div>
-                ))}
-          </div>
-        </section>
-        <section
-          id="instructorSection"
-          className="lg:max-w-[30%] md:max-w-[100%] py-12 px-4"
-        >
-          {course.instructor && (
-            <div className="flex flex-col">
-              <h2 className="font-bold text-2xl py-4">Meet your Instructor</h2>
-              {/* <img src="" alt="" /> */}
-              <div className="flex flex-col">
-                <p className="text-xl">{course.instructor.name}</p>
-                <p className="text-gray-500">{course.instructor.profession}</p>
-                <p className="flex  gap-1 items-center">
-                  {course.instructor.rating}{' '}
-                  <Star className="text-yellow-600" size={12} />
-                </p>
+    <Layout>
+      <div className="flex max-md:flex-col  gap-3 p-4">
+        <main className="md:w-[70%] shadow p-4">
+          <section id="courseInfo">
+            <div className="flex  max-md:flex-col gap-3 items-start justify-between">
+              <h1 className="text-[1.5rem]">{course.title}</h1>
+              <div className="max-md:hidden">
+                <EnrollButton />
               </div>
-              <div className=" text-gray-600 py-4">{course.instructor.bio}</div>
             </div>
+            <div className="flex gap-3 py-4 text-gray-700 text-[1rem] items-center justify-start">
+              <span className="rating items-center  gap-1 flex">
+                <Star fill="#ffa" size={12} className="text-yellow-400" />
+                <span>{avgRating}</span>
+              </span>
+              <span className="price">{formattedPrice}</span>
+            </div>
+            <div className="md:hidden my-4 w-full flex">
+              <EnrollButton />
+            </div>
+            <div className="description">
+              <span>{course.description}</span>
+            </div>
+          </section>
+          <section id="lessons" className="my-4">
+            <h2 className="text-xl mb-2">Lessons</h2>
+            <ul className="flex flex-col gap-3">
+              {!course.lessons || course.lessons.length === 0 ? (
+                <EmptyMessage message={'No Lessons Yet'} />
+              ) : (
+                course.lessons?.map((lesson, idx) => (
+                  <LessonBox
+                    key={idx}
+                    idx={idx}
+                    enrollment={enrollment}
+                    course={course}
+                    lesson={lesson}
+                  />
+                ))
+              )}
+            </ul>
+          </section>
+          {course.recommendations && (
+            <section id="recommendations" className="my-4 py-6 w-full ">
+              <h2 className="text-2xl mb-2">Recommendations</h2>
+              <ul className="flex gap-4 overflow-scroll w-full">
+                {course.recommendations.map((course, idx) => (
+                  <li key={idx}>
+                    <CourseCard course={course} />
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
-        </section>
+        </main>
+        <aside className="md:w-[30%] flex-1">
+          <ProfileCard user={course.instructor} />
+          <section id="extra"></section>
+        </aside>
       </div>
-    </PublicLayout>
+    </Layout>
   );
 };
 
 export default CourseDetails;
-//

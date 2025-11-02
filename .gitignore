@@ -157,8 +157,9 @@ dist-ssr
 *.sw?
 
 
-#senvironment variables
+#environment variables
 .env
 .env.local
 
-Uploads
+Uploads/
+Courses/

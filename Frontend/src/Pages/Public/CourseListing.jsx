@@ -1,8 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import CourseCard from '../../Components/CourseCard';
-import Hero from '../../Components/Hero';
-import Header from '../../Components/Header';
 import PublicLayout from './Layout';
+import axiosInstance from '../../utils/axios.util';
 
 const levels = ['all', 'beginner', 'intermediate', 'advanced'];
 const sampleCourses = [
@@ -73,9 +72,24 @@ const CoursesPage = () => {
   const [search, setSearch] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [expandSearch, setExpandSearch] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const { data: response } = await axiosInstance.get('/courses');
+        if (!response.success)
+          throw new Error(response.message || 'unable to fetch courses');
+        else setCourses(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchCourses();
+  }, []);
 
   const filteredCourses = useMemo(() => {
-    return sampleCourses.filter((course) => {
+    return courses.filter((course) => {
       const matchesLevel =
         selectedLevel === 'all' || course.level === selectedLevel;
       const matchesSearch =
@@ -83,7 +97,7 @@ const CoursesPage = () => {
         course.description.toLowerCase().includes(search.toLowerCase());
       return matchesLevel && matchesSearch;
     });
-  }, [search, selectedLevel]);
+  }, [search, selectedLevel, courses]);
 
   return (
     <PublicLayout
@@ -91,7 +105,8 @@ const CoursesPage = () => {
         heading: 'Unlock Your CAD Potential, Explore Our Expert Courses',
         body: 'Learn AutoCAD, Revit, and CAD design skills with industry-recognized certification and hands-on projects.',
         ctaText: 'Enroll now',
-        ctaUrl: '/courses/123',
+        ctaUrl: '#courseList',
+        image: '/images/white-building.jpg',
       }}
     >
       {/* Filter/Search Section */}
@@ -122,7 +137,10 @@ const CoursesPage = () => {
         </div>
 
         {/* Courses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div
+          id="courseList"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {filteredCourses.length === 0 ? (
             <p className="text-center col-span-full text-gray-600">
               No courses found.

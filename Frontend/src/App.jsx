@@ -1,19 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-// import ProtectedRoute from './Components/ProtectedRoute';
-import LoginPage from './Pages/Auth/Login';
-import SignupPage from './Pages/Auth/Signup';
-import ResetPasswordPage from './Pages/Auth/ResetPassword';
-import ForgotPasswordPage from './Pages/Auth/ForgotPassword';
-import Dashboard from './Pages/Dashboard/Dashboard';
-import Courses from './Pages/Dashboard/Courses';
-import Challenges from './Pages/Dashboard/Challenges';
-import Profile from './Pages/Dashboard/Profile';
-import AdminDashboard from './Pages/AdminDashboard/AdminDashboard';
-import CreateCourse from './Pages/AdminDashboard/CreateCourse';
-import RegisterStudent from './Pages/AdminDashboard/RegisterStudent';
-import AdminProfile from './Pages/AdminDashboard/AdminProfile';
-import PostChallenge from './Pages/AdminDashboard/PostChallenge';
+import React, { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 
+<<<<<<< HEAD
 const App = () => {
   return (
     <>
@@ -53,109 +42,91 @@ const App = () => {
               // </ProtectedRoute>
             }
           />
+=======
+const LoginPage = lazy(() => import('./Pages/Auth/Login'));
+const SignupPage = lazy(() => import('./Pages/Auth/Signup'));
+const ResetPasswordPage = lazy(() => import('./Pages/Auth/ResetPassword'));
+const ForgotPasswordPage = lazy(() => import('./Pages/Auth/ForgotPassword'));
+const StudentDashboard = lazy(() => import('./Pages/Student/Dashboard'));
+const CourseListing = lazy(() => import('./Pages/Public/CourseListing'));
+const CourseDetails = lazy(() => import('./Pages/Public/CourseDetails'));
+const NotFound = lazy(() => import('./Pages/Public/404'));
+const MyCourses = lazy(() => import('./Pages/Student/MyEnrollments'));
+const AdminDashboard = lazy(() => import('./Pages/Admin/AdminDashboard'));
 
-          <Route
-            path="/challenges"
-            element={
-              // <ProtectedRoute>
-              <Challenges />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              // <ProtectedRoute>
-              <Profile />
-              // </ProtectedRoute>
-            }
-          />
+const ManageCourses = lazy(() => import('./Pages/Admin/ManageCourses'));
+const Home = lazy(() => import('./Pages/Public/Home'));
+const LessonDetails = lazy(() => import('./Pages/Student/Lesson'));
 
-          {/* Protected Admin Dashboard */}
-          <Route
-            path="/dashboard/admin"
-            element={
-              // <ProtectedRoute>
-              <AdminDashboard />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/courses/create"
-            element={
-              // <ProtectedRoute>
-              <CreateCourse />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/student/register"
-            element={
-              // <ProtectedRoute>
-              <RegisterStudent />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/challenge/post"
-            element={
-              // <ProtectedRoute>
-              <PostChallenge />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile/admin"
-            element={
-              // <ProtectedRoute>
-              <AdminProfile />
-              // </ProtectedRoute>
-            }
-          />
+import useAuth, { AuthProvider } from './context/AuthContext';
+>>>>>>> 5546e9782df4523d3415eeee38bb17718dd33166
 
-          {/* Not found page */}
-          <Route path="/*" element={<Dashboard />} />
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+const ProtectedRoute = ({ allowedRoles = null }) => {
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) return <p>Loading...</p>;
+
+  if (allowedRoles) {
+    if (!user) {
+      return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    if (!allowedRoles.includes(user.role) && user.role !== 'admin') {
+      return <Navigate to="/404" replace />; 
+    }
+  }
+
+  return <Outlet />;
 };
 
+function App() {
+  return (
+    <>
+      <AuthProvider>
+        <Suspense>
+          <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route
+              path="/reset-password/:token"
+              element={<ResetPasswordPage />}
+            />
+            <Route path="/courses" element={<CourseListing />} />
+            <Route path="/courses/:slug" element={<CourseDetails />} />
+
+            {/* Group routes that require authentication */}
+            <Route
+              element={<ProtectedRoute allowedRoles={['student', 'admin']} />}
+            >
+              {/* <Route path="/profile" element={<Profile />} /> */}
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+              <Route path="/dashboard" element={<StudentDashboard />} />
+              <Route path="/my-courses" element={<MyCourses />} />
+              <Route
+                path="/courses/:courseSlug/lessons/:lessonSlug"
+                element={<LessonDetails />}
+              />
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/admin/" element={<AdminDashboard />} />
+              <Route path="/admin/courses" element={<ManageCourses />} />
+            </Route>
+
+            {/* 404 fallback */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </AuthProvider>
+      <Analytics />
+    </>
+  );
+}
+
 export default App;
-
-// ### General (Accessible to Both Roles or Public)
-// - `/` - Home page
-// - `/login` - Login page
-// - `/signup` - Signup/Registration page
-// - `/forgot-password` - Password recovery page
-// - `/profile` - User profile and settings
-// - `/courses` - List of all courses (for browsing or enrollment)
-// - `/courses/:courseId` - Course details and content overview
-// - `/contact` - Contact page
-// - `/about` - About the platform
-
-// ***
-
-// ### Student Routes
-// - `/dashboard` - Student dashboard showing enrolled courses, progress summary, announcements
-// - `/my-courses` - List of courses the student is enrolled in
-// - `/my-courses/:courseId` - Detailed course view with lectures, assignments, quizzes
-// - `/my-courses/:courseId/lecture/:lectureId` - Lecture video or materials
-// - `/my-courses/:courseId/assignments` - Assignments list and submission page
-// - `/my-courses/:courseId/quizzes` - Quizzes and tests page
-// - `/my-courses/:courseId/results` - Grades and feedback for tests and assignments
-// - `/progress` - Detailed progress tracking across courses
-// - `/messages` - Messaging with instructors or support
-
-// ***
-
-// ### Admin Routes
-// - `/admin/dashboard` - Admin overview of platform metrics, user statistics
-// - `/admin/users` - User management (view, add, edit, delete users - students, instructors, admins)
-// - `/admin/courses` - Manage courses (list, create, edit, delete courses)
-// - `/admin/courses/:courseId` - Detailed course management (content, lectures, assignments)
-// - `/admin/courses/:courseId/assignments` - Manage assignments for a course
-// - `/admin/courses/:courseId/quizzes` - Manage quizzes for a course
-// - `/admin/reports` - Analytics and reports on usage, progress, revenue
-// - `/admin/settings` - Platform settings and configuration
-// - `/admin/notifications` - Manage site-wide announcements and notifications

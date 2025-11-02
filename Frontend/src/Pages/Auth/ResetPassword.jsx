@@ -24,7 +24,7 @@ const ResetPasswordPage = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!passwords.newPassword.trim())
-      newErrors.newPassword = 'Password is required';
+      newErrors.newPassword = 'Password is required'
     if (!passwords.confirmPassword.trim())
       newErrors.confirmPassword = 'Password is required';
     if (passwords.newPassword.trim().length < 8 && passwords.newPassword.trim())

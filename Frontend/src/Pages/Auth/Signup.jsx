@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthAlert from '../../Components/AuthAlert';
+import axiosInstance from '../../utils/axios.util';
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -48,11 +49,10 @@ const SignupPage = () => {
 
     setLoading(true);
     try {
-      // Replace axiosInstance call with your API logic
-      // const { data: response } = await axiosInstance.post('/auth/register', formData);
-
-      // Mock response success for demo:
-      const response = { success: true };
+      const { data: response } = await axiosInstance.post(
+        '/auth/register',
+        formData
+      );
 
       if (!response || !response.success) {
         setAlert('failure');

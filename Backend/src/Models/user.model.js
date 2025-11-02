@@ -4,40 +4,59 @@ const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
       unique: true,
-      required: true
+      required: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     role: {
       type: String,
       enum: ["student", "instructor", "admin"],
-      default: "student"
+      default: "student",
     },
     profilePicture: String,
     bio: String,
+    socials: [
+      {
+        type: {
+          type: String,
+          enum: [
+            "instagram",
+            "whatsapp",
+            "twitter",
+            "mail",
+            "others",
+            "facebook",
+          ],
+          default: "others",
+          required: true,
+        },
+        username: String,
+        url: String,
+      },
+    ],
     enrollments: [
       {
         type: Schema.Types.ObjectId,
-        ref: "enrollment"
-      }
+        ref: "enrollment",
+      },
     ],
     authentication: {
       token: String,
       tokenExpiry: {
         type: Date,
-        default: new Date(Date.now() + 5 * 60 * 1000)
-      }
-    }
+        default: () => new Date(Date.now() + 5 * 60 * 1000),
+      },
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 

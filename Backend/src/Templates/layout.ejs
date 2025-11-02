@@ -66,22 +66,19 @@
             <h1>
                 <%= subject %>
             </h1>
-            <p>
-                <%= name ? `Dear ${name},` : "Hi" %>
-                <%= "Dear user," %>
-            </p>
-            <p>
-                <%= message %>
-            </p>
+         
+            <div>
+                <%- message %>
+            </div>
             <p>Best regards,<br />The FischerBon Team</p>
         </div>
         <div class="footer">
             <p>&copy;
-                <%= new Date().getFullYear() %>FischerBon. All
+                <%= new Date().getFullYear() %> FischerBon. All
                 rights reserved.
             </p>
             <p><a
-                    href="<%= process.env.BASE_URL %>">www.fischerbon.com</a>
+                    href="<%= process.env.FRONTEND_URL %>">www.fischerbon.com</a>
                 | <a
                     href="mailto:support@fischerbon.com">support@fischerbon.com</a>
             </p>

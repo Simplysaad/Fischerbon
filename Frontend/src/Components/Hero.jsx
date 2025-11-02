@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function Hero({
   hero: {
@@ -16,7 +17,7 @@ export default function Hero({
 }) {
   return (
     <section
-      className="bg-gradient-to-r from-blue-600 to-cyan-500 md:py-24 flex items-center justify-center text-white"
+      className="bg-gradient-to-r from-blue-600 to-cyan-500  py-12 md:py-24 flex items-center justify-center text-white"
       aria-label="Hero section for LMS platform"
       style={{ minWidth: '100vw', minHeight: '600px' }}
     >
@@ -32,7 +33,7 @@ export default function Hero({
 
           {/* Optional supplementary info */}
           {trustBadge && (
-            <p className="text-sm md:text-base flex gap-2 border-white bg-opacity-20 p-2 rounded inline-block drop-shadow-sm max-w-max">
+            <p className="text-sm md:text-base  gap-2 border-white bg-opacity-20 p-2 rounded inline-block drop-shadow-sm max-w-max">
               <span>
                 <Star />{' '}
               </span>
@@ -61,18 +62,17 @@ export default function Hero({
             </p>
           )}
 
-          <a
-            // href= {ctaUrl}
-            href="#waitlist"
+          <Link
+            to={ctaUrl || '/'}
             className="inline-block mt-4 bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-cyan-400 transition-colors focus:outline-none focus:ring-4 focus:ring-cyan-300 max-w-max"
             aria-label={ctaText}
           >
             {ctaText}
-          </a>
+          </Link>
         </div>
 
         {/* Image */}
-        <div className="flex-1 max-w-md md:max-w-lg h-full flex items-center justify-center">
+        <div className="flex-1 max-w-md  max-md:hidden md:max-w-lg h-full flex items-center justify-center">
           <img
             src={image}
             alt={heading}
