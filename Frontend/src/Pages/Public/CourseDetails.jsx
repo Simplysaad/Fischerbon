@@ -55,6 +55,8 @@ const CourseDetails = () => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  const [showAllLessons, setShowAllLessons] = useState(false);
+
   const location = useLocation();
 
   useEffect(() => {
@@ -90,7 +92,8 @@ const CourseDetails = () => {
     const handleEnroll = async () => {
       try {
         if (!user) {
-          navigate('/login', { state: { from: location } });
+          setIsAuthModalOpen(!isAuthModalOpen);
+          // navigate('/login', { state: { from: location } });
           return null;
         }
         const { data: response } = await axiosInstance.post(
@@ -158,6 +161,7 @@ const CourseDetails = () => {
     course.payment === 'free' ? 'Free' : `${formatCurrency(course.price)}`;
   return (
     <Layout>
+      {isAuthModalOpen && <AuthModal next={() => console.log('hello owrld')} />}
       <div className="flex max-md:flex-col  gap-3 p-4">
         <main className="md:w-[70%] shadow p-4">
           <section id="courseInfo">
@@ -201,15 +205,29 @@ const CourseDetails = () => {
             <ul className="flex flex-col gap-3">
               {!course.lessons || course.lessons.length === 0
                 ? null
-                : course.lessons?.map((lesson, idx) => (
-                    <LessonBox
-                      key={idx}
-                      idx={idx}
-                      enrollment={enrollment}
-                      course={course}
-                      lesson={lesson}
-                    />
-                  ))}
+                : course.lessons
+                    ?.slice(0, showAllLessons ? course.lessons.length : 5)
+                    .map((lesson, idx) => (
+                      <LessonBox
+                        key={idx}
+                        idx={idx}
+                        enrollment={enrollment}
+                        course={course}
+                        lesson={lesson}
+                      />
+                    ))}
+              {course.lessons.length > 5 && (
+                <li>
+                  <button
+                    className="text-blue-600"
+                    onClick={() => setShowAllLessons(!showAllLessons)}
+                  >
+                    {showAllLessons
+                      ? 'Show Less Lessons'
+                      : `Show All Lessons (${course.lessons.length})`}
+                  </button>
+                </li>
+              )}
             </ul>
           </section>
           {course.recommendations && (

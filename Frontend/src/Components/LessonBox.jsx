@@ -48,9 +48,8 @@ const LessonBox = ({ idx, enrollment, isActive, lesson, course }) => {
             (l) => l.lessonId === lesson._id
           ) ? (
             <CircleCheck color="#fff" fill="#3c3" size={16} />
-          ) : (
-            <Lock size={16} />
-          )}
+          ) : // <Lock size={16} />
+          null}
         </span>
       </li>
     </Link>

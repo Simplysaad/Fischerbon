@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  const login = async ({ email, password }) => {
+  const login = async ({ email, password }, next) => {
     const { data: response } = await axiosInstance.post('/auth/login', {
       email,
       password,
@@ -37,7 +37,8 @@ export const AuthProvider = ({ children }) => {
       const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
       const from = location.state?.from?.pathname || fallbackUrl;
 
-      navigate(from, { replace: true });
+      if (!next) navigate(from, { replace: true });
+      else return next();
     }
     return response;
   };

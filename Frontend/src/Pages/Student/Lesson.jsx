@@ -3,15 +3,10 @@ import PublicLayout from './Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
-import lessonVideo from '../../assets/test.mp4';
-import {
-  ArrowBigLeft,
-  ArrowLeft,
-  ArrowRight,
-  LucideArrowBigLeft,
-} from 'lucide-react';
-import LessonBox from '../../Components/LessonBox';
+import lessonVideo from '../../assets/test-2.mp4';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import ProfileCard from '../../Components/ProfileCard';
+import LessonList from '../../Components/LessonList';
 
 const LessonDetails = () => {
   const { courseSlug, lessonSlug } = useParams();
@@ -61,8 +56,51 @@ const LessonDetails = () => {
   }, [courseId, lessonId, user]);
 
   if (loading)
-    return <div className="text-center py-12">Loading lesson...</div>;
+    return (
+      <PublicLayout>
+        <section className="flex lg:gap-6 gap-4 px-4 py-6 flex-col md:flex-row">
+          <main className="md:w-[70%] w-[100%]">
+            <div className="mb-6 min-w-[100%] rounded">
+              <div className="md:h-[50vh] h-[30vh] w-full bg-gray-300 "></div>
+            </div>
+
+            <section className="">
+              <section id="courseInfo" className="animate-pulse">
+                <div className="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
+                <div className="h-6 bg-gray-300 rounded w-1/4 mb-4"></div>
+                <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-300 rounded w-5/6 mb-2"></div>
+              </section>
+
+              <div className="mt-12 cta 'flex' justify-between gap-2">
+                <button className="py-2 float-start flex px-4 text-green-600 rounded underline">
+                  <ArrowLeft />
+                  <span className="w-full px-12 rounded bg-gray-400 animate-pulse"></span>
+                </button>
+                <span className="py-2 float-end flex justify-start px-4 text-gray-600 animate-pulse rounded underline">
+                  <span className="w-full px-12 rounded bg-gray-400 animate-pulse"></span>
+                  <ArrowRight />
+                </span>
+              </div>
+            </section>
+          </main>
+          <aside className="w-[30%]">
+            <h2 className="text-xl font-bold py-4">
+              <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+              <div className="h-4 bg-gray-300 rounded w-5/6 mb-2"></div>
+            </h2>
+            <LessonList.LessonListSkeleton />
+            <ProfileCard.ProfileCardSkeleton />
+          </aside>
+        </section>
+      </PublicLayout>
+    );
   if (!lesson || !course)
+    // return navigate('/404');
     return <div className="text-center py-12">Lesson or course not found.</div>;
 
   const lessonIndex = course.lessons.findIndex(
@@ -87,26 +125,23 @@ const LessonDetails = () => {
 
   return (
     <PublicLayout>
-      <section className="flex lg:gap-6 gap-4 px-4 py-6 flex-col md:flex-row">
-        <main className="w-[70%]">
-          {lesson.content?.video && (
-            <div className="mb-6 min-w-[100%] border rounded">
-              {lesson.content?.video && (
-                <div className="min-h-[100%] ">
-                  <video
-                    // src={lesson.content.video}
-                    src={lessonVideo}
-                    controls
-                    className="w-full  rounded shadow"
-                    preload="metadata"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                  {/* Your browser does not support the video tag. */}
-                </div>
-              )}
+      <section className="flex lg:gap-6 gap-4  py-6 flex-col md:flex-row">
+        <main className="md:w-[70%] w-[100%]">
+          <div className="mb-6 min-w-[100%] rounded">
+            {/* {lesson.content?.video && ( */}
+            <div className="min-h-[100%] ">
+              <video
+                // src={lesson.content.video}
+                src={lessonVideo}
+                controls
+                className="w-full  rounded shadow"
+                preload="metadata"
+              >
+                Your browser does not support the video tag.
+              </video>
             </div>
-          )}
+            {/* )} */}
+          </div>
 
           <section className="">
             <h2 className="font-bold text-xl">{lesson.title}</h2>
@@ -179,21 +214,13 @@ const LessonDetails = () => {
             </div>
           </section>
         </main>
-        <aside className="w-[30%]">
+        <aside className="md:w-[30%] w-[100%]">
           <h2 className="text-xl font-bold py-4">{course.title}</h2>
-          <section className="w-full  my-6 flex flex-col gap-2">
-            {course.lessons.length > 0 &&
-              course.lessons.map((lesson, idx) => (
-                <LessonBox
-                  enrollment={enrollment}
-                  key={idx}
-                  idx={idx}
-                  isActive={lessonIndex === idx}
-                  lesson={lesson}
-                  course={course}
-                />
-              ))}
-          </section>
+          <LessonList
+            course={course}
+            enrollment={enrollment}
+            lessonIndex={lessonIndex}
+          />
           <ProfileCard user={course.instructor} />
         </aside>
       </section>
