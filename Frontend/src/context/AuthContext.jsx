@@ -35,11 +35,11 @@ export const AuthProvider = ({ children }) => {
     });
     if (response.success) {
       setUser(response.data);
-      const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
-      const from = location.state?.from?.pathname || fallbackUrl;
+      // const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
+      // const from = location.state?.from?.pathname || fallbackUrl;
 
-      if (!next) navigate(from, { replace: true });
-      else return next();
+      // if (!next) navigate(from, { replace: true });
+      // else return next();
     }
     return response;
   };

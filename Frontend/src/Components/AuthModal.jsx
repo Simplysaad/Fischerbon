@@ -5,15 +5,28 @@ import useAuth from '../context/AuthContext';
 const LoginForm = ({ next }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const { login } = useAuth();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const response = await login({ email, password }, next);
-    console.log(response);
+    try {
+      setIsLoading(true);
+      const response = await login({ email, password });
+
+      if (response) next && next();
+      console.log(response);
+    } catch (err) {
+      setError(err);
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   }
   return (
     <form onSubmit={handleSubmit} className="py-12 px-4 flex flex-col gap-4">
+      <span className="text-red-500">{error.toString()}</span>
       <div className="">
         <input
           type="email"
@@ -38,27 +51,28 @@ const LoginForm = ({ next }) => {
       </div>
       <div className="">
         <button
+          disabled={isLoading}
           type="submit"
-          className="bg-blue-600 py-2 px-4 text-white rounded w-full"
+          className={`${isLoading ? 'bg-blue-400' : 'bg-blue-600'} py-2 px-4 text-white rounded w-full`}
         >
-          Submit
+          {isLoading ? 'Submitting...' : 'Submit'}
         </button>
       </div>
     </form>
   );
 };
 
-const SignupForm = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+// const SignupForm = () => {
+//   const [name, setName] = useState('');
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    // Handle sign up submission logic here
-  }
-  return <form>{/* Signup form fields */}</form>;
-};
+//   function handleSubmit(e) {
+//     e.preventDefault();
+//     // Handle sign up submission logic here
+//   }
+//   return <form>{/* Signup form fields */}</form>;
+// };
 
 const AuthModal = ({ next, setIsAuthModalOpen }) => {
   // const [modalType, setModalType] = useState('login');
@@ -68,7 +82,7 @@ const AuthModal = ({ next, setIsAuthModalOpen }) => {
     <div className="fixed top-0  min-h-screen min-w-screen bg-gray-600 opacity-90 flex justify-center items-center">
       <div className="border bg-gray-200">
         <X className="border" onClick={() => setIsAuthModalOpen(false)} />
-        <LoginForm />
+        <LoginForm next={next} />
       </div>
     </div>
   );

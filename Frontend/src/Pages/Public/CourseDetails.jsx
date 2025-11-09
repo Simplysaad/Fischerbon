@@ -88,25 +88,25 @@ const CourseDetails = () => {
     fetchCourseDetails();
   }, [courseId, user]);
 
+  async function enroll() {
+    try {
+      const { data: response } = await axiosInstance.post(
+        `/enrollments/new/${courseId}`
+      );
+      if (!response.success)
+        throw new Error(response.message || 'Unable to enroll user');
+      window.location = response.data.authorization_url;
+    } catch (err) {
+      console.error(err);
+    }
+  }
   const EnrollButton = ({}) => {
-    const handleEnroll = async () => {
-      // try {
+    async function handleEnroll() {
       if (!user) {
         setIsAuthModalOpen(!isAuthModalOpen);
-        // navigate('/login', { state: { from: location } });
         return null;
-      }
-      //   const { data: response } = await axiosInstance.post(
-      //     `/enrollments/new/${courseId}`
-      //   );
-      //   if (!response.success)
-      //     throw new Error(response.message || 'Unable to enroll user');
-      //   window.location = response.data.authorization_url;
-      window.location = '/x';
-      // } catch (error) {
-      //   console.error(error);
-      // }
-    };
+      } else await enroll();
+    }
 
     const lastCompletedLesson = enrollment?.completedLessons
       .slice()
@@ -163,10 +163,7 @@ const CourseDetails = () => {
   return (
     <Layout>
       {isAuthModalOpen && (
-        <AuthModal
-          setIsAuthModalOpen={setIsAuthModalOpen}
-          next={() => console.log('hello owrld')}
-        />
+        <AuthModal setIsAuthModalOpen={setIsAuthModalOpen} next={enroll} />
       )}
       <div className="flex max-md:flex-col  gap-3 p-4">
         <main className="md:w-[70%] shadow p-4">
