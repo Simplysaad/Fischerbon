@@ -4,6 +4,16 @@ import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 export const AuthContext = createContext();
 
+const fetchUser = async () => {
+  try {
+    const { data: response } = await axiosInstance.get('/auth/status');
+    if (response.success) return response.data;
+    else return null;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // start with loading
@@ -11,20 +21,11 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setIsLoading(true);
-        const { data: response } = await axiosInstance.get('/auth/status');
-        if (response.success) setUser(response.data);
-        else setUser(null);
-      } catch (err) {
-        console.error(err);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUser();
+    setIsLoading(true);
+
+    fetchUser()
+      .then((data) => setUser(data))
+      .then(() => setIsLoading(false));
   }, []);
 
   const login = async ({ email, password }, next) => {

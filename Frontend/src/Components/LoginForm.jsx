@@ -1,6 +1,4 @@
-import { X } from 'lucide-react';
-import React, { useState } from 'react';
-import Input from './Input';
+import { useState } from 'react';
 import useAuth from '../context/AuthContext';
 
 const LoginForm = ({ next }) => {
@@ -14,15 +12,12 @@ const LoginForm = ({ next }) => {
     console.log(response);
   }
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border py-12 px-4 flex flex-col gap-4"
-    >
+    <form onSubmit={handleSubmit} className=" py-12 px-4 flex flex-col gap-4">
       <div className="">
         <input
           type="email"
           id="email"
-          className="p-2 rounded border focus:ring-1 w-full focus:outline-none"
+          className="p-2 rounded focus:ring-1 w-full focus:outline-none"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email Address"
@@ -52,32 +47,4 @@ const LoginForm = ({ next }) => {
   );
 };
 
-const SignupForm = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    // Handle sign up submission logic here
-  }
-  return <form>{/* Signup form fields */}</form>;
-};
-
-const AuthModal = ({ next, setIsAuthModalOpen }) => {
-  // const [modalType, setModalType] = useState('login');
-  const [loading, setLoading] = useState(false);
-
-  return (
-    <div className="fixed top-0  min-h-screen min-w-screen bg-gray-600 opacity-90 flex justify-center items-center">
-      <div className="border bg-gray-200">
-        <span className="border bg-green-900">
-          <X onClick={() => setIsAuthModalOpen(false)} />
-        </span>
-        <LoginForm />
-      </div>
-    </div>
-  );
-};
-
-export default AuthModal;
+export default LoginForm;

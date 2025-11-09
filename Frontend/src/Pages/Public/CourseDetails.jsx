@@ -90,21 +90,22 @@ const CourseDetails = () => {
 
   const EnrollButton = ({}) => {
     const handleEnroll = async () => {
-      try {
-        if (!user) {
-          setIsAuthModalOpen(!isAuthModalOpen);
-          // navigate('/login', { state: { from: location } });
-          return null;
-        }
-        const { data: response } = await axiosInstance.post(
-          `/enrollments/new/${courseId}`
-        );
-        if (!response.success)
-          throw new Error(response.message || 'Unable to enroll user');
-        window.location = response.data.authorization_url;
-      } catch (error) {
-        console.error(error);
+      // try {
+      if (!user) {
+        setIsAuthModalOpen(!isAuthModalOpen);
+        // navigate('/login', { state: { from: location } });
+        return null;
       }
+      //   const { data: response } = await axiosInstance.post(
+      //     `/enrollments/new/${courseId}`
+      //   );
+      //   if (!response.success)
+      //     throw new Error(response.message || 'Unable to enroll user');
+      //   window.location = response.data.authorization_url;
+      window.location = '/x';
+      // } catch (error) {
+      //   console.error(error);
+      // }
     };
 
     const lastCompletedLesson = enrollment?.completedLessons
@@ -161,7 +162,12 @@ const CourseDetails = () => {
     course.payment === 'free' ? 'Free' : `${formatCurrency(course.price)}`;
   return (
     <Layout>
-      {isAuthModalOpen && <AuthModal next={() => console.log('hello owrld')} />}
+      {isAuthModalOpen && (
+        <AuthModal
+          setIsAuthModalOpen={setIsAuthModalOpen}
+          next={() => console.log('hello owrld')}
+        />
+      )}
       <div className="flex max-md:flex-col  gap-3 p-4">
         <main className="md:w-[70%] shadow p-4">
           <section id="courseInfo">
