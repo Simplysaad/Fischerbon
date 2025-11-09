@@ -1,6 +1,5 @@
 import { X } from 'lucide-react';
 import React, { useState } from 'react';
-import Input from './Input';
 import useAuth from '../context/AuthContext';
 
 const LoginForm = ({ next }) => {
@@ -14,10 +13,7 @@ const LoginForm = ({ next }) => {
     console.log(response);
   }
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="border py-12 px-4 flex flex-col gap-4"
-    >
+    <form onSubmit={handleSubmit} className="py-12 px-4 flex flex-col gap-4">
       <div className="">
         <input
           type="email"
@@ -71,9 +67,7 @@ const AuthModal = ({ next, setIsAuthModalOpen }) => {
   return (
     <div className="fixed top-0  min-h-screen min-w-screen bg-gray-600 opacity-90 flex justify-center items-center">
       <div className="border bg-gray-200">
-        <span className="border bg-green-900">
-          <X onClick={() => setIsAuthModalOpen(false)} />
-        </span>
+        <X className="border" onClick={() => setIsAuthModalOpen(false)} />
         <LoginForm />
       </div>
     </div>
