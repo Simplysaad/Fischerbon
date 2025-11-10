@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, UserCircle, Lock } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthAlert from '../../Components/AuthAlert';
 import useAuth from '../../context/AuthContext';
 
@@ -13,6 +13,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const location = useLocation();
 
   const validateForm = () => {
     const newErrors = {};
@@ -37,19 +38,21 @@ const LoginPage = () => {
 
       const response = await login({ ...formData });
 
-      if (!response.success) {
-        setAlert('failure');
-        setResult({ message: response.message });
-      } else {
-        setResult({ message: response.message });
-        setAlert('success');
-      }
+      setResult({ message: response.message });
+      setAlert(response?.success ? 'success' : 'failure');
+
+      const fallbackUrl =
+        response?.data?.role === 'admin' ? '/admin/' : '/dashboard';
+      const from = location.state?.from?.pathname || fallbackUrl;
+      console.log('from', from);
+      navigate(from, { replace: true });
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left informational side */}

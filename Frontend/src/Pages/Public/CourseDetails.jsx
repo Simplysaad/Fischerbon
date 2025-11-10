@@ -46,7 +46,6 @@ const CourseDetails = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const courseId = slug.split('-').at(-1);
-
   const { user } = useAuth();
 
   const [course, setCourse] = useState(null);
@@ -54,16 +53,16 @@ const CourseDetails = () => {
   const [loading, setLoading] = useState(true);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [enrollLoading, setEnrollLoading] = useState(false);
+  const [enrollMessage, setEnrollMessage] = useState('');
 
   const [showAllLessons, setShowAllLessons] = useState(false);
-
-  const location = useLocation();
 
   useEffect(() => {
     async function fetchCourseDetails() {
       setLoading(true);
+      setEnrollMessage('');
       try {
-        // Fetch course data
         const { data: response } = await axiosInstance.get(
           `/courses/${courseId}`
         );
@@ -73,14 +72,12 @@ const CourseDetails = () => {
         setCourse(courseData);
 
         // Detect enrollment from user context enrollments array
-        if (user?.enrollments) {
-          const userEnrollment = user.enrollments.find(
-            (e) => e.courseId === courseData._id
-          );
-          setEnrollment(userEnrollment || null);
-        }
+        const userEnrollment =
+          user?.enrollments?.find((e) => e.courseId === courseData._id) || null;
+        setEnrollment(userEnrollment);
       } catch (error) {
         console.error(error);
+        setCourse(null);
       } finally {
         setLoading(false);
       }
@@ -89,66 +86,97 @@ const CourseDetails = () => {
   }, [courseId, user]);
 
   async function enroll() {
+    if (!user) {
+      // setIsAuthModalOpen(true);
+      navigate('/login?from=enrollment', {
+        state: {
+          from: {
+            pathname: `/courses/${courseId}`,
+          },
+        },
+      });
+      return;
+    }
+    setEnrollLoading(true);
+    setEnrollMessage('');
     try {
       const { data: response } = await axiosInstance.post(
         `/enrollments/new/${courseId}`
       );
-      if (!response.success)
-        throw new Error(response.message || 'Unable to enroll user');
-      window.location = response.data.authorization_url;
+      if (!response.success) {
+        return setEnrollMessage(response.message || 'Enrollment failed');
+      }
+
+      if (response.message?.toLowerCase() === 'user is already enrolled') {
+        // setEnrollment(user.enrollments.find((e) => e.courseId === courseId));
+        setEnrollMessage('You are already enrolled in this course.');
+
+        console.log(response?.data);
+        setEnrollment(response?.data);
+      } else if (response.message?.toLowerCase() === 'payment initialized') {
+        window.location = response.data.authorization_url;
+      } else {
+        setEnrollMessage(response.message || 'Enrollment succeeded');
+      }
     } catch (err) {
       console.error(err);
+      // setEnrollMessage(err.message || 'An error occurred during enrollment.');
+    } finally {
+      setEnrollLoading(false);
     }
   }
-  const EnrollButton = ({}) => {
-    async function handleEnroll() {
-      if (!user) {
-        setIsAuthModalOpen(!isAuthModalOpen);
-        return null;
-      } else await enroll();
-    }
 
+  const EnrollButton = () => {
     const lastCompletedLesson = enrollment?.completedLessons
       .slice()
-      .sort((a, b) => a.completedAt - b.completedAt)
+      .sort((a, b) => new Date(a.completedAt) - new Date(b.completedAt))
       ?.pop();
 
+    if (enrollLoading) {
+      return (
+        <button
+          disabled={true}
+          className="px-4 py-2 bg-blue-400 text-white rounded cursor-not-allowed"
+        >
+          Processing...
+        </button>
+      );
+    }
+
+    if (enrollment) {
+      return (
+        <Link
+          to={`/courses/${course.slug}/lessons/${lastCompletedLesson?.lessonId || course.lessons[0]?.slug}`}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Continue Learning
+        </Link>
+      );
+    }
+
     return (
-      <div className="text-nowrap bg-blue-500 hover:bg-blue-600 text-white px-2 py-2 rounded">
-        {enrollment ? (
-          <Link
-            to={`/courses/${course.slug}/lessons/${lastCompletedLesson?.lessonId || course.lessons[0]?.slug}`}
-          >
-            Continue Learning
-          </Link>
-        ) : (
-          <button onClick={handleEnroll}>Enroll now</button>
-        )}
-      </div>
+      <button
+        onClick={enroll}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Enroll now
+      </button>
     );
   };
 
-  if (loading) {
-    return <CourseDetailsSkeleton />;
-  }
+  if (loading) return <CourseDetailsSkeleton />;
 
   if (!course) {
     navigate('/404');
-    return null; //<div className="text-center py-12">Course not found.</div>;
+    return null;
   }
 
-  // Calculate completed lessons IDs and progress percentage
-  let completedLessonIds = [];
-  if (Array.isArray(enrollment?.completedLessons)) {
-    completedLessonIds =
-      enrollment.completedLessons.map((l) => l.lessonId) || [];
-  }
-
+  const completedLessonIds =
+    enrollment?.completedLessons?.map((l) => l.lessonId) || [];
   const progressPercent = course.lessons
-    ? (completedLessonIds.length / course.lessons?.length) * 100
+    ? (completedLessonIds.length / course.lessons.length) * 100
     : 0;
 
-  // Calculate average rating
   const avgRating =
     course.ratings && course.ratings.length > 0
       ? (
@@ -157,63 +185,78 @@ const CourseDetails = () => {
         ).toFixed(1)
       : 'No ratings';
 
-  // Format price display
   const formattedPrice =
-    course.payment === 'free' ? 'Free' : `${formatCurrency(course.price)}`;
+    course.payment === 'free' ? 'Free' : formatCurrency(course.price);
+
   return (
     <Layout>
       {isAuthModalOpen && (
         <AuthModal setIsAuthModalOpen={setIsAuthModalOpen} next={enroll} />
       )}
-      <div className="flex max-md:flex-col  gap-3 p-4">
+      <div className="flex max-md:flex-col gap-3 p-4">
         <main className="md:w-[70%] shadow p-4">
           <section id="courseInfo">
-            <div className="flex  max-md:flex-col gap-3 items-start justify-between">
+            <div className="flex max-md:flex-col gap-3 items-start justify-between">
               <h1 className="text-[1.5rem]">{course.title}</h1>
               <div className="max-md:hidden">
                 <EnrollButton />
               </div>
             </div>
+
             <div className="flex gap-3 py-4 text-gray-700 text-[1rem] items-center justify-start">
-              <span className="rating items-center  gap-1 flex">
+              <span className="rating items-center gap-1 flex">
                 <Star fill="#ffa" size={12} className="text-yellow-400" />
                 <span>{avgRating}</span>
               </span>
               <span className="price">{formattedPrice}</span>
             </div>
+
             <div className="md:hidden my-4 w-full flex">
               <EnrollButton />
             </div>
+
+            {enrollMessage && (
+              <div
+                className={`my-2 text-sm font-semibold ${
+                  enrollMessage.includes('error') ||
+                  enrollMessage.includes('failed')
+                    ? 'text-red-600'
+                    : 'text-green-600'
+                }`}
+              >
+                {enrollMessage}
+              </div>
+            )}
+
             <div className="description">
-              <span>
-                <p>
-                  {isDescriptionExpanded
-                    ? course.description
-                    : course.description.split(' ').splice(0, 50).join(' ') +
-                      (course.description.split(' ').length > 50 ? '...' : '')}
-                  <span
-                    className="text-blue-600 cursor-pointer"
-                    onClick={() =>
-                      setIsDescriptionExpanded(!isDescriptionExpanded)
-                    }
-                  >
-                    {isDescriptionExpanded ? ' Show Less' : ' Read More'}
-                  </span>
-                </p>
-              </span>
+              <p>
+                {isDescriptionExpanded
+                  ? course.description
+                  : course.description.split(' ').splice(0, 50).join(' ') +
+                    (course.description.split(' ').length > 50 ? '...' : '')}
+                <span
+                  className="text-blue-600 cursor-pointer"
+                  onClick={() =>
+                    setIsDescriptionExpanded(!isDescriptionExpanded)
+                  }
+                >
+                  {isDescriptionExpanded ? ' Show Less' : ' Read More'}
+                </span>
+              </p>
             </div>
           </section>
+
           <section id="lessons" className="my-4">
             <h2 className="text-xl mb-2">Lessons</h2>
             <ul className="flex flex-col gap-3">
               {!course.lessons || course.lessons.length === 0
                 ? null
                 : course.lessons
-                    ?.slice(0, showAllLessons ? course.lessons.length : 5)
+                    .slice(0, showAllLessons ? course.lessons.length : 5)
                     .map((lesson, idx) => (
                       <LessonBox
-                        key={idx}
                         idx={idx}
+                        key={lesson._id}
                         enrollment={enrollment}
                         course={course}
                         lesson={lesson}
@@ -233,19 +276,21 @@ const CourseDetails = () => {
               )}
             </ul>
           </section>
+
           {course.recommendations && (
             <section id="recommendations" className="my-4 py-6 w-full ">
               <h2 className="text-2xl mb-2">Recommendations</h2>
               <ul className="flex gap-4 overflow-scroll w-full">
-                {course.recommendations.map((course, idx) => (
-                  <li key={idx}>
-                    <CourseCard course={course} />
+                {course.recommendations.map((recommendation) => (
+                  <li key={recommendation._id}>
+                    <CourseCard course={recommendation} />
                   </li>
                 ))}
               </ul>
             </section>
           )}
         </main>
+
         <aside className="md:w-[30%] flex-1">
           <ProfileCard user={course.instructor} />
           <section id="extra"></section>

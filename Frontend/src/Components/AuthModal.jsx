@@ -11,78 +11,74 @@ const LoginForm = ({ next }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setError('');
     try {
       setIsLoading(true);
       const response = await login({ email, password });
-
       if (response) next && next();
-      console.log(response);
     } catch (err) {
-      setError(err);
-      console.error(err);
+      setError(err.message || 'Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
   }
+
   return (
-    <form onSubmit={handleSubmit} className="py-12 px-4 flex flex-col gap-4">
-      <span className="text-red-500">{error.toString()}</span>
-      <div className="">
-        <input
-          type="email"
-          id="email"
-          className="p-2 rounded border focus:ring-1 w-full focus:outline-none"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email Address"
-        />
-        {/* <label htmlFor="email">Email Address</label> */}
-      </div>
-      <div className="">
-        <input
-          type="password"
-          id="password"
-          className="p-2 rounded border focus:ring-1 w-full focus:outline-none"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-        />
-        {/* <label htmlFor="email">Password</label> */}
-      </div>
-      <div className="">
-        <button
-          disabled={isLoading}
-          type="submit"
-          className={`${isLoading ? 'bg-blue-400' : 'bg-blue-600'} py-2 px-4 text-white rounded w-full`}
-        >
-          {isLoading ? 'Submitting...' : 'Submit'}
-        </button>
-      </div>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-6 p-6 w-full max-w-md"
+    >
+      {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+      <input
+        type="email"
+        required
+        placeholder="Email Address"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+      <input
+        type="password"
+        required
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+      />
+      <button
+        type="submit"
+        disabled={isLoading}
+        className={`w-full py-3 rounded-md text-white font-semibold ${
+          isLoading
+            ? 'bg-blue-400 cursor-not-allowed'
+            : 'bg-blue-600 hover:bg-blue-700'
+        } transition`}
+      >
+        {isLoading ? 'Signing In...' : 'Sign In'}
+      </button>
     </form>
   );
 };
 
-// const SignupForm = () => {
-//   const [name, setName] = useState('');
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-
-//   function handleSubmit(e) {
-//     e.preventDefault();
-//     // Handle sign up submission logic here
-//   }
-//   return <form>{/* Signup form fields */}</form>;
-// };
-
 const AuthModal = ({ next, setIsAuthModalOpen }) => {
-  // const [modalType, setModalType] = useState('login');
-  const [loading, setLoading] = useState(false);
-
   return (
-    <div className="fixed top-0  min-h-screen min-w-screen bg-gray-600 opacity-90 flex justify-center items-center">
-      <div className="border bg-gray-200">
-        <X className="border" onClick={() => setIsAuthModalOpen(false)} />
-        <LoginForm next={next} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+      <div className="relative bg-white rounded-lg shadow-lg w-full max-w-md mx-4">
+        <button
+          aria-label="Close modal"
+          onClick={() => setIsAuthModalOpen(false)}
+          className="absolute top-3 right-3 p-1 text-gray-600 hover:text-gray-900 transition"
+        >
+          <X size={20} />
+        </button>
+        <header className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800">
+            Sign in to your account
+          </h2>
+        </header>
+        <section className="px-6 py-6">
+          <LoginForm next={next} />
+        </section>
       </div>
     </div>
   );

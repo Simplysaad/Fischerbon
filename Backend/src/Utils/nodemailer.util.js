@@ -17,70 +17,35 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// export default async function sendEmail(emailOptions) {
-//   try {
-//     const { to, subject, template, data, message } = emailOptions;
-//     const templateOptions = {
-//       subject,
-//       logoUrl: `${process.env.BASE_URL}/Images/fischerbon-logo.png`,
-//       supportEmail: "support@fischerbon.com",
-//     };
-//     if (template && data) {
-//       let templatePath = path.join(
-//         __dirname,
-//         "..",
-//         "Templates",
-//         `${template}.ejs`
-//       );
-//       let htmlMessage = await ejs.renderFile(templatePath, data);
-//       console.log(data);
-//       templateOptions.message = htmlMessage;
-//     } else {
-//       templateOptions.message = message;
-//     }
-
-//     const templatePath = path.join(__dirname, "..", "Templates", "layout.ejs");
-
-//     const emailHtml = await ejs.renderFile(templatePath, templateOptions);
-
-//     // Send email
-//     await transporter.sendMail({
-//       from: '"Engr. Iskeel" <noreply@fischerbon.com>',
-//       to,
-//       subject,
-//       html: emailHtml,
-//     });
-
-//     console.log(`Email sent successfully to ${to}`);
-//   } catch (error) {
-//     console.error("Failed to send email:", error.message);
-//     throw new Error(`Failed to send email: ${error.message}`);
-//   }
-// }
-
 export default async function sendEmail(emailOptions) {
-  const dir = path.join(__dirname, "..", "Templates");
-  console.log(dir);
+  const templatesDir = path.join(__dirname, "..", "Templates");
   try {
     const { to, subject, template, data = {}, message } = emailOptions;
-    const layoutOptions = {
+
+    // Prepare shared data for both templates
+    const sharedData = {
       subject,
       logoUrl: `${process.env.BASE_URL}/Images/fischerbon-logo.png`,
       supportEmail: "support@fischerbon.com",
       ...data,
     };
 
-    if (template) {
-      let templatePath = path.join(dir, `${template}.ejs`);
+    let htmlMessage;
 
-      let htmlMessage = await ejs.renderFile(templatePath, { name: "saad" });
-      layoutOptions.message = htmlMessage;
+    if (template) {
+      const templatePath = path.join(templatesDir, `${template}.ejs`);
+      // Render the custom template with shared data
+      htmlMessage = await ejs.renderFile(templatePath, sharedData);
     } else {
-      layoutOptions.message = message;
+      htmlMessage = message || "";
     }
 
-    const layoutPath = path.join(dir, "layout.ejs");
-    const emailHtml = await ejs.renderFile(layoutPath, layoutOptions);
+    // Pass shared data plus rendered message to layout.ejs
+    const layoutPath = path.join(templatesDir, "layout.ejs");
+    const emailHtml = await ejs.renderFile(layoutPath, {
+      ...sharedData,
+      message: htmlMessage, // injected as HTML partial
+    });
 
     await transporter.sendMail({
       from: '"Engr. Iskeel" <noreply@fischerbon.com>',
@@ -89,6 +54,6 @@ export default async function sendEmail(emailOptions) {
       html: emailHtml,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Error sending email:", err);
   }
 }

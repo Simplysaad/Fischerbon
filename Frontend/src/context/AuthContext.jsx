@@ -35,10 +35,11 @@ export const AuthProvider = ({ children }) => {
     });
     if (response.success) {
       setUser(response.data);
-      // const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
-      // const from = location.state?.from?.pathname || fallbackUrl;
+      const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
+      const from = location.state?.from?.pathname || fallbackUrl;
 
-      // if (!next) navigate(from, { replace: true });
+      // if (!next)
+      navigate(from, { replace: true });
       // else return next();
     }
     return response;
@@ -51,6 +52,8 @@ export const AuthProvider = ({ children }) => {
       fullName,
       role,
     });
+
+    console.log('register response', response);
     if (response.success) {
       setUser(response.data);
       const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';

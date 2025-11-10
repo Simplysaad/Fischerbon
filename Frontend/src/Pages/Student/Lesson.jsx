@@ -3,7 +3,7 @@ import PublicLayout from './Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
-import lessonVideo from '../../assets/test-2.mp4';
+import lessonVideo from '../../assets/presspull.mp4';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import ProfileCard from '../../Components/ProfileCard';
 import LessonList from '../../Components/LessonList';
