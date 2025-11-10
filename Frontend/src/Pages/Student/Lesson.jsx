@@ -121,7 +121,7 @@ const LessonDetails = () => {
   const isCompleted = enrollment?.completedLessons?.some(
     (cl) => cl.lessonId === lessonId
   );
-  const lessonVideo = '/video/presspull.mp4';
+  const lessonVideo = '/video/test.mp4';
 
   return (
     <PublicLayout>
