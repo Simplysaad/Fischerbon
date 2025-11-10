@@ -1,15 +1,15 @@
 URGENT
 
 - Finish work on authModal
-  - To reduce steps in sign up process for guests
-  - after clicking "enroll now", normally navigate to checkout,
-  - but if not logged in, show authModal
-  - Then navigate to checkout
+- To reduce steps in sign up process for guests
+- after clicking "enroll now", normally navigate to checkout,
+- but if not logged in, show authModal
+- Then navigate to checkout
 - Refactor the loading component
 
 LONG TERM
 
-- Implement Ai support, for students to ask questions when stuck
+- Implement AI support, for students to ask questions when stuck
 
 COMPLETED
 

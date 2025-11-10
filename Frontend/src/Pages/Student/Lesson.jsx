@@ -3,7 +3,6 @@ import PublicLayout from './Layout';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/axios.util';
 import useAuth from '../../context/AuthContext';
-import lessonVideo from '../../assets/presspull.mp4';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import ProfileCard from '../../Components/ProfileCard';
 import LessonList from '../../Components/LessonList';
@@ -122,6 +121,7 @@ const LessonDetails = () => {
   const isCompleted = enrollment?.completedLessons?.some(
     (cl) => cl.lessonId === lessonId
   );
+  const lessonVideo = '/video/presspull.mp4';
 
   return (
     <PublicLayout>

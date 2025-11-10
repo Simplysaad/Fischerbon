@@ -1,5 +1,4 @@
 import React from 'react';
-import ProfileImage from '../assets/autocadImage.jpg';
 import { Facebook, Icon, Instagram, Phone, Star, Twitter } from 'lucide-react';
 import EmptyMessage from './EmptyMessage';
 
