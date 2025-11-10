@@ -1,9 +1,5 @@
 import React from 'react';
 
-const dotStyle = (delay) => ({
-  animationDelay: delay,
-});
-
 // Spinner keyframes for pulsing dots
 const styles = `
 @keyframes pulse {
@@ -50,7 +46,7 @@ const Loading = ({
     height: dot,
     margin: dot / 2,
     borderRadius: '50%',
-    backgroundColor: '#fff', // cyan-500
+    backgroundColor: '#06b6d4',
     display: 'inline-block',
     animationName: 'pulse',
     animationDuration: '1.4s',
@@ -65,7 +61,7 @@ const Loading = ({
     left: 0,
     width: '100vw',
     height: '100vh',
-    backgroundColor: 'rgba(14, 165, 233, 1)', // translucent cyan-500
+    backgroundColor: 'rgba(14, 165, 233, .8)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

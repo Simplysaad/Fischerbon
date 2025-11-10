@@ -8,8 +8,17 @@ const LoginForm = ({ next }) => {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const response = await login({ email, password }, next);
-    console.log(response);
+
+    setError('');
+    setIsLoading(true);
+    try {
+      const response = await login({ email, password }, next);
+      // Handle success (e.g., redirect is likely handled by login function)
+    } catch (err) {
+      setError(err.message || 'Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   }
   return (
     <form onSubmit={handleSubmit} className=" py-12 px-4 flex flex-col gap-4">
@@ -19,6 +28,7 @@ const LoginForm = ({ next }) => {
           id="email"
           className="p-2 rounded focus:ring-1 w-full focus:outline-none"
           value={email}
+          required
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Email Address"
         />
@@ -32,15 +42,19 @@ const LoginForm = ({ next }) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
+          required
+          autoComplete="current-password"
         />
         {/* <label htmlFor="email">Password</label> */}
       </div>
+      {error && <div className="text-red-600 text-sm">{error}</div>}
       <div className="">
         <button
           type="submit"
-          className="bg-blue-600 py-2 px-4 text-white rounded w-full"
+          disabled={isLoading}
+          className="bg-blue-600 py-2 px-4 text-white rounded w-full disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Submit
+          {isLoading ? 'Logging in...' : 'Submit'}
         </button>
       </div>
     </form>

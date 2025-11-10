@@ -61,6 +61,8 @@ const SignupPage = () => {
       }
     } catch (err) {
       console.error(err);
+      setAlert('network');
+      setResult({ message: err.message || 'An unexpected error occurred' });
     } finally {
       setLoading(false);
     }

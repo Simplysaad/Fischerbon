@@ -40,14 +40,17 @@ const LoginPage = () => {
 
       setResult({ message: response.message });
       setAlert(response?.success ? 'success' : 'failure');
-
-      const fallbackUrl =
-        response?.data?.role === 'admin' ? '/admin/' : '/dashboard';
-      const from = location.state?.from?.pathname || fallbackUrl;
-      console.log('from', from);
-      navigate(from, { replace: true });
+      if (response?.success) {
+        const fallbackUrl =
+          response?.data?.role === 'admin' ? '/admin/' : '/dashboard';
+        const from = location.state?.from?.pathname || fallbackUrl;
+        console.log('from', from);
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       console.error(err);
+      setResult({ message: err.message || 'An unexpected error occurred' });
+      setAlert('failure');
     } finally {
       setLoading(false);
     }

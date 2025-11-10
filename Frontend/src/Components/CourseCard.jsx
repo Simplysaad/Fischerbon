@@ -32,9 +32,9 @@ const CourseCard = ({ course }) => {
           <span className="card-level">{formatCurrency(course.price)}</span>
         </span>
         <Link to={`/courses/${course.slug || course._id}`}>
-          <button className="enroll-button w-full  px-4 py-2 my-4 hover:bg-blue-600 focus:bg-blue-600 text-white  bg-blue-500 rounded">
+          <span className="enroll-button w-full  px-4 py-2 my-4 hover:bg-blue-600 focus:bg-blue-600 text-white  bg-blue-500 rounded">
             Enroll Now
-          </button>
+          </span>
         </Link>
       </div>
     </div>

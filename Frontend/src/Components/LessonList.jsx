@@ -4,7 +4,8 @@ import LessonBox from './LessonBox';
 function LessonList({ course, enrollment, lessonIndex }) {
   const [showAll, setShowAll] = useState(false);
 
-  // Calculate lessons to show depending on showAll toggle
+  if (!course || !course.lessons) return null;
+
   const lessonsToShow = showAll
     ? course.lessons
     : course.lessons.slice(
@@ -14,7 +15,6 @@ function LessonList({ course, enrollment, lessonIndex }) {
           : course.lessons.length
       );
 
-  // The mapping index from the original lessons array, to correctly mark active
   const startIndex = showAll ? 0 : lessonIndex > 2 ? lessonIndex - 2 : 0;
 
   return (
@@ -33,12 +33,12 @@ function LessonList({ course, enrollment, lessonIndex }) {
             />
           );
         })}
-      <p
-        className="text-blue-500 underline text-sm mt-2"
+      <button
+        className="text-blue-500 underline text-sm mt-2 cursor-pointer bg-transparent border-none p-0"
         onClick={() => setShowAll(!showAll)}
       >
         {showAll ? 'Show Less' : 'Load All'}
-      </p>
+      </button>
     </section>
   );
 }
@@ -46,8 +46,8 @@ function LessonList({ course, enrollment, lessonIndex }) {
 LessonList.LessonListSkeleton = () => {
   return (
     <section className="w-full my-6 flex flex-col gap-2">
-      {[...Array(5)].map(() => {
-        return <LessonBox.LessonBoxSkeleton />;
+      {[...Array(5)].map((_, idx) => {
+        return <LessonBox.LessonBoxSkeleton key={idx} />;
       })}
     </section>
   );

@@ -33,6 +33,14 @@ export default async function sendEmail(emailOptions) {
     let htmlMessage;
 
     if (template) {
+      // Prevent path traversal by ensuring template doesn't contain path separators
+      if (
+        template.includes("..") ||
+        template.includes("/") ||
+        template.includes("\\")
+      ) {
+        throw new Error("Invalid template name");
+      }
       const templatePath = path.join(templatesDir, `${template}.ejs`);
       // Render the custom template with shared data
       htmlMessage = await ejs.renderFile(templatePath, sharedData);
@@ -45,9 +53,6 @@ export default async function sendEmail(emailOptions) {
     const emailHtml = await ejs.renderFile(layoutPath, {
       ...sharedData,
       message: htmlMessage, // injected as HTML partial
-    });
-
-    await transporter.sendMail({
       from: '"Engr. Iskeel" <noreply@fischerbon.com>',
       to,
       subject,
@@ -55,5 +60,6 @@ export default async function sendEmail(emailOptions) {
     });
   } catch (err) {
     console.error("Error sending email:", err);
+    throw err;
   }
 }

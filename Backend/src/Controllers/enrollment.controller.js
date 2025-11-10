@@ -10,7 +10,7 @@ import User from "../Models/user.model.js";
 export const createEnrollment = async (req, res, next) => {
   try {
     // check if logged in
-    if (!req.user && !req.body) {
+    if (!req.user) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized - user not logged in",

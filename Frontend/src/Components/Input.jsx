@@ -1,7 +1,12 @@
 import React from 'react';
 
 const Input = ({ type, value, onChange, error, label, placeholder }) => {
-  const name = label.split(' ').join('').toLowerCase();
+  const name =
+    label
+      ?.split(' ')
+      .join('')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '') || 'input';
   return (
     <div>
       <label

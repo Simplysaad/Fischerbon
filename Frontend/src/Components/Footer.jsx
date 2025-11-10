@@ -114,12 +114,12 @@ const Footer = () => {
           </ul>
         </nav>
       </div>
-      <div
+      <button
         className="fixed right-0 bottom-0 cursor-pointer z-10 bg-blue-400 p-2 rounded-full text-white hover:bg-blue-500"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
       >
         <ArrowBigUp size={24} />
-      </div>
+      </button>
       <div className="mt-12 border-t border-cyan-400 pt-6 text-center text-cyan-300 text-sm">
         © {new Date().getFullYear()} AutoCAD LMS. All rights reserved.
       </div>

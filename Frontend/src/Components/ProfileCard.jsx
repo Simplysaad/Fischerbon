@@ -6,12 +6,15 @@ const ProfileCard = ({ user = null }) => {
   if (!user)
     return <EmptyMessage message={'Instructor details Not avilable'} />;
 
-  const userInitials = user.name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase();
-  const color = '#000'; //  `#${user._id.slice(-6)}`;
+  const userInitials =
+    (user.name || '')
+      .split(' ')
+      .filter((n) => n.length > 0)
+      .map((n) => n[0])
+      .join('')
+      .toUpperCase() || '?';
+
+  const color = `#${user._id.slice(-6)}`;
   console.log(color);
 
   return (
@@ -29,7 +32,7 @@ const ProfileCard = ({ user = null }) => {
             />
           ) : (
             <div
-              className={`flex justify-center font-extrabold items-center w-[3rem] h-[3rem] bg-[#000000] rounded-full`}
+              className={`flex justify-center font-extrabold items-center w-[3rem] h-[3rem] bg-[${color}] rounded-full`}
             >
               <p className="text-center text-3xl text-white">{userInitials}</p>
             </div>

@@ -3,20 +3,18 @@ import { useLocation } from 'react-router-dom';
 
 function ScrollToAnchor() {
   const location = useLocation();
-  const lastHash = useRef('');
 
   useEffect(() => {
     if (location.hash) {
-      lastHash.current = location.hash.slice(1); // remove #
-    }
+      const id = location.hash.slice(1);
+      const el = documnt.getElementById(id);
 
-    if (lastHash.current) {
-      const el = document.getElementById(lastHash.current);
       if (el) {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
           lastHash.current = '';
         }, 100);
+        return () => clearTimeout(timer);
       }
     }
   }, [location]);

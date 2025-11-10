@@ -69,13 +69,15 @@ export const postRegister = async (req, res, next) => {
       httpOnly: true,
     });
 
-    await sendEmail({
+    sendEmail({
       to: email,
       subject: "Welcome to Fischerbon LMS!",
       template: "welcomeEmail",
       data: {
         name,
       },
+    }).catch((err) => {
+      console.error("failed to send email:", err);
     });
 
     return res.status(201).json({

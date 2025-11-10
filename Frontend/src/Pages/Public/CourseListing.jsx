@@ -73,6 +73,7 @@ const CoursesPage = () => {
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [expandSearch, setExpandSearch] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function fetchCourses() {
@@ -141,13 +142,22 @@ const CoursesPage = () => {
           id="courseList"
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {filteredCourses.length === 0
-            ? [1, 2, 3].map((_, index) => (
-                <CourseCard.CourseCardSkeleton key={index} />
-              ))
-            : filteredCourses.map((course) => (
-                <CourseCard key={course._id} course={course} />
-              ))}
+          {isLoading ? (
+            [1, 2, 3].map((_, index) => (
+              <CourseCard.CourseCardSkeleton key={index} />
+            ))
+          ) : filteredCourses.length === 0 ? (
+            <div className="col-span-full text-center py-12 text-gray-500">
+              <p className="text-xl">No courses found.</p>
+              <p className="text-sm mt-2">
+                Try adjusting your search or filters.
+              </p>
+            </div>
+          ) : (
+            filteredCourses.map((course) => (
+              <CourseCard key={course._id} course={course} />
+            ))
+          )}
         </div>
       </section>
     </PublicLayout>

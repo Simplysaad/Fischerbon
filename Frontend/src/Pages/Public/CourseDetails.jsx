@@ -91,7 +91,7 @@ const CourseDetails = () => {
       navigate('/login?from=enrollment', {
         state: {
           from: {
-            pathname: `/courses/${courseId}`,
+            pathname: `/courses/${slug}`,
           },
         },
       });
@@ -114,9 +114,19 @@ const CourseDetails = () => {
         console.log(response?.data);
         setEnrollment(response?.data);
       } else if (response.message?.toLowerCase() === 'payment initialized') {
-        window.location = response.data.authorization_url;
+        if (response.data?.authorization_url) {
+          window.location = response.data.authorization_url;
+        } else {
+          setEnrollMessage(
+            'Payment initialization failed: missing redirect URL'
+          );
+        }
       } else {
         setEnrollMessage(response.message || 'Enrollment succeeded');
+        const newEnrollment =
+          response?.data ||
+          user.enrollments?.find((e) => e.courseId === courseId);
+        if (newEnrollment) setEnrollment(newEnrollment);
       }
     } catch (err) {
       console.error(err);

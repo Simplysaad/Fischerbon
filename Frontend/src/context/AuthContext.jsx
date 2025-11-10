@@ -11,6 +11,7 @@ const fetchUser = async () => {
     else return null;
   } catch (err) {
     console.error(err);
+    return null;
   }
 };
 
@@ -25,7 +26,7 @@ export const AuthProvider = ({ children }) => {
 
     fetchUser()
       .then((data) => setUser(data))
-      .then(() => setIsLoading(false));
+      .finally(() => setIsLoading(false));
   }, []);
 
   const login = async ({ email, password }, next) => {
@@ -35,7 +36,8 @@ export const AuthProvider = ({ children }) => {
     });
     if (response.success) {
       setUser(response.data);
-      const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
+      const fallbackUrl =
+        response.data?.role === 'admin' ? '/admin/' : '/dashboard';
       const from = location.state?.from?.pathname || fallbackUrl;
 
       // if (!next)
@@ -56,7 +58,8 @@ export const AuthProvider = ({ children }) => {
     console.log('register response', response);
     if (response.success) {
       setUser(response.data);
-      const fallbackUrl = user?.role === 'admin' ? '/admin/' : '/dashboard';
+      const fallbackUrl =
+        response.data?.role === 'admin' ? '/admin/' : '/dashboard';
       const from = location.state?.from?.pathname || fallbackUrl;
 
       navigate(from, { replace: true });

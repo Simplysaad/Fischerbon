@@ -95,16 +95,16 @@ Hero.HeroSkeleton = () => {
       <div className="max-w-7xl w-11/12 h-full mx-auto flex flex-col md:flex-row items-center gap-10">
         {/* Text Content Skeleton */}
         <div className="flex-1 max-w-xl h-full flex flex-col justify-center space-y-6">
-          <div className="w-3/4 h-10 bg-gray-300 rounded animate-pulse"></div>
-          <div className="w-full h-6 bg-gray-300 rounded animate-pulse"></div>
-          <div className="w-5/6 h-6 bg-gray-300 rounded animate-pulse"></div>
-          <div className="w-2/3 h-6 bg-gray-300 rounded animate-pulse"></div>
-          <div className="w-1/2 h-10 bg-gray-300 rounded animate-pulse mt-4"></div>
+          <div className="w-3/4 h-10 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-full h-6 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-5/6 h-6 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-2/3 h-6 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-1/2 h-10 bg-white/30 rounded animate-pulse mt-4"></div>
         </div>
 
         {/* Image Skeleton */}
         <div className="flex-1 max-w-md  max-md:hidden md:max-w-lg h-full flex items-center justify-center">
-          <div className="w-full h-64 bg-gray-300 rounded-xl animate-pulse"></div>
+          <div className="w-full h-64 bg-white/30 rounded-xl animate-pulse"></div>
         </div>
       </div>
     </section>

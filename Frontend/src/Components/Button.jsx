@@ -1,9 +1,9 @@
 import React from 'react';
 
-const Button = ({ text, disabled = false, onClick }) => {
+const Button = ({ text, disabled = false, onClick, type = 'button' }) => {
   return (
     <button
-      type="submit"
+      type={type}
       disabled={disabled}
       onClick={onClick}
       className={`py-3 px-5 ${disabled ? 'bg-accent cursor-not-allowed' : 'bg-primary hover:bg-primaryHover cursor-pointer'} rounded-sm font-medium text-sm leading-6 text-white ease-in-out duration-300 mt-2`}

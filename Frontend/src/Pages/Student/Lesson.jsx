@@ -75,7 +75,7 @@ const LessonDetails = () => {
                 <div className="h-4 bg-gray-300 rounded w-5/6 mb-2"></div>
               </section>
 
-              <div className="mt-12 cta 'flex' justify-between gap-2">
+              <div className="mt-12 cta flex justify-between gap-2">
                 <button className="py-2 float-start flex px-4 text-green-600 rounded underline">
                   <ArrowLeft />
                   <span className="w-full px-12 rounded bg-gray-400 animate-pulse"></span>
@@ -87,7 +87,7 @@ const LessonDetails = () => {
               </div>
             </section>
           </main>
-          <aside className="w-[30%]">
+          <aside className="md:w-[30%] w-[100%]">
             <h2 className="text-xl font-bold py-4">
               <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
               <div className="h-4 bg-gray-300 rounded w-5/6 mb-2"></div>
@@ -100,7 +100,11 @@ const LessonDetails = () => {
     );
   if (!lesson || !course)
     // return navigate('/404');
-    return <div className="text-center py-12">Lesson or course not found.</div>;
+    return (
+      <PublicLayout>
+        <div className="text-center py-12">Lesson or course not found.</div>
+      </PublicLayout>
+    );
 
   const lessonIndex = course.lessons.findIndex(
     (l) => l._id === lessonId
