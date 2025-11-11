@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthAlert from '../../Components/AuthAlert';
-import axiosInstance from '../../utils/axios.util';
+import useAuth from '../../context/AuthContext';
 
 const SignupPage = () => {
-  const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -19,6 +19,7 @@ const SignupPage = () => {
   const [loading, setLoading] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [alert, setAlert] = useState('');
+  const [result, setResult] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
@@ -44,27 +45,24 @@ const SignupPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
-    setLoading(true);
     try {
-      const { data: response } = await axiosInstance.post(
-        '/auth/register',
-        formData
-      );
+      setLoading(true);
 
-      if (!response || !response.success) {
+      const response = await register({ ...formData });
+
+      if (!response.success) {
         setAlert('failure');
-        setEmailError('An account with that email already exists!');
+        setResult({ message: response.message });
       } else {
+        setResult({ message: response.message });
         setAlert('success');
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 1500);
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       setAlert('network');
+      setResult({ message: err.message || 'An unexpected error occurred' });
     } finally {
       setLoading(false);
     }

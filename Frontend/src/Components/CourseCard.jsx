@@ -32,10 +32,27 @@ const CourseCard = ({ course }) => {
           <span className="card-level">{formatCurrency(course.price)}</span>
         </span>
         <Link to={`/courses/${course.slug || course._id}`}>
-          <button className="enroll-button w-full  px-4 py-2 my-4 border hover:bg-blue-500 focus:bg-blue-500 focus:text-white hover:text-white  border-blue-500 rounded">
+          <span className="block enroll-button text-center  w-full  px-4 py-2 my-4 hover:bg-blue-600 focus:bg-blue-600 text-white  bg-blue-500 rounded">
             Enroll Now
-          </button>
+          </span>
         </Link>
+      </div>
+    </div>
+  );
+};
+
+CourseCard.CourseCardSkeleton = () => {
+  return (
+    <div className="shadow w-[100%] p-4">
+      <div className="card-image w-full overflow-hidden">
+        <div className="w-full h-40 bg-gray-300 animate-pulse"></div>
+      </div>
+      <div className="card-content py-4">
+        <div className="w-3/4 h-6 bg-gray-300 animate-pulse mb-2"></div>
+        <div className="w-full h-4 bg-gray-300 animate-pulse mb-2"></div>
+        <div className="w-full h-4 bg-gray-300 animate-pulse mb-2"></div>
+        <div className="w-1/2 h-4 bg-gray-300 animate-pulse mb-4"></div>
+        <div className="w-full h-10 bg-gray-300 rounded animate-pulse"></div>
       </div>
     </div>
   );

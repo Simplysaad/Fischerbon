@@ -22,11 +22,14 @@ export const createEnrollment = async (req, res, next) => {
     const currentUser = req.user;
     const { email, enrollments } = currentUser;
 
-    const isEnrolled = enrollments.find((e) => e.courseId === courseId);
+    const isEnrolled = enrollments.find(
+      (e) => e.courseId.toString() === courseId
+    );
     if (isEnrolled) {
-      return res.status(400).json({
-        success: false,
-        message: "User is already enrolled",
+      return res.status(200).json({
+        success: true,
+        message: "user is already enrolled",
+        data: isEnrolled,
       });
     }
 
@@ -44,19 +47,7 @@ export const createEnrollment = async (req, res, next) => {
     const { price: amount } = currentCourse;
 
     const amountInKobo = amount * 100;
-    // await sendEmail({
-    //     to: currentUser.email,
-    //     subject: "Course Enrollment Confirmation",
-    //     template: "enrollmentSuccess",
-    //     // message: "Thamks for enrolling in this course",
-    //     data: {
-    //       courseId,
-    //       name: currentUser.name.split(" ")[0] || "",
-    //       title: currentCourse.title,
-    //       amount: amountInKobo / 100,
-    //       date: format(Date.now()),
-    //     },
-    //  });
+
     const payment = await initialize(email, amountInKobo, courseId);
 
     if (!payment || !payment.status) {
@@ -66,6 +57,20 @@ export const createEnrollment = async (req, res, next) => {
           payment?.message || "Error encountered while initializing payment",
       });
     }
+
+    await sendEmail({
+      to: currentUser.email,
+      subject: "Course Enrollment Initialized",
+      template: "enrollmentInit",
+      data: {
+        courseId,
+        name: currentUser.name.split(" ")[0] || "",
+        title: currentCourse.title,
+        amount: amountInKobo / 100,
+        date: format(Date.now()),
+        paymentUrl: payment.data.authorization_url,
+      },
+    });
 
     return res.status(201).json({
       success: true,
@@ -146,68 +151,10 @@ export const verifyEnrollment = async (req, res, next) => {
     return res
       .redirect(`${process.env.FRONTEND_URL}/courses/${currentCourse.slug}`)
       .end();
-    // return res.status(201).json({
-    //   success: true,
-    //   message: "user enrolled successfully",
-    //   data: newEnrollment,
-    // });
   } catch (err) {
     next(err);
   }
 };
-
-// export const getEnrollments = async (req, res, next) => {
-//   try {
-//     const currentUser = req.user;
-//     if (!currentUser) throw new Error("Unauthorized - User  not logged in ");
-
-//     let isAdmin = currentUser.role === "admin";
-//     let filter = !isAdmin ? { _id: currentUser._id } : null;
-
-//     const enrollments = await Enrollment.find(filter)
-//       .sort({ createdAt: -1 })
-//       // .populate({ path: "courseId", populate: { path: "lessons" } })
-//       .populate({
-//         path: "courseId",
-//         select: "_id title lessons",
-//         populate: { path: "lessons" },
-//         path: "completedLessons",
-//       })
-//       .select("courseId completedLessons");
-
-//     console.log(enrollments);
-
-//     const enrollments2 = enrollments?.map((e) => {
-//       // x = {
-//       //   id: "course1",
-//       //   title: "AutoCAD Beginner Fundamentals",
-//       //   instructor: "Admin",
-//       //   progress: 75, // in percentage
-//       //   completedLessons: 15,
-//       // };
-
-//       const lastCompleted = e.completedLessons
-//         .sort((a, b) => b.completedAt - a.completedAt)
-//         .pop();
-
-//       return {
-//         _id: e.courseId._id || e.courseId,
-//         progress:
-//           (e.courseId.lessons?.length / e.completedLessons.length) * 100,
-//         instructor: e.courseId.instructor,
-//         lastCompleted,
-//       };
-//     });
-
-//     return res.status(200).json({
-//       success: true,
-//       message: `${enrollments.length} retrieved successfully`,
-//       data: enrollments,
-//     });
-//   } catch (err) {
-//     next(err);
-//   }
-// };
 
 export const getEnrollments = async (req, res, next) => {
   try {

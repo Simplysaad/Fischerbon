@@ -96,7 +96,7 @@ const Dashboard = () => {
                   ctaText={'Check courses'}
                 />
               ) : (
-                <ul>
+                <ul className="flex flex-col gap-2">
                   {filteredEnrollments.map((enrollment, idx) => (
                     <li key={enrollment._id || idx}>
                       <EnrollmentCard enrollment={enrollment} />

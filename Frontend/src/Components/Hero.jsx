@@ -64,7 +64,7 @@ export default function Hero({
 
           <Link
             to={ctaUrl || '/'}
-            className="inline-block mt-4 bg-white text-blue-700 font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-cyan-400 transition-colors focus:outline-none focus:ring-4 focus:ring-cyan-300 max-w-max"
+            className="inline-block mt-4 bg-white hover:text-white text-blue-700 font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-blue-400 transition-colors focus:outline-none focus:ring-4 focus:ring-cyan-300 max-w-max"
             aria-label={ctaText}
           >
             {ctaText}
@@ -84,3 +84,29 @@ export default function Hero({
     </section>
   );
 }
+
+Hero.HeroSkeleton = () => {
+  return (
+    <section
+      className="bg-gradient-to-r from-blue-600 to-cyan-500  py-12 md:py-24 flex items-center justify-center text-white"
+      aria-label="Hero section skeleton loader"
+      style={{ minWidth: '100vw', minHeight: '600px' }}
+    >
+      <div className="max-w-7xl w-11/12 h-full mx-auto flex flex-col md:flex-row items-center gap-10">
+        {/* Text Content Skeleton */}
+        <div className="flex-1 max-w-xl h-full flex flex-col justify-center space-y-6">
+          <div className="w-3/4 h-10 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-full h-6 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-5/6 h-6 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-2/3 h-6 bg-white/30 rounded animate-pulse"></div>
+          <div className="w-1/2 h-10 bg-white/30 rounded animate-pulse mt-4"></div>
+        </div>
+
+        {/* Image Skeleton */}
+        <div className="flex-1 max-w-md  max-md:hidden md:max-w-lg h-full flex items-center justify-center">
+          <div className="w-full h-64 bg-white/30 rounded-xl animate-pulse"></div>
+        </div>
+      </div>
+    </section>
+  );
+};
