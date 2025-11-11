@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo-full.png';
 
 const AuthContainer = ({ title, subtitle, children }) => {
   return (
