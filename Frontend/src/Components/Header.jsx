@@ -1,4 +1,4 @@
-import Logo from '../assets/logo-removebg-preview.png';
+import Logo from '../assets/logo-full.png';
 import { Link } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 

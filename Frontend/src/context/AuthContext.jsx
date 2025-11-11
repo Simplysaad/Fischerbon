@@ -4,6 +4,17 @@ import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 export const AuthContext = createContext();
 
+const fetchUser = async () => {
+  try {
+    const { data: response } = await axiosInstance.get('/auth/status');
+    if (response.success) return response.data;
+    else return null;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // start with loading
@@ -11,33 +22,47 @@ export const AuthProvider = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setIsLoading(true);
-        const { data: response } = await axiosInstance.get('/auth/status');
-        if (response.success) setUser(response.data);
-        else setUser(null);
-      } catch (err) {
-        console.error(err);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUser();
+    setIsLoading(true);
+
+    fetchUser()
+      .then((data) => setUser(data))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const login = async ({ email, password }) => {
+  const login = async ({ email, password }, next) => {
     const { data: response } = await axiosInstance.post('/auth/login', {
       email,
       password,
     });
     if (response.success) {
       setUser(response.data);
-      // Navigate back to the original page or default to home
-      const fallbackUrl = user.role === 'admin' ? '/admin/' : '/dashboard';
+      const fallbackUrl =
+        response.data?.role === 'admin' ? '/admin/' : '/dashboard';
       const from = location.state?.from?.pathname || fallbackUrl;
-      setTimeout(() => navigate(from, { replace: true }), 1500);
+
+      // if (!next)
+      navigate(from, { replace: true });
+      // else return next();
+    }
+    return response;
+  };
+
+  const register = async ({ email, password, fullName, role = 'student' }) => {
+    const { data: response } = await axiosInstance.post('/auth/register', {
+      email,
+      password,
+      fullName,
+      role,
+    });
+
+    console.log('register response', response);
+    if (response.success) {
+      setUser(response.data);
+      const fallbackUrl =
+        response.data?.role === 'admin' ? '/admin/' : '/dashboard';
+      const from = location.state?.from?.pathname || fallbackUrl;
+
+      navigate(from, { replace: true });
     }
     return response;
   };
@@ -49,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, register, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

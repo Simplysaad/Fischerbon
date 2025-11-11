@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Logo from '../assets/logo-removebg-preview-removebg-preview.png';
+import Logo from '../assets/logo-full.png';
 import axiosInstance from '../utils/axios.util';
+import { ArrowBigUp } from 'lucide-react';
 
 const Footer = () => {
   const [courses, setCourses] = useState([]);
@@ -60,10 +61,10 @@ const Footer = () => {
           <h3 className="font-semibold text-lg mb-3 border-b border-cyan-400 pb-2">
             Resources
           </h3>
-          <ul className="list-disc list-inside">
+          <ul className="">
             <li>
               <Link to="/profile" className="hover:text-cyan-300">
-                Your Profile
+                Profile
               </Link>
             </li>
             <li>
@@ -113,7 +114,12 @@ const Footer = () => {
           </ul>
         </nav>
       </div>
-
+      <button
+        className="fixed right-0 bottom-0 cursor-pointer z-10 bg-blue-400 p-2 rounded-full text-white hover:bg-blue-500"
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      >
+        <ArrowBigUp size={24} />
+      </button>
       <div className="mt-12 border-t border-cyan-400 pt-6 text-center text-cyan-300 text-sm">
         © {new Date().getFullYear()} AutoCAD LMS. All rights reserved.
       </div>

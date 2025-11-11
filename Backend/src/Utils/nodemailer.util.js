@@ -18,41 +18,48 @@ const transporter = nodemailer.createTransport({
 });
 
 export default async function sendEmail(emailOptions) {
+  const templatesDir = path.join(__dirname, "..", "Templates");
   try {
-    const { to, subject, template, data, message } = emailOptions;
-    const templateOptions = {
+    const { to, subject, template, data = {}, message } = emailOptions;
+
+    // Prepare shared data for both templates
+    const sharedData = {
       subject,
       logoUrl: `${process.env.BASE_URL}/Images/fischerbon-logo.png`,
       supportEmail: "support@fischerbon.com",
+      ...data,
     };
-    if (template && data) {
-      let templatePath = path.join(
-        __dirname,
-        "..",
-        "Templates",
-        `${template}.ejs`
-      );
-      let htmlMessage = await ejs.renderFile(templatePath, data);
-      templateOptions.message = htmlMessage;
+
+    let htmlMessage;
+
+    if (template) {
+      // Prevent path traversal by ensuring template doesn't contain path separators
+      if (
+        template.includes("..") ||
+        template.includes("/") ||
+        template.includes("\\")
+      ) {
+        throw new Error("Invalid template name");
+      }
+      const templatePath = path.join(templatesDir, `${template}.ejs`);
+      // Render the custom template with shared data
+      htmlMessage = await ejs.renderFile(templatePath, sharedData);
     } else {
-      templateOptions.message = message;
+      htmlMessage = message || "";
     }
 
-    const templatePath = path.join(__dirname, "..", "Templates", "layout.ejs");
-
-    const emailHtml = await ejs.renderFile(templatePath, templateOptions);
-
-    // Send email
-    await transporter.sendMail({
+    // Pass shared data plus rendered message to layout.ejs
+    const layoutPath = path.join(templatesDir, "layout.ejs");
+    const emailHtml = await ejs.renderFile(layoutPath, {
+      ...sharedData,
+      message: htmlMessage, // injected as HTML partial
       from: '"Engr. Iskeel" <noreply@fischerbon.com>',
       to,
       subject,
       html: emailHtml,
     });
-
-    console.log(`Email sent successfully to ${to}`);
-  } catch (error) {
-    console.error("Failed to send email:", error.message);
-    throw new Error(`Failed to send email: ${error.message}`);
+  } catch (err) {
+    console.error("Error sending email:", err);
+    throw err;
   }
 }

@@ -1,0 +1,22 @@
+<div class="container">
+    <h1>Complete your enrollment now!</h1>
+    <p>Hi <%= name %>,</p>
+    <p>
+        We're excited to have you join us. You started the enrollment process for <strong>
+            <%= title %>
+        </strong>, but your payment hasn't been completed yet.
+    </p>
+    <p>
+        To secure your spot and get immediate access to the course content, please complete your payment as soon as
+        possible.
+    </p>
+    <a href="<%= paymentUrl %>" class="button" target="_blank" rel="noopener noreferrer">Complete Payment</a>
+    <p>If you have any questions or need assistance, feel free to contact us at <a href="mailto:<%= supportEmail %>">
+            <%= supportEmail %>
+        </a>.</p>
+    <p>We look forward to seeing you in class!</p>
+
+    <div class="footer">
+        <p>&copy; <%= new Date().getFullYear() %> Your Company. All rights reserved.</p>
+    </div>
+</div>

@@ -13,9 +13,9 @@ const LessonBox = ({ idx, enrollment, isActive, lesson, course }) => {
           <p className="text-">{lesson.title}</p>
           <p className="text-gray-400 text-[.9rem]">video</p>
         </span>
-        {/* <span className="status float-end">
-          <CircleCheck color="#fff" fill="#3c3" size={16} />
-        </span> */}
+        <span className="status float-end">
+          <Lock size={16} />
+        </span>
       </li>
     );
   }
@@ -48,23 +48,28 @@ const LessonBox = ({ idx, enrollment, isActive, lesson, course }) => {
             (l) => l.lessonId === lesson._id
           ) ? (
             <CircleCheck color="#fff" fill="#3c3" size={16} />
-          ) : (
-            <Lock size={16} />
-          )}
+          ) : // <Lock size={16} />
+          null}
         </span>
       </li>
     </Link>
   );
 };
 
+LessonBox.LessonBoxSkeleton = () => {
+  return (
+    <div className="animate-pulse flex gap-2 shadow p-2 rounded justify-start items-center">
+      <span className="min-w-[10%] rounded-full text-center text-3xl font-bold py-2  bg-gray-300">
+        &nbsp;
+      </span>
+      <span className="info w-full">
+        <div className="h-4 bg-gray-300 rounded w-3/4 mb-2">&nbsp;</div>
+        <div className="h-3 bg-gray-300 rounded w-1/2">&nbsp;</div>
+      </span>
+      <span className="status float-end">
+        <div className="h-4 w-4 bg-gray-300 rounded-full">&nbsp;</div>
+      </span>
+    </div>
+  );
+};
 export default LessonBox;
-
-//  onClick={() => {
-//                     console.log(lesson.title);
-//                     console.log(
-//                       `/courses/${courseId}/lessons/${course.lessons[idx]._id}`
-//                     );
-//                     navigate(
-//                       `/courses/${courseId}/lessons/${course.lessons[idx]._id}`
-//                     );
-//                   }}

@@ -2,47 +2,11 @@ import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 
-<<<<<<< HEAD
-const App = () => {
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LoginPage />} />
+import useAuth, { AuthProvider } from './context/AuthContext';
+import Loading from './Components/Loading';
 
-          {/* Auth */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
+import ScrollToAnchor from './Components/ScrollToAnchor';
 
-          {/* Protected Dashboard */}
-          <Route
-            path="/dashboard"
-            element={
-              // <ProtectedRoute>
-              <Dashboard />
-              // </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/courses"
-            element={
-              // <ProtectedRoute>
-              <Courses />
-              // </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/courses/:courseId"
-            element={
-              // <ProtectedRoute>
-              <Courses />
-              // </ProtectedRoute>
-            }
-          />
-=======
 const LoginPage = lazy(() => import('./Pages/Auth/Login'));
 const SignupPage = lazy(() => import('./Pages/Auth/Signup'));
 const ResetPasswordPage = lazy(() => import('./Pages/Auth/ResetPassword'));
@@ -58,14 +22,11 @@ const ManageCourses = lazy(() => import('./Pages/Admin/ManageCourses'));
 const Home = lazy(() => import('./Pages/Public/Home'));
 const LessonDetails = lazy(() => import('./Pages/Student/Lesson'));
 
-import useAuth, { AuthProvider } from './context/AuthContext';
->>>>>>> 5546e9782df4523d3415eeee38bb17718dd33166
-
 const ProtectedRoute = ({ allowedRoles = null }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Loading />;
 
   if (allowedRoles) {
     if (!user) {
@@ -73,7 +34,7 @@ const ProtectedRoute = ({ allowedRoles = null }) => {
     }
 
     if (!allowedRoles.includes(user.role) && user.role !== 'admin') {
-      return <Navigate to="/404" replace />; 
+      return <Navigate to="/404" replace />;
     }
   }
 
@@ -81,10 +42,12 @@ const ProtectedRoute = ({ allowedRoles = null }) => {
 };
 
 function App() {
+  // if (true) return <Loading overlay size="large" />;
   return (
     <>
       <AuthProvider>
-        <Suspense>
+        <Suspense fallback={<Loading overlay active size="large" />}>
+          <ScrollToAnchor />
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<Home />} />

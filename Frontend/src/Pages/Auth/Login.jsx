@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, UserCircle, Lock } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthAlert from '../../Components/AuthAlert';
 import useAuth from '../../context/AuthContext';
 
@@ -13,6 +13,7 @@ const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const location = useLocation();
 
   const validateForm = () => {
     const newErrors = {};
@@ -37,23 +38,24 @@ const LoginPage = () => {
 
       const response = await login({ ...formData });
 
-      console.log(formData);
-
-      if (response.success) {
-        const currentUser = response.data;
-
-        console.log(currentUser); //TODO: Remove this;
-        setAlert('success');
-        setResult({ message: 'Welcome back!' });
-      } else {
-        setAlert('failure');
-        setResult({ message: 'Invalid credentials' });
+      setResult({ message: response.message });
+      setAlert(response?.success ? 'success' : 'failure');
+      if (response?.success) {
+        const fallbackUrl =
+          response?.data?.role === 'admin' ? '/admin/' : '/dashboard';
+        const from = location.state?.from?.pathname || fallbackUrl;
+        console.log('from', from);
+        navigate(from, { replace: true });
       }
     } catch (err) {
+      console.error(err);
+      setResult({ message: err.message || 'An unexpected error occurred' });
+      setAlert('failure');
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen flex bg-gray-50">
       {/* Left informational side */}
@@ -62,8 +64,8 @@ const LoginPage = () => {
           Welcome Back to FischerBon
         </h2>
         <p className="text-xl mb-8 max-w-md">
-          Access your engineering design courses, including PDMS, CAD, BIM,
-          Piping 3D and more. Learn from industry experts, anytime, anywhere.
+          Access your engineering design courses, including AutoCAD, BIM, 3D
+          Modelling and more. Learn from industry experts, anytime, anywhere.
         </p>
         {/* Suggest adding an illustrative engineering graphic or animation here */}
       </div>
@@ -97,7 +99,7 @@ const LoginPage = () => {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
+              className="text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
             >
               <UserCircle className="w-5 h-5 text-blue-600" /> Email Address
             </label>
@@ -121,7 +123,7 @@ const LoginPage = () => {
           <div className="relative">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
+              className=" text-sm font-medium text-gray-700 mb-1 flex items-center gap-2"
             >
               <Lock className="w-5 h-5 text-blue-600" /> Password
             </label>
