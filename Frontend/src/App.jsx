@@ -2,6 +2,11 @@ import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 
+import useAuth, { AuthProvider } from './context/AuthContext';
+import Loading from './Components/Loading';
+
+import ScrollToAnchor from './Components/ScrollToAnchor';
+
 const LoginPage = lazy(() => import('./Pages/Auth/Login'));
 const SignupPage = lazy(() => import('./Pages/Auth/Signup'));
 const ResetPasswordPage = lazy(() => import('./Pages/Auth/ResetPassword'));
@@ -16,6 +21,7 @@ const AdminDashboard = lazy(() => import('./Pages/Admin/AdminDashboard'));
 const ManageCourses = lazy(() => import('./Pages/Admin/ManageCourses'));
 const Home = lazy(() => import('./Pages/Public/Home'));
 const LessonDetails = lazy(() => import('./Pages/Student/Lesson'));
+
 const ProtectedRoute = ({ allowedRoles = null }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
