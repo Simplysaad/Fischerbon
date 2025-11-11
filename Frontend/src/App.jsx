@@ -15,7 +15,7 @@ const AdminDashboard = lazy(() => import('./Pages/Admin/AdminDashboard'));
 
 const ManageCourses = lazy(() => import('./Pages/Admin/ManageCourses'));
 const Home = lazy(() => import('./Pages/Public/Home'));
-const LessonDetails = lazy(() => import('./Pages/Student/
+const LessonDetails = lazy(() => import('./Pages/Student/Lesson'));
 const ProtectedRoute = ({ allowedRoles = null }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
